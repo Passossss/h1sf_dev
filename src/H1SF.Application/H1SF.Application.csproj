@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\H1SF.Domain\H1SF.Domain.csproj" />
+    <ProjectReference Include="..\H1SF.Infrastructure\H1SF.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
