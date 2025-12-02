@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace H1SF.Domain.Entities.Faturamento
 {
+    /// <summary>
+    /// Tabela H1SF.SFT_SELECAO_FTRM
+    /// </summary>
     public class SelecaoFaturamento
     {
         public int SftCdTRec { get; set; }
@@ -18,5 +21,10 @@ namespace H1SF.Domain.Entities.Faturamento
         public int SftCdMercDst { get; set; }
         public DateTime SftDtcSelFtrm { get; set; }
         public string SftLgonFunc { get; set; } = string.Empty;
+        
+        // Campos adicionais para query 572-20-SQL-CNPJ-TRIANG
+        public int? SftCdTMtz { get; set; }
+        public int? SftIdMtz { get; set; }
+        public int? SftIdCli { get; set; }
     }
 }

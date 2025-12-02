@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace H1SF.Domain.Entities.Faturamento
 {
+    /// <summary>
+    /// Tabela H1ST.TIPO_RECOLHIMENTO
+    /// </summary>
     public class TipoRecolhimento
     {
         public int CdFbr { get; set; }
@@ -13,5 +16,7 @@ namespace H1SF.Domain.Entities.Faturamento
         public int CdRegrDct { get; set; }
         public int CdRegrFtrm { get; set; }
         public int CdTRec { get; set; }
+        public string? CdTPrd { get; set; }
+        public string? NmCdad { get; set; }
     }
 }
