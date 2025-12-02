@@ -2,12 +2,14 @@
 using H1SF.Application.Services.DataHora;
 using H1SF.Application.Services.Emitente;
 using H1SF.Application.Services.Fabrica;
+using H1SF.Application.Services.FaturamentoPws;
 using H1SF.Application.Services.Protocolo;
 using H1SF.Infrastructure.Data;
 using H1SF.Infrastructure.Repositories;
 using H1SF.Infrastructure.Repositories.DataHora;
 using H1SF.Infrastructure.Repositories.Emitente;
 using H1SF.Infrastructure.Repositories.Fabrica;
+using H1SF.Infrastructure.Repositories.FaturamentoPws;
 using H1SF.Infrastructure.Repositories.Protocolo;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +44,9 @@ builder.Services.AddScoped<IRecuperadorEmitente, RecuperadorEmitente>();
 
 builder.Services.AddScoped<IProtocoloRepository, ProtocoloRepository>();
 builder.Services.AddScoped<ILeitorProtocolo, LeitorProtocolo>();
+
+builder.Services.AddScoped<IAtualizarPwsRepository, AtualizarPwsRepository>();
+builder.Services.AddScoped<IAtualizarPwsService, AtualizarPwsService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

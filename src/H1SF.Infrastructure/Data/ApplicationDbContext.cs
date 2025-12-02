@@ -33,6 +33,11 @@ public class ApplicationDbContext : DbContext
     
     // Entidades de Protocolo
     public DbSet<ProtocoloDespacho> ProtocolosDespacho { get; set; }
+    
+    // Entidades de Recolhimento (PWS)
+    public DbSet<ItemRecolhimento> ItensRecolhimento { get; set; }
+    public DbSet<VolumeRecolhimento> VolumesRecolhimento { get; set; }
+    public DbSet<ItemVolumeRecolhimento> ItensVolumeRecolhimento { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -120,6 +125,27 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => new { e.PtdCdMercDst, e.PtdDtcSelFtrm, e.PtdLgonFunc, e.PtdCdSeq });
             entity.ToTable("PTD_PROTODSP", schema: "H1SF");
+        });
+
+        // Configurar ItemRecolhimento
+        modelBuilder.Entity<ItemRecolhimento>(entity =>
+        {
+            entity.HasKey(e => e.IdEtiqRec);
+            entity.ToTable("ITEM_RECOLHIMENTO", schema: "H1ST");
+        });
+
+        // Configurar VolumeRecolhimento
+        modelBuilder.Entity<VolumeRecolhimento>(entity =>
+        {
+            entity.HasKey(e => e.IdVol);
+            entity.ToTable("VOLUME_RECOLHIMENTO", schema: "H1ST");
+        });
+
+        // Configurar ItemVolumeRecolhimento
+        modelBuilder.Entity<ItemVolumeRecolhimento>(entity =>
+        {
+            entity.HasKey(e => new { e.IdEtiqRec, e.IdVol });
+            entity.ToTable("ITEM_VOLUME_RECOLHIMENTO", schema: "H1ST");
         });
     }
 }
