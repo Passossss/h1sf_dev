@@ -48,6 +48,8 @@ public class ApplicationDbContext : DbContext
     // Entidade DetalheRelatorio (DRE_DETREL)
     public DbSet<Domain.Entities.DreDetalhesRelatorio.DetalheRelatorio> DetalhesRelatorio { get; set; }
 
+    public DbSet<Domain.Entities.EntradaNfIcRis.InterfaceRisRequest> InterfaceRisRequests { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -216,6 +218,63 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.DreIdVia)
                 .HasColumnName("DRE_ID_VIA")
                 .HasMaxLength(10);
+
+            entity.Property(e => e.DataCriacao)
+                .HasColumnName("DT_CRIACAO")
+                .HasDefaultValueSql("SYSDATE");
+        });
+
+        modelBuilder.Entity<Domain.Entities.EntradaNfIcRis.InterfaceRisRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("INTERFACE_RIS_REQUEST");
+
+            entity.Property(e => e.CdAces)
+                .HasColumnName("CD_ACES")
+                .HasMaxLength(2);
+
+            entity.Property(e => e.CdRetrEci)
+                .HasColumnName("CD_RETR_ECI");
+
+            entity.Property(e => e.CdRetrAces)
+                .HasColumnName("CD_RETR_ACES");
+
+            entity.Property(e => e.IcTAcao)
+                .HasColumnName("IC_T_ACAO")
+                .HasMaxLength(1);
+
+            entity.Property(e => e.CdMercDst)
+                .HasColumnName("CD_MERC_DST");
+
+            entity.Property(e => e.DtcSelFtrm)
+                .HasColumnName("DTC_SEL_FTRM");
+
+            entity.Property(e => e.LgonFunc)
+                .HasColumnName("LGON_FUNC")
+                .HasMaxLength(50);
+
+            entity.Property(e => e.IdPtcDsp)
+                .HasColumnName("ID_PTC_DSP")
+                .HasMaxLength(50);
+
+            entity.Property(e => e.IdImprFtrm)
+                .HasColumnName("ID_IMPR_FTRM")
+                .HasMaxLength(50);
+
+            entity.Property(e => e.LgonFuncRsp)
+                .HasColumnName("LGON_FUNC_RSP")
+                .HasMaxLength(50);
+
+            entity.Property(e => e.AreParm)
+                .HasColumnName("ARE_PARM")
+                .HasMaxLength(1000);
+
+            entity.Property(e => e.MensagemErro)
+                .HasColumnName("MSG_ERRO")
+                .HasMaxLength(2000);
+
+            entity.Property(e => e.Sucesso)
+                .HasColumnName("IC_SUCESSO");
 
             entity.Property(e => e.DataCriacao)
                 .HasColumnName("DT_CRIACAO")
