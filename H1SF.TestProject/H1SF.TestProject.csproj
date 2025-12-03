@@ -23,6 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\H1SF.Middleware\H1SF.Middleware.csproj" />
+    <ProjectReference Include="..\src\H1SF.Application\H1SF.Application.csproj" />
+    <ProjectReference Include="..\src\H1SF.Domain\H1SF.Domain.csproj" />
+    <ProjectReference Include="..\src\H1SF.Infrastructure\H1SF.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 

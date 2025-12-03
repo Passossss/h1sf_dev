@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
 {
-    public class InterfaceRisRepository : IInterfaceRisRepository
+    public class EntradaRisServiceRisRepository : IEntradaRisRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<InterfaceRisRepository> _logger;
+        private readonly ILogger<EntradaRisServiceRisRepository> _logger;
 
-        public InterfaceRisRepository(
+        public EntradaRisServiceRisRepository(
             ApplicationDbContext context,
-            ILogger<InterfaceRisRepository> logger)
+            ILogger<EntradaRisServiceRisRepository> logger)
         {
             _context = context;
             _logger = logger;
@@ -21,11 +21,11 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
             _logger.LogInformation("Interface RIS Repository inicializado (modo MOCK)");
         }
 
-        public async Task<Guid> SalvarRequisicaoAsync(InterfaceRisRequest request)
+        public async Task<Guid> SalvarRequisicaoAsync(EntradaRisRequest request)
         {
             try
             {
-                _context.InterfaceRisRequests.Add(request);
+                _context.EntradaRisRequest.Add(request);
                 await _context.SaveChangesAsync();
 
                 _logger.LogDebug("Requisição RIS salva. ID: {Id}", request.Id);
@@ -39,11 +39,11 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
             }
         }
 
-        public async Task AtualizarRespostaAsync(int id, InterfaceRisResponse response)
+        public async Task AtualizarRespostaAsync(int id, EntradaRisResponse response)
         {
             try
             {
-                var request = await _context.InterfaceRisRequests
+                var request = await _context.EntradaRisRequest
                     .FirstOrDefaultAsync(r => r.Id == id);
 
                 if (request != null)
@@ -64,14 +64,14 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
             }
         }
 
-        public async Task<InterfaceRisResponse> EmitirLinkParaInterfaceRisAsync(InterfaceRisRequest request)
+        public async Task<EntradaRisResponse> EmitirLinkParaInterfaceRisAsync(EntradaRisRequest request)
         {
             _logger.LogInformation("Emitindo link MOCK para interface RIS - Programa H1SF5008");
 
             return await EmitirLinkMockAsync(request);
         }
 
-        private async Task<InterfaceRisResponse> EmitirLinkMockAsync(InterfaceRisRequest request)
+        private async Task<EntradaRisResponse> EmitirLinkMockAsync(EntradaRisRequest request)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
 
                 // Mock SIMPLES - sempre sucesso para começar
                 // Depois pode adicionar lógica mais complexa
-                return new InterfaceRisResponse
+                return new EntradaRisResponse
                 {
                     CdRetrEci = 0,
                     CdRetrAces = 0,
@@ -92,7 +92,7 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro no mock da interface RIS");
-                return new InterfaceRisResponse
+                return new EntradaRisResponse
                 {
                     CdRetrEci = 99,
                     CdRetrAces = 99,
@@ -103,9 +103,9 @@ namespace H1SF.Infrastructure.Repositories.EntradaNfIcRis
             }
         }
 
-        public async Task<InterfaceRisRequest?> ObterRequisicaoPorIdAsync(int id)
+        public async Task<EntradaRisRequest?> ObterRequisicaoPorIdAsync(int id)
         {
-            return await _context.InterfaceRisRequests
+            return await _context.EntradaRisRequest
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 

@@ -8,11 +8,11 @@ namespace H1SF.API.Controllers
     [Route("api/interface-ris")]
     public class InterfaceRisController : ControllerBase
     {
-        private readonly IInterfaceRisService _service;
+        private readonly IEntradaRisService _service;
         private readonly ILogger<InterfaceRisController> _logger;
 
         public InterfaceRisController(
-            IInterfaceRisService service,
+            IEntradaRisService service,
             ILogger<InterfaceRisController> logger)
         {
             _service = service;

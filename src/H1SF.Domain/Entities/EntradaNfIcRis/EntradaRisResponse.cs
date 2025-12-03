@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace H1SF.Domain.Entities.EntradaNfIcRis
 {
-    public class InterfaceRisResponse
+    public class EntradaRisResponse
     {
         public int CdRetrEci { get; set; }          // WX04-CD-RETR-ECI
         public int CdRetrAces { get; set; }         // WX04-CD-RETR-ACES

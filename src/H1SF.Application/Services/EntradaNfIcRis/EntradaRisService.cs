@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace H1SF.Application.Services.EntradaNfIcRis
 {
-    public class InterfaceRisService : IInterfaceRisService
+    public class EntradaRisService : IEntradaRisService
     {
-        private readonly IInterfaceRisRepository _repository;
-        private readonly ILogger<InterfaceRisService> _logger;
+        private readonly IEntradaRisRepository _repository;
+        private readonly ILogger<EntradaRisService> _logger;
 
-        public InterfaceRisService(
-            IInterfaceRisRepository repository,
-            ILogger<InterfaceRisService> logger)
+        public EntradaRisService(
+            IEntradaRisRepository repository,
+            ILogger<EntradaRisService> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -30,7 +30,7 @@ namespace H1SF.Application.Services.EntradaNfIcRis
             try
             {
                 // 1. Preparar requisição RIS (equivalente aos MOVE do COBOL)
-                var request = new InterfaceRisRequest
+                var request = new EntradaRisRequest
                 {
                     CdAces = "02",                      // MOVE '02' TO WX04-CD-ACES
                     CdRetrEci = 0,                      // MOVE ZEROS TO WX04-CD-RETR-ECI
@@ -100,7 +100,7 @@ namespace H1SF.Application.Services.EntradaNfIcRis
             return resultado;
         }
 
-        private string? MontarMensagemErro(Domain.Entities.EntradaNfIcRis.InterfaceRisResponse response, string areParm)
+        private string? MontarMensagemErro(Domain.Entities.EntradaNfIcRis.EntradaRisResponse response, string areParm)
         {
             throw new NotImplementedException();
         }

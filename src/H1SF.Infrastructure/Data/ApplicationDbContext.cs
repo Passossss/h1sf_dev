@@ -48,7 +48,7 @@ public class ApplicationDbContext : DbContext
     // Entidade DetalheRelatorio (DRE_DETREL)
     public DbSet<Domain.Entities.DreDetalhesRelatorio.DetalheRelatorio> DetalhesRelatorio { get; set; }
 
-    public DbSet<Domain.Entities.EntradaNfIcRis.InterfaceRisRequest> InterfaceRisRequests { get; set; }
+    public DbSet<Domain.Entities.EntradaNfIcRis.EntradaRisRequest> EntradaRisRequest { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -224,7 +224,7 @@ public class ApplicationDbContext : DbContext
                 .HasDefaultValueSql("SYSDATE");
         });
 
-        modelBuilder.Entity<Domain.Entities.EntradaNfIcRis.InterfaceRisRequest>(entity =>
+        modelBuilder.Entity<Domain.Entities.EntradaNfIcRis.EntradaRisRequest>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.ToTable("INTERFACE_RIS_REQUEST");

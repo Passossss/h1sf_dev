@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace H1SF.Domain.Entities.EntradaNfIcRis
 {
-    public class InterfaceRisRequest
+    public class EntradaRisRequest
     {
         public int Id { get; set; }
         public string CdAces { get; set; } = "02";                 // WX04-CD-ACES
