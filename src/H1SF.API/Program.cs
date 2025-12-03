@@ -6,6 +6,7 @@ using H1SF.Application.Services.FaturamentoPws;
 using H1SF.Application.Services.LogCaps;
 using H1SF.Application.Services.Monitor;
 using H1SF.Application.Services.Protocolo;
+using H1SF.Application.Services.Recolhimento;
 using H1SF.Application.Services.Transacao;
 using H1SF.Infrastructure.Data;
 using H1SF.Infrastructure.Repositories;
@@ -15,6 +16,7 @@ using H1SF.Infrastructure.Repositories.Fabrica;
 using H1SF.Infrastructure.Repositories.FaturamentoPws;
 using H1SF.Infrastructure.Repositories.LogCaps;
 using H1SF.Infrastructure.Repositories.Protocolo;
+using H1SF.Infrastructure.Repositories.Recolhimento;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +60,9 @@ builder.Services.AddScoped<IMontadorLogCaps, MontadorLogCaps>();
 builder.Services.AddScoped<IIniciadorTransacaoSf30, IniciadorTransacaoSf30>();
 
 builder.Services.AddScoped<IAtualizadorFaseLbrcImps, AtualizadorFaseLbrcImps>();
+
+builder.Services.AddScoped<IFinalizadorItemRecolhimentoRepository, FinalizadorItemRecolhimentoRepository>();
+builder.Services.AddScoped<IFinalizadorItemRecolhimento, FinalizadorItemRecolhimento>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
