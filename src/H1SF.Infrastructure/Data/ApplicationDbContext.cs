@@ -5,6 +5,7 @@ using H1SF.Domain.Entities.Faturamento;
 using H1SF.Domain.Entities.LogCaps;
 using H1SF.Domain.Entities.Protocolo;
 using Microsoft.EntityFrameworkCore;
+using H1SF.Domain.Entities.DreDetalhesRelatorio;
 
 namespace H1SF.Infrastructure.Data;
 
@@ -43,6 +44,9 @@ public class ApplicationDbContext : DbContext
     // Entidades de Log CAPS
     public DbSet<Fornecedor> Fornecedores { get; set; }
     public DbSet<Peca> Pecas { get; set; }
+
+    // Entidade DetalheRelatorio (DRE_DETREL)
+    public DbSet<Domain.Entities.DreDetalhesRelatorio.DetalheRelatorio> DetalhesRelatorio { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -158,7 +162,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.CodigoFonteAtendimento);
             entity.ToTable("SUP_FORNECEDOR", schema: "H1SF");
-            
+
             entity.Property(e => e.CodigoFonteAtendimento)
                 .HasColumnName("SUP_CD_FNT_ATND");
             entity.Property(e => e.CodigoFornecedorSuprimentos)
@@ -170,11 +174,52 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.IdPeca);
             entity.ToTable("PECA", schema: "H1SR");
-            
+
             entity.Property(e => e.IdPeca)
                 .HasColumnName("ID_PECA");
             entity.Property(e => e.NomePecaIngles)
                 .HasColumnName("NM_PECA_ING");
+        });
+
+        // Configurar DetalheRelatorio (Tabela DRE_DETREL)
+        modelBuilder.Entity<Domain.Entities.DreDetalhesRelatorio.DetalheRelatorio>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("DRE_DETREL", schema: "H1CB");
+
+            entity.Property(e => e.DreCdStm)
+                .HasColumnName("DRE_CD_STM")
+                .HasMaxLength(10);
+
+            entity.Property(e => e.DreDtcGrc)
+                .HasColumnName("DRE_DTC_GRC");
+
+            entity.Property(e => e.DreIdPrcp)
+                .HasColumnName("DRE_ID_PRCP")
+                .HasMaxLength(50);
+
+            entity.Property(e => e.DreCdSqnDct)
+                .HasColumnName("DRE_CD_SQN_DCT")
+                .HasMaxLength(20);
+
+            entity.Property(e => e.DreCdSqnPjl)
+                .HasColumnName("DRE_CD_SQN_PJL")
+                .HasMaxLength(10);
+
+            entity.Property(e => e.DreCdSqnLnh)
+                .HasColumnName("DRE_CD_SQN_LNH");
+
+            entity.Property(e => e.DreCnLnhRel)
+                .HasColumnName("DRE_CN_LNH_REL")
+                .HasMaxLength(2000);
+
+            entity.Property(e => e.DreIdVia)
+                .HasColumnName("DRE_ID_VIA")
+                .HasMaxLength(10);
+
+            entity.Property(e => e.DataCriacao)
+                .HasColumnName("DT_CRIACAO")
+                .HasDefaultValueSql("SYSDATE");
         });
     }
 }
