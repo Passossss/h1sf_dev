@@ -64,4 +64,29 @@ public class MonitorFaturamentoRepository : IMonitorFaturamentoRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    /// <summary>
+    /// 565-00-ATUALIZA-LBRC-IMPS
+    /// UPDATE H1SF.MNT_MONITOR_FTRM SET MNT_DTC_FASE_LBRC_IMPS = SYSDATE
+    /// WHERE MNT_CD_MERC_DST = :WQ02-CD-MERC-DST
+    /// AND MNT_DTC_SEL_FTRM = :WQ02-DTC-SEL-FTRM
+    /// AND MNT_LGON_FUNC = :WQ02-LGON-FUNC
+    /// </summary>
+    public async Task AtualizarFaseLbrcImpsAsync(
+        string codigoMercadoDestino, 
+        string dataSelecaoFaturamento, 
+        string loginFuncionario)
+    {
+        var monitor = await _context.MonitorFaturamento
+            .Where(x => x.CodigoMercadoriaDestino.ToString() == codigoMercadoDestino &&
+                       x.TimestampSelecao == dataSelecaoFaturamento &&
+                       x.LoginFuncionario == loginFuncionario)
+            .FirstOrDefaultAsync();
+
+        if (monitor != null)
+        {
+            monitor.DataFaseLbrcImps = DateTime.Now; // SYSDATE
+            await _context.SaveChangesAsync();
+        }
+    }
 }

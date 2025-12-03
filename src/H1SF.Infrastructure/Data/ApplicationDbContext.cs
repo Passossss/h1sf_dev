@@ -2,6 +2,7 @@ using H1SF.Domain.Entities;
 using H1SF.Domain.Entities.Emitente;
 using H1SF.Domain.Entities.Fabrica;
 using H1SF.Domain.Entities.Faturamento;
+using H1SF.Domain.Entities.LogCaps;
 using H1SF.Domain.Entities.Protocolo;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,6 +39,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<ItemRecolhimento> ItensRecolhimento { get; set; }
     public DbSet<VolumeRecolhimento> VolumesRecolhimento { get; set; }
     public DbSet<ItemVolumeRecolhimento> ItensVolumeRecolhimento { get; set; }
+    
+    // Entidades de Log CAPS
+    public DbSet<Fornecedor> Fornecedores { get; set; }
+    public DbSet<Peca> Pecas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -146,6 +151,30 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => new { e.IdEtiqRec, e.IdVol });
             entity.ToTable("ITEM_VOLUME_RECOLHIMENTO", schema: "H1ST");
+        });
+
+        // Configurar Fornecedor
+        modelBuilder.Entity<Fornecedor>(entity =>
+        {
+            entity.HasKey(e => e.CodigoFonteAtendimento);
+            entity.ToTable("SUP_FORNECEDOR", schema: "H1SF");
+            
+            entity.Property(e => e.CodigoFonteAtendimento)
+                .HasColumnName("SUP_CD_FNT_ATND");
+            entity.Property(e => e.CodigoFornecedorSuprimentos)
+                .HasColumnName("SUP_CD_FORN_SPR");
+        });
+
+        // Configurar Peca
+        modelBuilder.Entity<Peca>(entity =>
+        {
+            entity.HasKey(e => e.IdPeca);
+            entity.ToTable("PECA", schema: "H1SR");
+            
+            entity.Property(e => e.IdPeca)
+                .HasColumnName("ID_PECA");
+            entity.Property(e => e.NomePecaIngles)
+                .HasColumnName("NM_PECA_ING");
         });
     }
 }

@@ -15,4 +15,5 @@ public class MonitorFaturamento
     public char? IndicadorCancelamento { get; set; }     // MNT_IC_CAN
     public DateTime? DataFaseMontagem { get; set; }      // MNT_DTC_FASE_MTG
     public DateTime? DataFaseComplementar { get; set; }  // MNT_DTC_FASE_MTG_CPLM
+    public DateTime? DataFaseLbrcImps { get; set; }      // MNT_DTC_FASE_LBRC_IMPS
 }

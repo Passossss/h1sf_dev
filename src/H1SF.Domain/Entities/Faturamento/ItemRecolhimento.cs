@@ -12,5 +12,6 @@ namespace H1SF.Domain.Entities.Faturamento
         public int QPecaRec { get; set; }
         public DateTime? DtcFnlItem { get; set; }
         public DateTime DataCriacao { get; set; }
+        public string CodigoFonteAtendimento { get; set; } = string.Empty; // CD_FNT_ATND
     }
 }

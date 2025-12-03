@@ -3,13 +3,17 @@ using H1SF.Application.Services.DataHora;
 using H1SF.Application.Services.Emitente;
 using H1SF.Application.Services.Fabrica;
 using H1SF.Application.Services.FaturamentoPws;
+using H1SF.Application.Services.LogCaps;
+using H1SF.Application.Services.Monitor;
 using H1SF.Application.Services.Protocolo;
+using H1SF.Application.Services.Transacao;
 using H1SF.Infrastructure.Data;
 using H1SF.Infrastructure.Repositories;
 using H1SF.Infrastructure.Repositories.DataHora;
 using H1SF.Infrastructure.Repositories.Emitente;
 using H1SF.Infrastructure.Repositories.Fabrica;
 using H1SF.Infrastructure.Repositories.FaturamentoPws;
+using H1SF.Infrastructure.Repositories.LogCaps;
 using H1SF.Infrastructure.Repositories.Protocolo;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,6 +51,13 @@ builder.Services.AddScoped<ILeitorProtocolo, LeitorProtocolo>();
 
 builder.Services.AddScoped<IAtualizarPwsRepository, AtualizarPwsRepository>();
 builder.Services.AddScoped<IAtualizarPwsService, AtualizarPwsService>();
+
+builder.Services.AddScoped<ILogCapsRepository, LogCapsRepository>();
+builder.Services.AddScoped<IMontadorLogCaps, MontadorLogCaps>();
+
+builder.Services.AddScoped<IIniciadorTransacaoSf30, IniciadorTransacaoSf30>();
+
+builder.Services.AddScoped<IAtualizadorFaseLbrcImps, AtualizadorFaseLbrcImps>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

@@ -30,5 +30,20 @@ namespace H1SF.Domain.Entities.Faturamento
         public int ItdIdMtz { get; set; }
         public string? ItdIdNf { get; set; }
         public string? ItdCdModTrsp { get; set; }
+        
+        // Campos para 875-00-MONTA-LOG-CAPS
+        public string CodigoMercadoDestino { get; set; } = string.Empty;
+        public string DataSelecaoFaturamento { get; set; } = string.Empty;
+        public string LoginFuncionario { get; set; } = string.Empty;
+        public string? IdNotaFiscalReferencia { get; set; }
+        public int IdEtiquetaRecolhimento { get; set; }
+        public DateTime? DataFaturaExportacao { get; set; } // ITD_DTC_FTR_EXP
+        public string? NumeroFaturaExportacao { get; set; } // ITD_FTR_EXP
+        public string? IdPedido { get; set; } // ITD_ID_PDD
+        public string? IdClienteReferencia { get; set; } // ITD_ID_CLI_REF
+        public string IdPeca { get; set; } = string.Empty; // ITD_ID_PECA
+        public int QuantidadePecaFaturada { get; set; } // ITD_Q_PECA_FTRD
+        public decimal PrecoFaturadoUnitarioEmissaoFiscal { get; set; } // ITD_PREC_FTRD_UNT_EMIF
+        public decimal TaxaCambioUS { get; set; } // ITD_RATE_US
     }
 }
