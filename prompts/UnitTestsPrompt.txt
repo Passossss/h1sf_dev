@@ -1,0 +1,6 @@
+1- Utilizar o prompt abaixo para criação de testes unitários.
+2- Substituir #code para o Código referente ao serviço que deseja criar o teste unitário.
+3- No copilot, digitando # abre o menu de arquivos e classes, basta selecionar o arquivo contend a classe de serviço desejada.
+
+Prompt:
+create simple unit tests without mock for #code in H1SF.TestProject folder tests based from H1SF.TestProject.Tests.RecuperadorDataHoraTests
