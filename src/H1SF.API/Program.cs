@@ -2,6 +2,7 @@
 using H1SF.Application.Services.DataHora;
 using H1SF.Application.Services.DreDetalhesRelatorio;
 using H1SF.Application.Services.Emitente;
+using H1SF.Application.Services.EntradaNfIcRis;
 using H1SF.Application.Services.Fabrica;
 using H1SF.Application.Services.FaturamentoPws;
 using H1SF.Application.Services.LogCaps;
@@ -14,6 +15,7 @@ using H1SF.Infrastructure.Repositories;
 using H1SF.Infrastructure.Repositories.DataHora;
 using H1SF.Infrastructure.Repositories.DreDetalhesRelatorio;
 using H1SF.Infrastructure.Repositories.Emitente;
+using H1SF.Infrastructure.Repositories.EntradaNfIcRis;
 using H1SF.Infrastructure.Repositories.Fabrica;
 using H1SF.Infrastructure.Repositories.FaturamentoPws;
 using H1SF.Infrastructure.Repositories.LogCaps;
@@ -66,10 +68,10 @@ builder.Services.AddScoped<IAtualizadorFaseLbrcImps, AtualizadorFaseLbrcImps>();
 builder.Services.AddScoped<IFinalizadorItemRecolhimentoRepository, FinalizadorItemRecolhimentoRepository>();
 builder.Services.AddScoped<IFinalizadorItemRecolhimento, FinalizadorItemRecolhimento>();
 
+builder.Services.AddScoped<IEmissorSyncpoint, EmissorSyncpoint>();
+
 builder.Services.AddScoped<IDetalheRelatorioService, DetalheRelatorioService>();
 builder.Services.AddScoped<IDetalheRelatorioRepository, DetalheRelatorioRepository>();
-
-builder.Services.AddScoped<IEmissorSyncpoint, EmissorSyncpoint>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
