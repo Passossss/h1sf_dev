@@ -69,6 +69,8 @@ builder.Services.AddScoped<IFinalizadorItemRecolhimento, FinalizadorItemRecolhim
 builder.Services.AddScoped<IDetalheRelatorioService, DetalheRelatorioService>();
 builder.Services.AddScoped<IDetalheRelatorioRepository, DetalheRelatorioRepository>();
 
+builder.Services.AddScoped<IEmissorSyncpoint, EmissorSyncpoint>();
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
