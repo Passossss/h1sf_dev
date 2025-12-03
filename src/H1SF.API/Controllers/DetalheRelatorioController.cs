@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace H1SF.API.Controllers
 {
-    ApiController]
-[Route("api/dre-detalhes-relatorio")]
+    [ApiController]
+    [Route("api/dre-detalhes-relatorio")]
     public class DetalheRelatorioController : ControllerBase
     {
         private readonly IDetalheRelatorioService _service;
