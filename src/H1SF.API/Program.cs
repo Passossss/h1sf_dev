@@ -6,6 +6,7 @@ using H1SF.Application.Services.EntradaNfIcRis;
 using H1SF.Application.Services.Fabrica;
 using H1SF.Application.Services.FaturamentoPws;
 using H1SF.Application.Services.LogCaps;
+using H1SF.Application.Services.Memoria;
 using H1SF.Application.Services.Monitor;
 using H1SF.Application.Services.Protocolo;
 using H1SF.Application.Services.Recolhimento;
@@ -69,6 +70,8 @@ builder.Services.AddScoped<IFinalizadorItemRecolhimentoRepository, FinalizadorIt
 builder.Services.AddScoped<IFinalizadorItemRecolhimento, FinalizadorItemRecolhimento>();
 
 builder.Services.AddScoped<IEmissorSyncpoint, EmissorSyncpoint>();
+
+builder.Services.AddScoped<ILiberadorMemoria, LiberadorMemoria>();
 
 builder.Services.AddScoped<IDetalheRelatorioService, DetalheRelatorioService>();
 builder.Services.AddScoped<IDetalheRelatorioRepository, DetalheRelatorioRepository>();
