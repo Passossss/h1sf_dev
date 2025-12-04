@@ -37,7 +37,7 @@ public class MemoriaController : ControllerBase
             
             await _liberadorMemoria.LiberarMemoriaAsync(chaveGetmain);
             
-            return Ok(new 
+            return Ok(new   
             { 
                 mensagem = chaveGetmain?.Equals("S", StringComparison.OrdinalIgnoreCase) == true 
                     ? "FREEMAIN executado - memória liberada" 

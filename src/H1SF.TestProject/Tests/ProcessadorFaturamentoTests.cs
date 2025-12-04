@@ -49,7 +49,7 @@ namespace H1SF.TestProject.Tests
             // Arrange
             var logger = CreateLogger<ProcessadorFaturamento>();
             var service = new ProcessadorFaturamento(logger);
-            var input = "B20251204123456ADMIN012"; // Exactly 24 bytes
+            var input = "B20251204123456ADMIN   1"; // Exactly 24 bytes: B(1) + 20251204123456(14) + "ADMIN   "(8) + 1(1)
 
             // Act
             var result = service.RetrieveParametro(input);
