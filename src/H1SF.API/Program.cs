@@ -77,6 +77,9 @@ builder.Services.AddScoped<ILiberadorMemoria, LiberadorMemoria>();
 builder.Services.AddScoped<IDetalheRelatorioService, DetalheRelatorioService>();
 builder.Services.AddScoped<IDetalheRelatorioRepository, DetalheRelatorioRepository>();
 
+builder.Services.AddScoped<IEntradaRisService, EntradaRisService>();
+builder.Services.AddScoped<IEntradaRisRepository, EntradaRisServiceRisRepository>();
+
 builder.Services.AddScoped<IRotinaPrincipalBootstrap, RotinaPrincipalBootstrap>();
 
 builder.Logging.ClearProviders();
