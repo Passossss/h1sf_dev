@@ -38,7 +38,7 @@ public class ProtocoloRepository : IProtocoloRepository
     ///          ORDER BY PTD_CD_MERC_DST, PTD_DTC_SEL_FTRM, PTD_LGON_FUNC, ...
     /// </summary>
     public async Task<List<DadosProtocolo>> ListarProtocolosNaoImpressosAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc)
     {
@@ -145,7 +145,7 @@ public class ProtocoloRepository : IProtocoloRepository
     ///          AND PTD_ID_PTC_DSP = :SF0001-PTD-ID-PTC-DSP
     /// </summary>
     public async Task AtualizarProtocoloComoImpressoAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc,
         int cdTRec,
@@ -198,7 +198,7 @@ public class ProtocoloRepository : IProtocoloRepository
     ///          AND ROWNUM = 1
     /// </summary>
     public async Task<bool> ExistemItensFaturadosAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc,
         string idPtcDsp)

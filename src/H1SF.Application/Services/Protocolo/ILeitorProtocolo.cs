@@ -12,7 +12,7 @@ public interface ILeitorProtocolo
     /// Lê e processa protocolos de despacho
     /// </summary>
     Task<List<DadosProtocolo>> ProcessarProtocolosAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc);
 }

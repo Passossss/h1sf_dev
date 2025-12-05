@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\H1SF.Application\H1SF.Application.csproj" />
+    <ProjectReference Include="..\H1SF.Domain\H1SF.Domain.csproj" />
+    <ProjectReference Include="..\H1SF.Infrastructure\H1SF.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

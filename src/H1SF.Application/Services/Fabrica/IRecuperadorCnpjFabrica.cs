@@ -14,7 +14,7 @@ public interface IRecuperadorCnpjFabrica
     Task<CnpjFabrica?> RecuperarCnpjAsync(
         string cdMercDst,
         string faseFtrm,
-        int cdMercDstInt,
+        int CdMercDstInt,
         DateTime dtcSelFtrm,
         string lgonFunc,
         string icSim);

@@ -29,7 +29,7 @@ public class LeitorProtocolo : ILeitorProtocolo
     /// PERFORM 705-00-MONTA-DANFE
     /// </summary>
     public async Task<List<DadosProtocolo>> ProcessarProtocolosAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc)
     {

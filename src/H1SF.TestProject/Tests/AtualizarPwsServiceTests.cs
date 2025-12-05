@@ -15,7 +15,7 @@ namespace H1SF.TestProject.Tests
         {
             public bool AtualizacaoRealizada { get; private set; }
 
-            public Task AtualizarPwsAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string areaParm)
+            public Task AtualizarPwsAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string areaParm)
             {
                 AtualizacaoRealizada = true;
                 return Task.CompletedTask;
@@ -26,7 +26,7 @@ namespace H1SF.TestProject.Tests
                 return Task.FromResult(true);
             }
 
-            public Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
+            public Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
             {
                 return Task.FromResult(new List<ItemFaturadoAgrupadoDto>());
             }
@@ -36,12 +36,12 @@ namespace H1SF.TestProject.Tests
                 return Task.FromResult(true);
             }
 
-            public Task<int?> ObterSomaQuantidadesItemAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec)
+            public Task<int?> ObterSomaQuantidadesItemAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec)
             {
                 return Task.FromResult<int?>(0);
             }
 
-            public Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
+            public Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
             {
                 return Task.FromResult(new List<VolumeInfoDto>());
             }
@@ -74,7 +74,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new AtualizarPwsInputDto
             {
-                CdMercDst = 123,
+                CdMercDst = "123",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = "USER01",
                 FaseFtrm = "1"
@@ -98,7 +98,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new AtualizarPwsInputDto
             {
-                CdMercDst = 0,
+                CdMercDst = "0",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = "USER01",
                 FaseFtrm = "1"
@@ -122,7 +122,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new AtualizarPwsInputDto
             {
-                CdMercDst = 456,
+                CdMercDst = "456",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = string.Empty,
                 FaseFtrm = "1"

@@ -20,12 +20,12 @@ namespace H1SF.TestProject.Tests
                 _cnpjEsperado = cnpjEsperado;
             }
 
-            public Task<CnpjFabrica?> ObterCnpjVendaAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+            public Task<CnpjFabrica?> ObterCnpjVendaAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
             {
                 return Task.FromResult(_cnpjEsperado);
             }
 
-            public Task<CnpjFabrica?> ObterCnpjTriangulacaoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string icSim)
+            public Task<CnpjFabrica?> ObterCnpjTriangulacaoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string icSim)
             {
                 return Task.FromResult(_cnpjEsperado);
             }

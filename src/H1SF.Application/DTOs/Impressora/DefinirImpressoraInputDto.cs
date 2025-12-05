@@ -8,7 +8,7 @@ namespace H1SF.Application.DTO
 {
     public class DefinirImpressoraInputDto
     {
-        public int CdMercDst { get; set; }
+        public string CdMercDst { get; set; }
         public DateTime DtcSelFtrm { get; set; }
         public string LgonFunc { get; set; } = string.Empty;
     }

@@ -23,12 +23,12 @@ namespace H1SF.TestProject.Tests
                 _nomeImpressora = nomeImpressora;
             }
 
-            public Task<int?> ObterIdTipoRecolhimentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+            public Task<int?> ObterIdTipoRecolhimentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
             {
                 return Task.FromResult<int?>(1);
             }
 
-            public Task<SelecaoFaturamento?> ObterSelecaoFaturamentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+            public Task<SelecaoFaturamento?> ObterSelecaoFaturamentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
             {
                 if (_idImpressora.HasValue)
                 {
@@ -63,7 +63,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new DefinirImpressoraInputDto
             {
-                CdMercDst = 123,
+                CdMercDst = "123",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = "USER01"
             };
@@ -87,7 +87,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new DefinirImpressoraInputDto
             {
-                CdMercDst = 999,
+                CdMercDst = "999",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = "USER99"
             };
@@ -111,7 +111,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new DefinirImpressoraInputDto
             {
-                CdMercDst = 123,
+                CdMercDst = "123",
                 DtcSelFtrm = DateTime.Today,
                 LgonFunc = "USER01"
             };

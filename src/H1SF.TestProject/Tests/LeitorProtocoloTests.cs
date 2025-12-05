@@ -24,17 +24,17 @@ namespace H1SF.TestProject.Tests
                 return Task.FromResult(_protocoloEsperado);
             }
 
-            public Task<List<H1SF.Domain.Entities.Protocolo.DadosProtocolo>> ListarProtocolosNaoImpressosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+            public Task<List<H1SF.Domain.Entities.Protocolo.DadosProtocolo>> ListarProtocolosNaoImpressosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
             {
                 return Task.FromResult(new List<H1SF.Domain.Entities.Protocolo.DadosProtocolo>());
             }
 
-            public Task AtualizarProtocoloComoImpressoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, int cdTRec, int cdTMtz, int idMtz, int idCli, string idPtcDsp)
+            public Task AtualizarProtocoloComoImpressoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, int cdTRec, int cdTMtz, int idMtz, int idCli, string idPtcDsp)
             {
                 return Task.CompletedTask;
             }
 
-            public Task<bool> ExistemItensFaturadosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string idPtcDsp)
+            public Task<bool> ExistemItensFaturadosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string idPtcDsp)
             {
                 return Task.FromResult(true);
             }
@@ -52,7 +52,7 @@ namespace H1SF.TestProject.Tests
             var service = new LeitorProtocolo(repository, logger);
 
             // Act
-            var result = await service.ProcessarProtocolosAsync(123, DateTime.Today, "USER01");
+            var result = await service.ProcessarProtocolosAsync("123", DateTime.Today, "USER01");
 
             // Assert
             Assert.IsNotNull(result);
@@ -68,7 +68,7 @@ namespace H1SF.TestProject.Tests
             var service = new LeitorProtocolo(repository, logger);
 
             // Act
-            var result = await service.ProcessarProtocolosAsync(999, DateTime.Today, "INVALID");
+            var result = await service.ProcessarProtocolosAsync("999", DateTime.Today, "INVALID");
 
             // Assert
             Assert.IsNotNull(result);
@@ -85,7 +85,7 @@ namespace H1SF.TestProject.Tests
             var service = new LeitorProtocolo(repository, logger);
 
             // Act
-            var result = await service.ProcessarProtocolosAsync(456, DateTime.Today, string.Empty);
+            var result = await service.ProcessarProtocolosAsync("456", DateTime.Today, string.Empty);
 
             // Assert
             Assert.IsNotNull(result);

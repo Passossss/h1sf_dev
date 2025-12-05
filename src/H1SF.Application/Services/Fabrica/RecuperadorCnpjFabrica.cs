@@ -31,7 +31,7 @@ public class RecuperadorCnpjFabrica : IRecuperadorCnpjFabrica
     public async Task<CnpjFabrica?> RecuperarCnpjAsync(
         string cdMercDst,
         string faseFtrm,
-        int cdMercDstInt,
+        int CdMercDstInt,
         DateTime dtcSelFtrm,
         string lgonFunc,
         string icSim)
@@ -46,13 +46,13 @@ public class RecuperadorCnpjFabrica : IRecuperadorCnpjFabrica
             {
                 _logger.LogDebug("Recuperando CNPJ para triangulação");
                 resultado = await _repository.ObterCnpjTriangulacaoAsync(
-                    cdMercDstInt, dtcSelFtrm, lgonFunc, icSim);
+                    CdMercDstInt.ToString(), dtcSelFtrm, lgonFunc, icSim);
             }
             else
             {
                 _logger.LogDebug("Recuperando CNPJ para venda normal");
                 resultado = await _repository.ObterCnpjVendaAsync(
-                    cdMercDstInt, dtcSelFtrm, lgonFunc);
+                    CdMercDstInt.ToString(), dtcSelFtrm, lgonFunc);
             }
 
             // COBOL: 572-30-TRATA-CNPJ

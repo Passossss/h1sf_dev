@@ -10,6 +10,6 @@ namespace H1SF.Application.Services
     public interface IImpressoraService
     {
         Task<DefinirImpressoraOutputDto> DefinirImpressoraAsync(DefinirImpressoraInputDto input);
-        Task<int?> ObterTipoRecolhimentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc);
+        Task<int?> ObterTipoRecolhimentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc);
     }
 }

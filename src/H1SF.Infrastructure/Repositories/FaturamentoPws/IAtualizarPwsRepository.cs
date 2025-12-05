@@ -10,10 +10,10 @@ namespace H1SF.Infrastructure.Repositories.FaturamentoPws
     public interface IAtualizarPwsRepository
     {
         Task<bool> DeveExecutarAtualizacaoAsync(string? sftIcNaczIcpnBt, string? sftCdTRec);
-        Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm);
+        Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm);
         Task<bool> AtualizarItemRecolhimentoAsync(int idEtiqRec, int qPecaRec);
-        Task<int?> ObterSomaQuantidadesItemAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec);
-        Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm);
+        Task<int?> ObterSomaQuantidadesItemAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec);
+        Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm);
         Task<bool> AtualizarIdDocumentoFiscalAsync(int idVol, string idNf);
         Task<bool> AtualizarVolumeFaturadoAsync(int idVol);
         Task<bool> VerificarTodosItensFinalizadosAsync(int idVol);

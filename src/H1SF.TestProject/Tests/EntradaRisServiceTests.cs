@@ -56,7 +56,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new EnviarInterfaceRisInputDto
             {
-                CdMercDst = 123,
+                CdMercDst = "123",
                 DtcSelFtrm = DateTime.Now,
                 LgonFunc = "TestUser",
                 AreParm = "TestParams"
@@ -92,7 +92,7 @@ namespace H1SF.TestProject.Tests
 
             var input = new EnviarInterfaceRisInputDto
             {
-                CdMercDst = 123,
+                CdMercDst = "123",
                 DtcSelFtrm = DateTime.Now,
                 LgonFunc = "TestUser",
                 AreParm = "TestParams"

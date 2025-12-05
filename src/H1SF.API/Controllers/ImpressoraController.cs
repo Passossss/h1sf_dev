@@ -43,7 +43,7 @@ public class ImpressoraController : ControllerBase
     /// </summary>
     [HttpGet("tipo-recolhimento")]
     public async Task<ActionResult<int?>> ObterTipoRecolhimento(
-        [FromQuery] int cdMercDst,
+        [FromQuery] string cdMercDst,
         [FromQuery] DateTime dtcSelFtrm,
         [FromQuery] string lgonFunc)
     {

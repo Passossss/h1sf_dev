@@ -37,7 +37,7 @@ public class CnpjFabricaRepository : ICnpjFabricaRepository
     ///                                AND ROWNUM = 1)
     /// </summary>
     public async Task<CnpjFabrica?> ObterCnpjVendaAsync(
-        int cdMercDst, 
+        string cdMercDst, 
         DateTime dtcSelFtrm, 
         string lgonFunc)
     {
@@ -116,7 +116,7 @@ public class CnpjFabricaRepository : ICnpjFabricaRepository
     ///                         AND ROWNUM = 1)
     /// </summary>
     public async Task<CnpjFabrica?> ObterCnpjTriangulacaoAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc,
         string icSim)

@@ -13,7 +13,7 @@ namespace H1SF.Domain.Entities.EntradaNfIcRis
         public int CdRetrEci { get; set; }                        // WX04-CD-RETR-ECI
         public int CdRetrAces { get; set; }                       // WX04-CD-RETR-ACES
         public string IcTAcao { get; set; } = "I";                // WX04-IC-T-ACAO
-        public int CdMercDst { get; set; }                        // WX04-CD-MERC-DST
+        public string CdMercDst { get; set; }                        // WX04-CD-MERC-DST
         public DateTime DtcSelFtrm { get; set; }                  // WX04-DTC-SEL-FTRM
         public string LgonFunc { get; set; } = string.Empty;      // WX04-LGON-FUNC
         public string IdPtcDsp { get; set; } = string.Empty;      // WX04-ID-PTC-DSP

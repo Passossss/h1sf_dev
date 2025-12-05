@@ -18,7 +18,7 @@ namespace H1SF.Domain.Entities.Faturamento
         public int SftCdMercDstOrig { get; set; }
         public DateTime SftDtcSelFtrmOrig { get; set; }
         public string SftLgonFuncOrig { get; set; } = string.Empty;
-        public int SftCdMercDst { get; set; }
+        public string SftCdMercDst { get; set; }
         public DateTime SftDtcSelFtrm { get; set; }
         public string SftLgonFunc { get; set; } = string.Empty;
         

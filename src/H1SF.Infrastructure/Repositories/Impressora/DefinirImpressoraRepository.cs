@@ -18,7 +18,7 @@ namespace H1SF.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<int?> ObterIdTipoRecolhimentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+        public async Task<int?> ObterIdTipoRecolhimentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
         {
             // Corresponde à primeira query SQL (com subquery)
             return await _context.ItensFaturados
@@ -29,7 +29,7 @@ namespace H1SF.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<SelecaoFaturamento?> ObterSelecaoFaturamentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+        public async Task<SelecaoFaturamento?> ObterSelecaoFaturamentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
         {
             // Corresponde à segunda query SQL
             return await _context.SelecoesFaturamento

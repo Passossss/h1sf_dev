@@ -84,7 +84,7 @@ namespace H1SF.Application.Services
         }
 
         // Método adicional para obter tipo de recolhimento (se necessário)
-        public async Task<int?> ObterTipoRecolhimentoAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
+        public async Task<int?> ObterTipoRecolhimentoAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc)
         {
             return await _repository.ObterIdTipoRecolhimentoAsync(cdMercDst, dtcSelFtrm, lgonFunc);
         }

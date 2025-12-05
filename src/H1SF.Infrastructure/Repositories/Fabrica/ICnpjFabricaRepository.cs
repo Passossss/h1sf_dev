@@ -12,14 +12,14 @@ public interface ICnpjFabricaRepository
     /// 572-10-SQL-CNPJ-VENDA
     /// Recupera CNPJ da fábrica para operação de venda normal
     /// </summary>
-    Task<CnpjFabrica?> ObterCnpjVendaAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc);
+    Task<CnpjFabrica?> ObterCnpjVendaAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc);
 
     /// <summary>
     /// 572-20-SQL-CNPJ-TRIANG
     /// Recupera CNPJ da fábrica para operação triangular
     /// </summary>
     Task<CnpjFabrica?> ObterCnpjTriangulacaoAsync(
-        int cdMercDst, 
+        string cdMercDst, 
         DateTime dtcSelFtrm, 
         string lgonFunc, 
         string icSim);

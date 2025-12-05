@@ -26,7 +26,7 @@ namespace H1SF.Infrastructure.Repositories.FaturamentoPws
             return true;
         }
 
-        public async Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
+        public async Task<List<ItemFaturadoAgrupadoDto>> ObterItensAgrupadosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
         {
             var query = _context.ItensFaturados
                 .Where(x => x.ItdCdMercDst == cdMercDst &&
@@ -66,7 +66,7 @@ namespace H1SF.Infrastructure.Repositories.FaturamentoPws
             return true;
         }
 
-        public async Task<int?> ObterSomaQuantidadesItemAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec)
+        public async Task<int?> ObterSomaQuantidadesItemAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm, int idEtiqRec)
         {
             var query = _context.ItensFaturados
                 .Where(x => x.ItdCdMercDst == cdMercDst &&
@@ -86,7 +86,7 @@ namespace H1SF.Infrastructure.Repositories.FaturamentoPws
             return await query.SumAsync(x => (int?)x.ItdQPecaFtrd);
         }
 
-        public async Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(int cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
+        public async Task<List<VolumeInfoDto>> ObterVolumesDistintosAsync(string cdMercDst, DateTime dtcSelFtrm, string lgonFunc, string faseFtrm)
         {
             var query = _context.ItensFaturados
                 .Where(x => x.ItdCdMercDst == cdMercDst &&

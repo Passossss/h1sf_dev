@@ -12,7 +12,7 @@ public interface IProtocoloRepository
     /// Lista protocolos de despacho não impressos (PTD_IC_DSP_IMPS = 'N')
     /// </summary>
     Task<List<DadosProtocolo>> ListarProtocolosNaoImpressosAsync(
-        int cdMercDst, 
+        string cdMercDst, 
         DateTime dtcSelFtrm, 
         string lgonFunc);
 
@@ -20,7 +20,7 @@ public interface IProtocoloRepository
     /// Atualiza protocolo como impresso (PTD_IC_DSP_IMPS = 'S')
     /// </summary>
     Task AtualizarProtocoloComoImpressoAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc,
         int cdTRec,
@@ -33,7 +33,7 @@ public interface IProtocoloRepository
     /// Verifica se existem itens faturados para o protocolo
     /// </summary>
     Task<bool> ExistemItensFaturadosAsync(
-        int cdMercDst,
+        string cdMercDst,
         DateTime dtcSelFtrm,
         string lgonFunc,
         string idPtcDsp);

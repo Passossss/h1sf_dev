@@ -8,7 +8,7 @@ public class ProtocoloDespacho
     /// <summary>
     /// PTD_CD_MERC_DST - Código Mercadoria Destino
     /// </summary>
-    public int PtdCdMercDst { get; set; }
+    public string PtdCdMercDst { get; set; }
 
     /// <summary>
     /// PTD_DTC_SEL_FTRM - Timestamp Seleção Faturamento

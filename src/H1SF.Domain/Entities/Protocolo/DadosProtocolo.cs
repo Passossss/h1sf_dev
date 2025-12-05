@@ -5,7 +5,7 @@ namespace H1SF.Domain.Entities.Protocolo;
 /// </summary>
 public class DadosProtocolo
 {
-    public int PtdCdMercDst { get; set; }
+    public string PtdCdMercDst { get; set; }
     public DateTime PtdDtcSelFtrm { get; set; }
     public string PtdLgonFunc { get; set; } = string.Empty;
     public int PtdCdSeq { get; set; }

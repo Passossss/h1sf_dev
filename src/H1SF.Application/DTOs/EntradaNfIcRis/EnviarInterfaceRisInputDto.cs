@@ -8,7 +8,7 @@ namespace H1SF.Application.DTOs.EntradaNfIcRis
 {
     public class EnviarInterfaceRisInputDto
     {
-        public int CdMercDst { get; set; }                       // WQ02-CD-MERC-DST
+        public string CdMercDst { get; set; }                       // WQ02-CD-MERC-DST
         public DateTime DtcSelFtrm { get; set; }                 // WQ02-DTC-SEL-FTRM
         public string LgonFunc { get; set; } = string.Empty;     // WQ02-LGON-FUNC
         public string AreParm { get; set; } = string.Empty;      // WQ02-ARE-PARM (opcional)
