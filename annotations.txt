@@ -1,3 +1,4 @@
-Sections not useds in the code:
+#Sections not used:
 110-00-PESQUISA-SUB-TRIB              SECTION.
 
+#Mocked Sections:
