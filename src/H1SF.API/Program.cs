@@ -22,6 +22,7 @@ using H1SF.Infrastructure.Repositories.FaturamentoPws;
 using H1SF.Infrastructure.Repositories.LogCaps;
 using H1SF.Infrastructure.Repositories.Protocolo;
 using H1SF.Infrastructure.Repositories.Recolhimento;
+using H1SF.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,8 @@ builder.Services.AddScoped<ILiberadorMemoria, LiberadorMemoria>();
 
 builder.Services.AddScoped<IDetalheRelatorioService, DetalheRelatorioService>();
 builder.Services.AddScoped<IDetalheRelatorioRepository, DetalheRelatorioRepository>();
+
+builder.Services.AddScoped<IRotinaPrincipalBootstrap, RotinaPrincipalBootstrap>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

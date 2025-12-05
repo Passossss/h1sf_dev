@@ -1,8 +1,10 @@
 ﻿using H1SF.Application.DTO;
+using H1SF.Application.DTOs.DataHora;
+using H1SF.Application.DTOs.EntradaNfIcRis;
 using H1SF.Application.Services;
-using H1SF.Application.Services.EntradaNfIcRis;
-using H1SF.Application.Services.DreDetalhesRelatorio;
 using H1SF.Application.Services.DataHora;
+using H1SF.Application.Services.DreDetalhesRelatorio;
+using H1SF.Application.Services.EntradaNfIcRis;
 
 namespace H1SF.Middleware
 {
@@ -82,6 +84,7 @@ namespace H1SF.Middleware
             }
         }
 
+        #region  Main routine Helpers
         private void HandleCicsCondition()
         {
             // Placeholder for CICS HANDLE CONDITION logic
@@ -251,12 +254,11 @@ namespace H1SF.Middleware
         {
             // Placeholder for 595-00-EMITE-RETURN-CICS logic
         }
+        #endregion
 
         #region Translated routine stubs (placeholders for original COBOL PERFORM targets)
-
         private void RetrieveParametro() { /* 570-00-RETRIEVE-PARAMETRO */ }
-
-        private async void DefineImpressoras()
+        private async Task<DefinirImpressoraOutputDto> DefineImpressoras()
         {
             /* 120-00-DEFINE-IMPRESSORAS */
             var input = new DefinirImpressoraInputDto
@@ -274,13 +276,18 @@ namespace H1SF.Middleware
                 throw new Exception(result.MensagemErro);
             }
 
-            // Use result.NomeImpressora as needed
-
+            return result;
         }
         private void AtualizaMonitor() { /* 560-00-ATUALIZA-MONITOR */ }
         private void GetMainTrsc() { /* 610-00-GETMAIN-TRSC */ }
         private void AtualizaPws() { /* 535-00-ATUALIZA-PWS */ }
-        private void RecuperaDataHora() { /* 510-00-RECUPERA-DATA-HORA */ }
+        private async Task<DataHoraSistemaDto> RecuperaDataHora()
+        { /* 510-00-RECUPERA-DATA-HORA */
+         
+            var result = await _recuperadorDataHora.RecuperarDataHoraAsync();
+
+            return result;
+        }
         private void SqlRecuperaCnpj() { /* 572-00-SQL-RECUPERA-CNPJ */ }
         private void RecuperaEmitente() { /* 505-00-RECUPERA-EMITENTE */ }
         private void LeProtocolo() { /* 500-00-LE-PROTOCOLO */ }
@@ -288,7 +295,23 @@ namespace H1SF.Middleware
         private void FreeMainTrsc() { /* 615-00-FREEMAIN-TRSC */ }
         private void StartSf30() { /* 625-00-START-SF30 */ }
         private void AtualizaLbrcImps() { /* 565-00-ATUALIZA-LBRC-IMPS */ }
-        private void EntradaNfIcRis() { /* 573-00-ENTRADA-NF-IC-RIS */ }
+        private async Task<IList<EnviarInterfaceRisOutputDto>> EntradaNfIcRis()
+        { /* 573-00-ENTRADA-NF-IC-RIS */
+            var dto = new EnviarInterfaceRisInputDto
+            {
+                CdMercDst = WS36CdMercDst,
+                DtcSelFtrm = DateTime.Now, // Replace with the actual value
+                LgonFunc = WS36LgonFuncSf31, // Replace with the actual value
+                AreParm = "SomeParameter" // Replace with the actual value if needed
+            };
+
+            var output = new List<EnviarInterfaceRisOutputDto>();
+
+            output.Add(await _entradaRisService.EnviarParaInterfaceRisAsync(dto));
+            output.Add(await _entradaRisService.ExecutarEntradaNfIcRisAsync(dto));
+
+            return output;
+        }
         private void StartSf31() { /* 645-00-START-SF31 */ }
         private void FinalizaItemRecPend() { /* 537-00-FINALIZA-ITEM-REC-PEND */ }
         private void EmiteSyncpoint() { /* 590-00-EMITE-SYNCPOINT */ }
