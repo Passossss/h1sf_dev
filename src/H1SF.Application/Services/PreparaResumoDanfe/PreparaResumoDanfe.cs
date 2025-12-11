@@ -8,7 +8,7 @@ namespace H1SF.Application.Services
 {
     public class PreparaResumoDanfe : IPreparaDetalheDanfe
     {
-        //170-00-DEFINE-VIAS-ORDENACAO
+        //760-00-PREPARA-RESUMO-DANFE
         //Mock
         //Mockado por verificar valor em uma condição utilizando CICS
         public void Executar()

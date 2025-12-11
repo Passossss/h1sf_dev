@@ -8,7 +8,7 @@ namespace H1SF.Application.Services
 {
     public class VerificaDea : IVerificaDea
     {
-        //170-00-DEFINE-VIAS-ORDENACAO
+        //607-00-VERIFICA-DEA
         //Mock
         //Mockado por verificar valor em uma condição utilizando CICS
         public void Executar()

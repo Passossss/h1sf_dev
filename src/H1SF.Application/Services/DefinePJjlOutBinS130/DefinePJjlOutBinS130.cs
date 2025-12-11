@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace H1SF.Application.Services
 {
-    public class PreparaDetalheDanfe : IPreparaDetalheDanfe
+    public class DefinePJjlOutBinS130 : IDefinePJjlOutBinS130
+
     {
-        //750-00-PREPARA-DETALHE-DANFE
+        //130-00-DEFINE-PJL-OUTBIN-S
         //Mock
         //Mockado por verificar valor em uma condição utilizando CICS
         public void Executar()
         {
-            // Lógica do serviço VerificaDea
+            // Lógica do serviço DefinePJjlOutBinS130
         }
     }
 }
