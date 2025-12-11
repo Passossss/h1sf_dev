@@ -1,10 +1,17 @@
 ﻿using H1SF.Application.DTO;
 using H1SF.Application.DTOs.DataHora;
+using H1SF.Application.DTOs.DreDetalhesRelatorio;
 using H1SF.Application.DTOs.EntradaNfIcRis;
 using H1SF.Application.Services;
 using H1SF.Application.Services.DataHora;
 using H1SF.Application.Services.DreDetalhesRelatorio;
+using H1SF.Application.Services.Emitente;
 using H1SF.Application.Services.EntradaNfIcRis;
+using H1SF.Application.Services.Fabrica;
+using H1SF.Application.Services.Memoria;
+using H1SF.Application.Services.Monitor;
+using H1SF.Application.Services.Protocolo;
+using H1SF.Application.Services.Recolhimento;
 using H1SF.Application.Services.Transacao;
 
 namespace H1SF.Middleware
@@ -18,16 +25,27 @@ namespace H1SF.Middleware
         private readonly IProcessadorFaturamentoService _processadorFaturamentoService;
         private readonly IRecuperadorDataHora _recuperadorDataHora;
         private readonly IEmissorSyncpoint _emissorSyncpoint;
+        private readonly IFinalizadorItemRecolhimento _finalizadorItemRecolhimento;
+        private readonly IAtualizadorFaseLbrcImps _atualizadorFaseLbrcImps;
+        private readonly IIniciadorTransacaoSf31 _iniciadorTransacaoSf31;
+        private readonly ILiberadorMemoria _liberadorMemoria;
+        private readonly IIniciadorTransacaoSf30 _iniciadorTransacaoSf30;
+        private readonly IAlocadorMemoria _alocadorMemoria;
+        private readonly IRecuperadorCnpjFabrica _recuperadorCnpjFabrica;
+        private readonly IRecuperadorEmitente _recuperadorEmitente;
+        private readonly ILeitorProtocolo _leitorProtocolo;
 
         // State variables translated from COBOL working-storage (minimal set needed by the method)
         private string WS35AuxTs;
         private string WS31ChvCancelado = string.Empty;
+        private string WS31ChvGetmain = string.Empty;
         private int WS32IndComando = 0;
         private string WS01DreCnLnhRel = string.Empty;
         private string CB0002DreCnLnhRel = string.Empty;
 
         private string WS36CdMercDst = string.Empty;
         private string WS36FaseFtrm = string.Empty;
+        private string CB0004IdCnpj = string.Empty;
         private string ST0001CdRegrFtrm = string.Empty;
         private string SF0002ItdCdModTrsp = string.Empty;
 
@@ -48,7 +66,16 @@ namespace H1SF.Middleware
             IDetalheRelatorioService detalheRelatorioService,
             IProcessadorFaturamentoService processadorFaturamentoService,
             IRecuperadorDataHora recuperadorDataHora,
-            IEmissorSyncpoint emissorSyncpoint)
+            IEmissorSyncpoint emissorSyncpoint,
+            IFinalizadorItemRecolhimento finalizadorItemRecolhimento,
+            IAtualizadorFaseLbrcImps atualizadorFaseLbrcImps,
+            IIniciadorTransacaoSf31 iniciadorTransacaoSf31,
+            ILiberadorMemoria liberadorMemoria,
+            IIniciadorTransacaoSf30 iniciadorTransacaoSf30,
+            IAlocadorMemoria alocadorMemoria,
+            IRecuperadorCnpjFabrica recuperadorCnpjFabrica,
+            IRecuperadorEmitente recuperadorEmitente,
+            ILeitorProtocolo leitorProtocolo)
         {
             _impressoraService = impressoraService;
             _entradaRisService = entradaRisService;
@@ -56,6 +83,15 @@ namespace H1SF.Middleware
             _processadorFaturamentoService = processadorFaturamentoService;
             _recuperadorDataHora = recuperadorDataHora;
             _emissorSyncpoint = emissorSyncpoint;
+            _finalizadorItemRecolhimento = finalizadorItemRecolhimento;
+            _atualizadorFaseLbrcImps = atualizadorFaseLbrcImps;
+            _iniciadorTransacaoSf31 = iniciadorTransacaoSf31;
+            _liberadorMemoria = liberadorMemoria;
+            _iniciadorTransacaoSf30 = iniciadorTransacaoSf30;
+            _alocadorMemoria = alocadorMemoria;
+            _recuperadorCnpjFabrica = recuperadorCnpjFabrica;
+            _recuperadorEmitente = recuperadorEmitente;
+            _leitorProtocolo = leitorProtocolo;
         }
 
         // Main routine
@@ -126,7 +162,7 @@ namespace H1SF.Middleware
             }
 
             // PERFORM 610-00-GETMAIN-TRSC.
-            GetMainTrsc();
+            GetMainTrscAsync().Wait();
 
             // PERFORM 535-00-ATUALIZA-PWS.
             AtualizaPws();
@@ -135,13 +171,13 @@ namespace H1SF.Middleware
             RecuperaDataHora();
 
             // PERFORM 572-00-SQL-RECUPERA-CNPJ.
-            SqlRecuperaCnpj();
+            SqlRecuperaCnpjAsync().Wait();
 
             // PERFORM 505-00-RECUPERA-EMITENTE.
-            RecuperaEmitente();
+            RecuperaEmitenteAsync().Wait();
 
             // PERFORM 500-00-LE-PROTOCOLO.
-            LeProtocolo();
+            LeProtocoloAsync().Wait();
 
             // IF WS32-IND-COMANDO GREATER ZEROS
             //    MOVE WS01-DRE-CN-LNH-REL TO CB0002-DRE-CN-LNH-REL
@@ -149,11 +185,11 @@ namespace H1SF.Middleware
             if (WS32IndComando > 0)
             {
                 CB0002DreCnLnhRel = WS01DreCnLnhRel;
-                InsertDetalhe();
+                InsertDetalheAsync().Wait();
             }
 
             // PERFORM 615-00-FREEMAIN-TRSC.
-            FreeMainTrsc();
+            FreeMainTrscAsync().Wait();
 
             // Conditional logic translated from commented/active COBOL blocks:
             // IF WS36-CD-MERC-DST EQUAL 'E' AND WS36-FASE-FTRM EQUAL '1'
@@ -169,13 +205,13 @@ namespace H1SF.Middleware
                 !string.Equals(ST0001CdRegrFtrm, "N", StringComparison.Ordinal))
             {
                 WS36FaseFtrm = "2";
-                StartSf30();
+                StartSf30Async().Wait();
             }
             else
             {
                 if (string.Equals(WS36CdMercDst, "E", StringComparison.Ordinal))
                 {
-                    AtualizaLbrcImps();
+                    AtualizaLbrcImpsAsync().Wait();
                 }
             }
 
@@ -197,12 +233,12 @@ namespace H1SF.Middleware
                     WS36DtcSelFtrmSf31 = SF0005SftDtcSelFtrmOrig;
                     WS36LgonFuncSf31 = SF0005SftLgonFuncOrig;
                     WS36FaseFtrmSf31 = "1";
-                    StartSf31();
+                    StartSf31Async().Wait();
                 }
             }
 
             // PERFORM 537-00-FINALIZA-ITEM-REC-PEND.
-            FinalizaItemRecPend();
+            FinalizaItemRecPendAsync().Wait();
 
             // PERFORM 590-00-EMITE-SYNCPOINT.
             EmiteSyncpointAsync().Wait();
@@ -283,8 +319,27 @@ namespace H1SF.Middleware
             return result;
         }
         private void AtualizaMonitor() { /* 560-00-ATUALIZA-MONITOR */ }
-        private void GetMainTrsc() { /* 610-00-GETMAIN-TRSC */ }
-        private void AtualizaPws() { /* 535-00-ATUALIZA-PWS */ }
+        
+        /// <summary>
+        /// 610-00-GETMAIN-TRSC
+        /// Aloca memória dinamicamente (CICS GETMAIN)
+        /// </summary>
+        private async Task GetMainTrscAsync()
+        {
+            const int tamanhoMemoria = 32000; // Tamanho típico para área de impressão
+            WS31ChvGetmain = await _alocadorMemoria.AlocarMemoriaAsync(tamanhoMemoria);
+        }
+        
+        /// <summary>
+        /// 535-00-ATUALIZA-PWS
+        /// Atualiza itens faturados agrupados por cliente/volume/etiqueta
+        /// </summary>
+        private void AtualizaPws()
+        {
+            // Esta rotina usa cursor SQL complexo (CSR_SEL_535A)
+            // Atualiza SF0002 com dados agrupados de ITD_ITMFATURADO
+            // TODO: Implementar quando necessário
+        }
         private async Task<DataHoraSistemaDto> RecuperaDataHora()
         { /* 510-00-RECUPERA-DATA-HORA */
          
@@ -292,13 +347,99 @@ namespace H1SF.Middleware
 
             return result;
         }
-        private void SqlRecuperaCnpj() { /* 572-00-SQL-RECUPERA-CNPJ */ }
-        private void RecuperaEmitente() { /* 505-00-RECUPERA-EMITENTE */ }
-        private void LeProtocolo() { /* 500-00-LE-PROTOCOLO */ }
-        private void InsertDetalhe() { /* 546-00-INSERT-DETALHE */ }
-        private void FreeMainTrsc() { /* 615-00-FREEMAIN-TRSC */ }
-        private void StartSf30() { /* 625-00-START-SF30 */ }
-        private void AtualizaLbrcImps() { /* 565-00-ATUALIZA-LBRC-IMPS */ }
+        
+        /// <summary>
+        /// 572-00-SQL-RECUPERA-CNPJ
+        /// Recupera CNPJ da fábrica (venda ou triangulação)
+        /// </summary>
+        private async Task SqlRecuperaCnpjAsync()
+        {
+            var resultado = await _recuperadorCnpjFabrica.RecuperarCnpjAsync(
+                WS36CdMercDst,
+                WS36FaseFtrm,
+                0, // TODO: Obter WS36-CD-MERC-DST convertido para int
+                DateTime.Now, // TODO: Obter WQ02-DTC-SEL-FTRM
+                WS36LgonFuncSf31,
+                SF0005SftIcNaczIcpnBt);
+            
+            if (resultado != null)
+            {
+                CB0004IdCnpj = resultado.IdCnpj;
+            }
+        }
+        
+        /// <summary>
+        /// 505-00-RECUPERA-EMITENTE
+        /// Recupera dados do emitente a partir do CNPJ
+        /// </summary>
+        private async Task RecuperaEmitenteAsync()
+        {
+            await _recuperadorEmitente.RecuperarEmitenteAsync(CB0004IdCnpj);
+        }
+        
+        /// <summary>
+        /// 500-00-LE-PROTOCOLO
+        /// Lê e processa protocolos de despacho
+        /// </summary>
+        private async Task LeProtocoloAsync()
+        {
+            await _leitorProtocolo.ProcessarProtocolosAsync(
+                WS36CdMercDst,
+                DateTime.Now, // TODO: Obter WQ02-DTC-SEL-FTRM
+                WS36LgonFuncSf31);
+        }
+        
+        /// <summary>
+        /// 546-00-INSERT-DETALHE
+        /// Insere detalhes do relatório
+        /// </summary>
+        private async Task InsertDetalheAsync()
+        {
+            var input = new InserirDetalheInputDto
+            {
+                DreCnLnhRel = CB0002DreCnLnhRel
+                // TODO: Adicionar outros campos conforme necessário
+            };
+            await _detalheRelatorioService.ExecutarInsercaoDetalheAsync(input);
+        }
+        
+        /// <summary>
+        /// 615-00-FREEMAIN-TRSC
+        /// Libera memória alocada dinamicamente (CICS FREEMAIN)
+        /// </summary>
+        private async Task FreeMainTrscAsync()
+        {
+            await _liberadorMemoria.LiberarMemoriaAsync(WS31ChvGetmain);
+        }
+        
+        /// <summary>
+        /// 625-00-START-SF30
+        /// Inicia transação SF30 (CICS START) - Fase 2
+        /// </summary>
+        private async Task StartSf30Async()
+        {
+            var input = new IniciarTransacaoSf30InputDto
+            {
+                AreaDadosSf30 = $"{WS36CdMercDst}{WS36FaseFtrm}",
+                TransactionId = "SF30"
+            };
+            await _iniciadorTransacaoSf30.IniciarTransacaoSf30Async(input);
+        }
+        
+        /// <summary>
+        /// 565-00-ATUALIZA-LBRC-IMPS
+        /// Atualiza fase LBRC_IMPS no monitor de faturamento
+        /// </summary>
+        private async Task AtualizaLbrcImpsAsync()
+        {
+            var input = new AtualizarFaseLbrcImpsInputDto
+            {
+                CodigoMercadoDestino = WS36CdMercDst,
+                DataSelecaoFaturamento = WS36DtcSelFtrmSf31,
+                LoginFuncionario = WS36LgonFuncSf31
+            };
+            await _atualizadorFaseLbrcImps.AtualizarFaseLbrcImpsAsync(input);
+        }
         private async Task<IList<EnviarInterfaceRisOutputDto>> EntradaNfIcRis()
         { /* 573-00-ENTRADA-NF-IC-RIS */
             var dto = new EnviarInterfaceRisInputDto
@@ -316,8 +457,29 @@ namespace H1SF.Middleware
 
             return output;
         }
-        private void StartSf31() { /* 645-00-START-SF31 */ }
-        private void FinalizaItemRecPend() { /* 537-00-FINALIZA-ITEM-REC-PEND */ }
+        
+        /// <summary>
+        /// 645-00-START-SF31
+        /// Inicia transação SF31 (CICS START)
+        /// </summary>
+        private async Task StartSf31Async()
+        {
+            var input = new IniciarTransacaoSf31InputDto
+            {
+                AreaDadosSf31 = $"{WS36CdMercDstSf31}{WS36DtcSelFtrmSf31}{WS36LgonFuncSf31}{WS36FaseFtrmSf31}",
+                TransactionId = "SF31"
+            };
+            await _iniciadorTransacaoSf31.IniciarTransacaoSf31Async(input);
+        }
+        
+        /// <summary>
+        /// 537-00-FINALIZA-ITEM-REC-PEND
+        /// Finaliza itens de recolhimento pendentes
+        /// </summary>
+        private async Task FinalizaItemRecPendAsync()
+        {
+            await _finalizadorItemRecolhimento.FinalizarItensPendentesAsync();
+        }
         
         ///  mary>
         /// 590-00-EMITE-SYNCPOINT
