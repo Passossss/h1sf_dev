@@ -24,8 +24,4 @@
     <ProjectReference Include="..\H1SF.Infrastructure\H1SF.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\GravaResumoRel\" />
-  </ItemGroup>
-
 </Project>
