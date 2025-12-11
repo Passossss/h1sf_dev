@@ -8,7 +8,7 @@ namespace H1SF.Application.Services
 {
     public class PclDetalhe740 : IPclDetalhe740
     {
-        /740-00-PCL-DETALHE
+        //740-00-PCL-DETALHE
         //Mock
         //Mockado por verificar valor em uma condição utilizando CICS
         public void Executar()
