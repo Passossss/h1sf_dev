@@ -5,6 +5,7 @@ using H1SF.Application.Services;
 using H1SF.Application.Services.DataHora;
 using H1SF.Application.Services.DreDetalhesRelatorio;
 using H1SF.Application.Services.EntradaNfIcRis;
+using H1SF.Application.Services.Transacao;
 
 namespace H1SF.Middleware
 {
@@ -16,6 +17,7 @@ namespace H1SF.Middleware
         private readonly IDetalheRelatorioService _detalheRelatorioService;
         private readonly IProcessadorFaturamentoService _processadorFaturamentoService;
         private readonly IRecuperadorDataHora _recuperadorDataHora;
+        private readonly IEmissorSyncpoint _emissorSyncpoint;
 
         // State variables translated from COBOL working-storage (minimal set needed by the method)
         private string WS35AuxTs;
@@ -45,13 +47,15 @@ namespace H1SF.Middleware
             IEntradaRisService entradaRisService,
             IDetalheRelatorioService detalheRelatorioService,
             IProcessadorFaturamentoService processadorFaturamentoService,
-            IRecuperadorDataHora recuperadorDataHora)
+            IRecuperadorDataHora recuperadorDataHora,
+            IEmissorSyncpoint emissorSyncpoint)
         {
             _impressoraService = impressoraService;
             _entradaRisService = entradaRisService;
             _detalheRelatorioService = detalheRelatorioService;
             _processadorFaturamentoService = processadorFaturamentoService;
             _recuperadorDataHora = recuperadorDataHora;
+            _emissorSyncpoint = emissorSyncpoint;
         }
 
         // Main routine
@@ -201,7 +205,7 @@ namespace H1SF.Middleware
             FinalizaItemRecPend();
 
             // PERFORM 590-00-EMITE-SYNCPOINT.
-            EmiteSyncpoint();
+            EmiteSyncpointAsync().Wait();
 
             // 100-99-PROCESSAM-EXIT: implicit return at end of method
         }
@@ -314,7 +318,15 @@ namespace H1SF.Middleware
         }
         private void StartSf31() { /* 645-00-START-SF31 */ }
         private void FinalizaItemRecPend() { /* 537-00-FINALIZA-ITEM-REC-PEND */ }
-        private void EmiteSyncpoint() { /* 590-00-EMITE-SYNCPOINT */ }
+        
+        ///  mary>
+        /// 590-00-EMITE-SYNCPOINT
+        /// Emite SYNCPOINT para confirmar alterações no banco de dados
+        /// </summary>
+        private async Task EmiteSyncpointAsync()
+        {
+            await _emissorSyncpoint.EmitirSyncpointAsync();
+        }
 
         public void Dispose()
         {
