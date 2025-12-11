@@ -1,11 +1,6 @@
 ﻿using H1SF.Domain.Entities.Faturamento;
 using H1SF.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H1SF.Infrastructure.Repositories
 {
