@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\DescarregaViasPtd\NovaPasta\**" />
+    <EmbeddedResource Remove="Services\DescarregaViasPtd\NovaPasta\**" />
+    <None Remove="Services\DescarregaViasPtd\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.1.0" />
     <PackageReference Include="FluentValidation" Version="12.1.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
