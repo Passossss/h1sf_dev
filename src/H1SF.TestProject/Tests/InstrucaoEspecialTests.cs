@@ -7,24 +7,24 @@ namespace H1SF.TestProject.Tests
     public class InstrucaoEspecialTests
     {
         [TestMethod]
-        public void InstrucaoEspecialService_ServiceCreation_Succeeds()
+        public void InstrucaoEspecial960Service_ServiceCreation_Succeeds()
         {
             // Arrange & Act
-            var service = new InstrucaoEspecialService();
+            var service = new InstrucaoEspecial960Service();
 
             // Assert
             Assert.IsNotNull(service);
         }
 
         [TestMethod]
-        public void InstrucaoEspecialService_ImplementsInterface_Success()
+        public void InstrucaoEspecial960Service_ImplementsInterface_Success()
         {
             // Arrange
-            var service = new InstrucaoEspecialService();
+            var service = new InstrucaoEspecial960Service();
 
             // Act & Assert
             Assert.IsNotNull(service);
-            Assert.IsInstanceOfType(service, typeof(IInstrucaoEspecialService));
+            Assert.IsInstanceOfType(service, typeof(IInstrucaoEspecial960Service));
         }
     }
 }
