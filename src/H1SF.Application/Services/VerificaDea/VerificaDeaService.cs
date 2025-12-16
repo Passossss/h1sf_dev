@@ -10,7 +10,7 @@ namespace H1SF.Application.Services
     {
         //607-00-VERIFICA-DEA
         //Mock
-        //Mockado por verificar valor em uma condição utilizando CICS
+        //Mocked(CICS condition)
         public void Executar()
         {
             // Lógica do serviço VerificaDea

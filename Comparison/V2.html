@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>COBOL vs C# Comparison</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; color: #222; }
+    h1,h2 { margin-bottom: 4px; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 18px; margin-top: 20px; }
+    table { border-collapse: collapse; width: 100%; margin: 8px 0 16px; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+    th { background: #f5f5f5; }
+    .note { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>COBOL (h1sf0033.txt) vs C# (src) – Summary</h1>
+  <p class="note">Sources: CobolCode/h1sf0033.txt (single COBOL file) and all *.cs files under src/.</p>
+
+  <h2>High-Level Metrics</h2>
+  <table>
+    <tr><th></th><th>COBOL</th><th>C#</th></tr>
+    <tr><td>Total lines</td><td>14,729</td><td>18,310</td></tr>
+    <tr><td>Non-blank lines</td><td>12,394</td><td>15,602</td></tr>
+    <tr><td>Comment lines</td><td>1,621 (≈11.0%)</td><td>3,344 (≈18.3%)</td></tr>
+    <tr><td>Files</td><td>1 file</td><td>278 files</td></tr>
+    <tr><td>Avg lines per file</td><td>14,729</td><td>≈66 (≈56 non-blank)</td></tr>
+    <tr><td>Classes / Interfaces (C#)</td><td>–</td><td>252 classes / 107 interfaces</td></tr>
+    <tr><td>COBOL size</td><td>≈718 KB</td><td>–</td></tr>
+  </table>
+
+  <h2>C# Breakdown by Project</h2>
+  <table>
+    <tr><th>Project</th><th>Files</th><th>Total lines</th><th>Non-blank lines</th></tr>
+    <tr><td>H1SF.API</td><td>20</td><td>1,176</td><td>1,028</td></tr>
+    <tr><td>H1SF.Application</td><td>166</td><td>11,979</td><td>10,156</td></tr>
+    <tr><td>H1SF.ConsoleApp</td><td>4</td><td>93</td><td>80</td></tr>
+    <tr><td>H1SF.Domain</td><td>30</td><td>891</td><td>769</td></tr>
+    <tr><td>H1SF.Infrastructure</td><td>27</td><td>1,912</td><td>1,662</td></tr>
+    <tr><td>H1SF.Middleware</td><td>6</td><td>388</td><td>323</td></tr>
+    <tr><td>H1SF.TestProject</td><td>25</td><td>1,871</td><td>1,584</td></tr>
+  </table>
+
+  <h2>COBOL Keyword Frequency (h1sf0033.txt)</h2>
+  <table>
+    <tr><th>Keyword</th><th>Count</th></tr>
+    <tr><td>MOVE</td><td>3,156</td></tr>
+    <tr><td>PERFORM</td><td>585</td></tr>
+    <tr><td>IF</td><td>567</td></tr>
+    <tr><td>EXEC</td><td>524</td></tr>
+    <tr><td>ADD</td><td>104</td></tr>
+    <tr><td>CLOSE</td><td>39</td></tr>
+    <tr><td>COMPUTE</td><td>28</td></tr>
+    <tr><td>OPEN</td><td>18</td></tr>
+    <tr><td>SUBTRACT</td><td>13</td></tr>
+    <tr><td>STOP</td><td>2</td></tr>
+    <tr><td>MULTIPLY / DIVIDE / ACCEPT / STRING / UNSTRING / READ / WRITE / CALL / EVALUATE / DISPLAY</td><td>0</td></tr>
+  </table>
+
+  <h2>Quick Observations</h2>
+  <ul>
+    <li>C# codebase is ~24% larger in raw lines but spread across 278 files and 7 projects; average file size is small (≈66 lines).</li>
+    <li>COBOL file is monolithic (14.7k lines) with heavy data movement (MOVE) and control flow (PERFORM/IF), indicating procedural structure.</li>
+    <li>C# shows higher comment density (≈18%) versus COBOL (≈11%), suggesting more inline documentation in the refactor.</li>
+    <li>Object-oriented surface in C#: 252 classes and 107 interfaces, reflecting modularization compared to the single COBOL program.</li>
+  </ul>
+</body>
+</html>
+

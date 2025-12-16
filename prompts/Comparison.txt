@@ -1,0 +1,44 @@
+I do need complete information's from complete comparison about COBOL code into @CobolCode/h1sf0033.txt  file VS C# code into @src  directory C# code implementation, with statistics numbers about code comparisons and more relevant comparison information's, output have to be in HTML Format for a presentation.
+
+Sources: CobolCode/h1sf0033.txt (single COBOL file) and all *.cs files under src/.
+
+I do like additional metrics (e.g., per-namespace C# counts, COBOL section breakdown).
+
+Rendered HTML file saved in the repo into Comparison/cobol-vs-csharp.html path).
+
+I do like additional metrics and visuals (charts, per-namespace C# counts, COBOL section breakdown).
+
+#IF HTML Charts become with ERROR
+The charts are overlapping each other, fix this error.
+
+I do want more slices (e.g., per-namespace class counts or COBOL PERFORM target list).
+
+Include a section in HTML content complete information comparisons, charts, etc., about COBOL functionalities, business rules and tasks into  @CobolCode/h1sf0033.txt file code VS C# codes into @src/  directory C# code implementation.
+
+Add a TOTAL Percentage C# Code implementation covered into @src/  directory C# code implementation VS full COBOL Code into  @CobolCode/h1sf0033.txt file code.
+
+Include a section in HTML content complete information comparisons, charts, etc., about COBOL functionalities, business rules and tasks into  @CobolCode/h1sf0033.txt file code VS NOT COVERED C# codes into @src/  directory C# code implementation.
+
+Add a TOTAL Percentage C# Code implementation do NOT COVERED into @src/ directory C# code implementation VS full COBOL Code into  @CobolCode/h1sf0033.txt file code.
+
+Create a navigable menu content each section into menu.
+
+Add a option to select Default Mode (current) or Dark Mode summary view.
+
+Include a section content informations and statistics about "Mock" functionalities, classes, methods. tasks and etc., into @src/  directory C# Code Implementations, describe each "Mock" code found based COBOL Code into @CobolCode/h1sf0033.txt 
+
+Complete Mocks section informations and statics researching any reference or comments using "Mock", "Mockado", "Mocked", "Mocado" any related terms inside each one C# Code file (*.cs) into @src
+
+Include a section in HTML content complete information and statistics about possibly NOT USED COBOL sections, functionalities, business rules or tasks into  @CobolCode/h1sf0033.txt.
+
+Include a section in HTML content complete information and statistics about possibly duplicated C# services, functionalities, business rules or tasks into @src
+
+Reorder HTML sections by related content proximity
+
+
+Add 2 logotype images on header,
+
+Create document header table with 1 line and 3 columns.
+Coloumn 1: Image logo with path "images/3conlogo.png"
+Columns 2: Document Title: "COBOL (h1sf0033.txt) vs C# (src) – Summary" and Subtitle: "Sources: CobolCode/h1sf0033.txt (single COBOL file) and all *.cs files under src/."
+Coloumn 3: Image logo with path "images/catlogo.jpeg"
