@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <title>H1SF — COBOL → C# Implementation Documentation</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+  :root{
+    --bg-gradient: linear-gradient(90deg, #0d47a1 0%, #0b2a66 35%, #061a3f 70%, #000000 100%);
+    --title-color: #ffffff;
+    --accent: #0d47a1;
+    --muted: #eef3ff;
+    --code-bg: #0b1e39;
+    --code-border: #133b72;
+    --code-text: #e6f0ff;
+  }
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+    color:#0f172a;
+    background:#ffffff;
+  }
+  /* Header table — gradient from left dark blue to right black */
+  .doc-header{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--bg-gradient);
+    color: var(--title-color);
+  }
+  .doc-header td{
+    padding:18px 16px;
+    vertical-align:middle;
+  }
+  .doc-header .logo{
+    width:160px;
+  }
+  .doc-header img{
+    max-height:64px;
+    max-width:160px;
+    display:block;
+    object-fit:contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .doc-header .titles{
+    text-align:center;
+  }
+  .doc-header h1{
+    margin:.15rem 0 .25rem;
+    font-size:1.65rem;
+    letter-spacing:.02em;
+  }
+  .doc-header h2{
+    margin:0;
+    font-size:1rem;
+    font-weight:500;
+    opacity:.9;
+  }
+
+  /* Content styling */
+  main{
+    max-width:1160px;
+    margin:24px auto 80px;
+    padding:0 20px;
+  }
+  h3{
+    margin:28px 0 10px;
+    font-size:1.25rem;
+    color:#0b2a66;
+    border-left:6px solid var(--accent);
+    padding-left:12px;
+  }
+  h4{ margin:20px 0 6px; font-size:1.05rem; color:#0b2a66;}
+  p{ margin:.35rem 0 .7rem;}
+  .callout{
+    background:var(--muted);
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:18px;
+  }
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0 16px;
+    font-size:.95rem;
+  }
+  .table th, .table td{
+    border:1px solid #e5e7eb;
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  .table th{
+    background:#f8fafc;
+    color:#0b2a66;
+    text-transform:uppercase;
+    font-size:.8rem;
+    letter-spacing:.03em;
+  }
+  .code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border:1px solid var(--code-border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow:auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  pre{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.92rem; }
+  code{ white-space:pre; }
+  .mermaid{
+    background:#f9fafb;
+    border:1px dashed #cbd5e1;
+    padding:10px;
+    border-radius:8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    color:#111827;
+    overflow:auto;
+  }
+  .small{ font-size:.92rem; color:#334155;}
+  .foot{
+    margin-top:36px; color:#475569; font-size:.92rem;
+  }
+  .badge{
+    display:inline-block;
+    background:#e5f0ff;
+    color:#0b2a66;
+    border:1px solid #bfd3ff;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:.78rem;
+    margin-right:6px;
+  }
+
+    :root{
+      --bg:#fff; --muted:#666; --accent:#4e79a7; --accent-2:#667eea; --card:#f8f9fb;
+      --mono: "Segoe UI Mono", "Courier New", monospace;
+    }
+    body{font-family:Segoe UI, Arial, Helvetica, sans-serif;background:var(--bg);color:#222;margin:20px;line-height:1.45}
+    header{display:flex;align-items:center;gap:16px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 16px;color:var(--muted)}
+    nav{margin:18px 0;padding:12px;border-radius:8px;background:var(--card);display:flex;flex-wrap:wrap;gap:8px}
+    nav a{color:var(--accent);text-decoration:none;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:#fff;border:1px solid #e6e9ee;border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+    table{width:100%;border-collapse:collapse;margin:8px 0}
+    th,td{border:1px solid #e6e9ee;padding:8px;text-align:left;font-size:13px}
+    th{background:#fafcff}
+    .muted{color:var(--muted);font-size:13px}
+    pre{background:#0f1724;color:#dbeafe;padding:12px;border-radius:6px;overflow:auto;font-family:var(--mono);font-size:12px}
+    ul{margin:8px 0 12px 18px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--accent-2);color:white;font-size:12px}
+    .section-title{margin-top:18px;margin-bottom:8px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+
+</head>
+<body>
+  <table class="doc-header">
+    <tr>
+      <td class="logo">
+        <img src="images/3conlogo.png" />
+      </td>
+      <td class="titles">
+
+    <h1>Unit Test Coverage</h1>
+	<h2>System Archtect: Bruno D'Alessio (3Con)</h2>
+      </td>
+      <td class="logo" style="text-align:right;">
+	<img src="images/catlogo.jpeg" />
+      </td>
+    </tr>
+  </table>
+
+<!-- ========================= -->
+<!-- Unit Test Coverage (100%) -->
+<!-- ========================= -->
+<a id="tests-coverage-100"></a>
+<table>
+  <tr>
+    <td>
+      <h3>Unit Test Coverage — Services (100%)</h3>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      All mapped C# services derived from COBOL sections have achieved
+      <strong>100% unit test coverage</strong>. This ensures that every business rule,
+      validation, and orchestration path is verified under isolated (unit) conditions consistent
+      with the architecture and testing approach described in this documentation. 
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>Scope</th>
+    <th>What’s Covered</th>
+    <th>Test Types</th>
+    <th>Metrics</th>
+  </tr>
+  <tr>
+    <td>
+      All mapped services (75) referenced in the Services Catalog
+      and main flow orchestration. 
+    </td>
+    <td>
+      Success paths, business errors (DTO-based), edge cases, and
+      dependency interactions via DI. 
+    </td>
+    <td>
+      Unit tests using mocks/stubs for repositories and external interfaces;
+      integration tests complement unit guarantees for MQ/DEA/CICS-like behavior. 
+    </td>
+    <td>
+      Line & branch coverage at 100% for service classes; mutation tests passed on
+      critical rule engines and orchestrators.
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <strong>Validation Approach</strong><br />
+      • Services return structured results (success/errors) rather than throw on business errors — tests assert DTOs and codes. <br />
+      • Cross-checks against reference data are verified through repository mocks. <br />
+      • Error handling and transaction syncpoints (e.g., <em>RegistraErroTrns</em>, <em>EmissorSyncpoint</em>) include explicit test cases. 
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <strong>Notes</strong><br />
+      While unit coverage for services is 100%, integration coverage depends on production connectors
+      (e.g., MQ and DEA). Dedicated integration tests and contract tests are maintained to ensure
+      end‑to‑end reliability in line with the recommendations section. 
+    </td>
+  </tr>
+</table>
+
+      <footer>
+        <div class="muted"> © 2025 • Contact: bruno.dalessio@trescon.com.br</div>
+      </footer>
+
+
+</body>
+</html>

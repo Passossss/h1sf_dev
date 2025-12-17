@@ -18,6 +18,8 @@ Coloumn 1: Image logo with path "images/3conlogo.png";
 Columns 2: Document Title and Subtitle
 Coloumn 3: Image logo with path "images/catlogo.jpeg";
 
+Create a section contains information about unit test services coverage 100%.
+
 COBOL code file in attachment, 5033.txt.
 
 Output have to be in HTML.

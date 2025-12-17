@@ -40,4 +40,4 @@ Coloumn 1: Image logo with path "images/3conlogo.png";
 Columns 2: Document Title: "COBOL (h1sf0033.txt) vs C# (src) – Summary" and Subtitle: "Sources: CobolCode/h1sf0033.txt (single COBOL file) and all *.cs files under src/.";
 Coloumn 3: Image logo with path "images/catlogo.jpeg";
 
-Header background color have to be something like Left side Green fade into Black in Right Side.
+Header background color have to be something like Left side Dark Blue fade into Black in Right Side.
