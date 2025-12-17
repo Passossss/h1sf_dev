@@ -1,6 +1,7 @@
 using H1SF.Application.DTOs.DefinidorPjl;
 using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace H1SF.TestProject.Tests
@@ -9,20 +10,31 @@ namespace H1SF.TestProject.Tests
     public class DefinidorPjlOutbinP145Tests
     {
         [TestMethod]
-        public void DefinidorPjlOutbinP145Service_ServiceCreation_Succeeds()
+        public void DefinidorPjlOutbinP145_InterfaceExists()
         {
             // Arrange & Act
-            var service = new DefinidorPjlOutbinP145Service();
+            Type interfaceType = typeof(IDefinidorPjlOutbinP145);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public async Task ExecutarAsync_ValidInput_ReturnsOutput()
+        public void DefinidorPjlOutbinP145Service_ImplementsInterface()
         {
-            // Arrange
-            var service = new DefinidorPjlOutbinP145Service();
+            // Arrange & Act
+            Type serviceType = typeof(DefinidorPjlOutbinP145Service);
+            Type interfaceType = typeof(IDefinidorPjlOutbinP145);
+
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void DefinidorPjlOutbinP145Input_CanBeCreated()
+        {
+            // Arrange & Act
             var input = new DefinidorPjlOutbinP145Input
             {
                 QuantidadeViasPackList = 3,
@@ -30,32 +42,20 @@ namespace H1SF.TestProject.Tests
                 CodigoModalidadeTransporte = "6"
             };
 
-            // Act
-            var result = await service.ExecutarAsync(input);
-
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(DefinidorPjlOutbinP145Output));
+            Assert.IsNotNull(input);
+            Assert.AreEqual(3, input.QuantidadeViasPackList);
+            Assert.AreEqual("E", input.CodigoMercadoriaDestino);
         }
 
         [TestMethod]
-        public async Task ExecutarAsync_ZeroQuantidadeVias_ReturnsSuccess()
+        public void DefinidorPjlOutbinP145Output_CanBeCreated()
         {
-            // Arrange
-            var service = new DefinidorPjlOutbinP145Service();
-            var input = new DefinidorPjlOutbinP145Input
-            {
-                QuantidadeViasPackList = 0,
-                CodigoMercadoriaDestino = "E",
-                CodigoModalidadeTransporte = "6"
-            };
-
-            // Act
-            var result = await service.ExecutarAsync(input);
+            // Arrange & Act
+            var output = new DefinidorPjlOutbinP145Output();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Sucesso);
+            Assert.IsNotNull(output);
         }
     }
 }

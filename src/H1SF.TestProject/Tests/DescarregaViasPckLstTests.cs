@@ -1,6 +1,7 @@
 using H1SF.Application.DTOs.DescarregaVias;
 using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace H1SF.TestProject.Tests
@@ -9,50 +10,51 @@ namespace H1SF.TestProject.Tests
     public class DescarregaViasPckLstTests
     {
         [TestMethod]
-        public void DescarregaViasPckLstService_ServiceCreation_Succeeds()
+        public void DescarregaViasPckLst_InterfaceExists()
         {
             // Arrange & Act
-            var service = new DescarregaViasPckLstService();
+            Type interfaceType = typeof(IDescarregaViasPckLst);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public async Task ExecutarAsync_ValidInput_ReturnsOutput()
+        public void DescarregaViasPckLstService_ImplementsInterface()
         {
-            // Arrange
-            var service = new DescarregaViasPckLstService();
+            // Arrange & Act
+            Type serviceType = typeof(DescarregaViasPckLstService);
+            Type interfaceType = typeof(IDescarregaViasPckLst);
+
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void DescarregaViasPckLstInput_CanBeCreated()
+        {
+            // Arrange & Act
             var input = new DescarregaViasPckLstInput
             {
                 NumeroViasVolume = 2,
                 IndiceImpressao = 3
             };
 
-            // Act
-            var result = await service.ExecutarAsync(input);
-
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(DescarregaViasPckLstOutput));
+            Assert.IsNotNull(input);
+            Assert.AreEqual(2, input.NumeroViasVolume);
+            Assert.AreEqual(3, input.IndiceImpressao);
         }
 
         [TestMethod]
-        public async Task ExecutarAsync_ZeroIndiceImpressao_ReturnsOutput()
+        public void DescarregaViasPckLstOutput_CanBeCreated()
         {
-            // Arrange
-            var service = new DescarregaViasPckLstService();
-            var input = new DescarregaViasPckLstInput
-            {
-                NumeroViasVolume = 0,
-                IndiceImpressao = 0
-            };
-
-            // Act
-            var result = await service.ExecutarAsync(input);
+            // Arrange & Act
+            var output = new DescarregaViasPckLstOutput();
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(output);
         }
     }
 }

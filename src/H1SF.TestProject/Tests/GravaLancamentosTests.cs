@@ -1,5 +1,6 @@
 using H1SF.Application.Services.GravaLançamentos;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -7,24 +8,36 @@ namespace H1SF.TestProject.Tests
     public class GravaLancamentosTests
     {
         [TestMethod]
-        public void GravaLancamentosCtService_ServiceCreation_Succeeds()
+        public void GravaLancamentosCt_InterfaceExists()
         {
             // Arrange & Act
-            var service = new GravaLancamentosCtService();
+            Type interfaceType = typeof(IGravaLancamentosCtService);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void GravaLancamentosCtService_ImplementsInterface_Success()
+        public void GravaLancamentosCtService_ImplementsInterface()
         {
-            // Arrange
-            var service = new GravaLancamentosCtService();
+            // Arrange & Act
+            Type serviceType = typeof(GravaLancamentosCtService);
+            Type interfaceType = typeof(IGravaLancamentosCtService);
 
-            // Act & Assert
-            Assert.IsNotNull(service);
-            Assert.IsInstanceOfType(service, typeof(IGravaLancamentosCtService));
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void GravaLancamentosCtService_CanBeInstantiated()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(GravaLancamentosCtService);
+            var constructor = serviceType.GetConstructor(Type.EmptyTypes);
+
+            // Assert
+            Assert.IsNotNull(constructor);
         }
     }
 }

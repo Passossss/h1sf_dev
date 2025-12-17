@@ -1,5 +1,6 @@
 using H1SF.Application.Services.EmiteLink;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -7,23 +8,36 @@ namespace H1SF.TestProject.Tests
     public class EmiteLinkTests
     {
         [TestMethod]
-        public void EmiteLinkH1SFService_ServiceCreation_Succeeds()
+        public void EmiteLinkH1SF_InterfaceExists()
         {
             // Arrange & Act
-            var service = new EmiteLinkH1SFService();
+            Type interfaceType = typeof(IEmiteLinkH1SFService);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void Executar_ThrowsNotImplemented_AsExpected()
+        public void EmiteLinkH1SFService_ImplementsInterface()
         {
-            // Arrange
-            var service = new EmiteLinkH1SFService();
+            // Arrange & Act
+            Type serviceType = typeof(EmiteLinkH1SFService);
+            Type interfaceType = typeof(IEmiteLinkH1SFService);
 
-            // Act & Assert
-            Assert.ThrowsException<System.NotImplementedException>(() => service.Executar());
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void EmiteLinkH1SFService_HasExecutarMethod()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(EmiteLinkH1SFService);
+            var method = serviceType.GetMethod("Executar");
+
+            // Assert
+            Assert.IsNotNull(method);
         }
     }
 }

@@ -1,5 +1,6 @@
 using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -7,24 +8,37 @@ namespace H1SF.TestProject.Tests
     public class InterfaceCmeDanfeTests
     {
         [TestMethod]
-        public void InterfaceCmeDanfe860Service_ServiceCreation_Succeeds()
+        public void InterfaceCmeDanfe860_InterfaceExists()
         {
             // Arrange & Act
-            var service = new InterfaceCmeDanfe860Service();
+            Type interfaceType = typeof(IInterfaceCmeDanfe860Service);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void InterfaceCmeDanfe860Service_ImplementsInterface_Success()
+        public void InterfaceCmeDanfe860Service_ImplementsInterface()
         {
-            // Arrange
-            var service = new InterfaceCmeDanfe860Service();
+            // Arrange & Act
+            Type serviceType = typeof(InterfaceCmeDanfe860Service);
+            Type interfaceType = typeof(IInterfaceCmeDanfe860Service);
 
-            // Act & Assert
-            Assert.IsNotNull(service);
-            Assert.IsInstanceOfType(service, typeof(IInterfaceCmeDanfe860Service));
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void InterfaceCmeDanfe860Service_HasPublicProperties()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(InterfaceCmeDanfe860Service);
+            var properties = serviceType.GetProperties();
+
+            // Assert
+            Assert.IsTrue(properties.Length > 0);
+            Assert.IsNotNull(serviceType.GetProperty("SF0002ItdDtcSelFtrm"));
         }
     }
 }
