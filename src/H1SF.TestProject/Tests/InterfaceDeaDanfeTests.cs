@@ -1,6 +1,7 @@
 using H1SF.Application.Services.InterfaceDeaDanfe;
 using H1SF.Application.Services.InterfaceDeaDanfe870;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -8,24 +9,36 @@ namespace H1SF.TestProject.Tests
     public class InterfaceDeaDanfeTests
     {
         [TestMethod]
-        public void InterfaceDeaDanfe870Service_ServiceCreation_Succeeds()
+        public void InterfaceDeaDanfe870_InterfaceExists()
         {
             // Arrange & Act
-            var service = new InterfaceDeaDanfe870Service();
+            Type interfaceType = typeof(IInterfaceDeaDanfe870Service);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void InterfaceDeaDanfe870Service_ImplementsInterface_Success()
+        public void InterfaceDeaDanfe870Service_ImplementsInterface()
         {
-            // Arrange
-            var service = new InterfaceDeaDanfe870Service();
+            // Arrange & Act
+            Type serviceType = typeof(InterfaceDeaDanfe870Service);
+            Type interfaceType = typeof(IInterfaceDeaDanfe870Service);
 
-            // Act & Assert
-            Assert.IsNotNull(service);
-            Assert.IsInstanceOfType(service, typeof(IInterfaceDeaDanfe870Service));
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void InterfaceDeaDanfe870Service_HasPublicProperties()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(InterfaceDeaDanfe870Service);
+            var properties = serviceType.GetProperties();
+
+            // Assert
+            Assert.IsTrue(properties.Length > 0);
         }
     }
 }

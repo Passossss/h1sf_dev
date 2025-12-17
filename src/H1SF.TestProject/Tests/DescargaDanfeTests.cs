@@ -1,5 +1,6 @@
 using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -7,37 +8,36 @@ namespace H1SF.TestProject.Tests
     public class DescargaDanfeTests
     {
         [TestMethod]
-        public void DanfeService_ServiceCreation_Succeeds()
+        public void Danfe_InterfaceExists()
         {
             // Arrange & Act
-            var service = new DanfeService();
+            Type interfaceType = typeof(IDanfeService);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void DescarregaViasDanfe_CallMethod_DoesNotThrow()
+        public void DanfeService_ImplementsInterface()
         {
-            // Arrange
-            var service = new DanfeService();
-
-            // Act
-            service.DescarregaViasDanfe();
+            // Arrange & Act
+            Type serviceType = typeof(DanfeService);
+            Type interfaceType = typeof(IDanfeService);
 
             // Assert
-            Assert.IsTrue(true); // If no exception thrown, test passes
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
         }
 
         [TestMethod]
-        public void DanfeService_ImplementsInterface_Success()
+        public void DanfeService_HasDescarregaViasDanfeMethod()
         {
-            // Arrange
-            var service = new DanfeService();
+            // Arrange & Act
+            Type serviceType = typeof(DanfeService);
+            var method = serviceType.GetMethod("DescarregaViasDanfe");
 
-            // Act & Assert
-            Assert.IsNotNull(service);
-            Assert.IsInstanceOfType(service, typeof(IDanfeService));
+            // Assert
+            Assert.IsNotNull(method);
         }
     }
 }

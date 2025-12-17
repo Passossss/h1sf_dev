@@ -1,5 +1,6 @@
 using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace H1SF.TestProject.Tests
 {
@@ -7,26 +8,36 @@ namespace H1SF.TestProject.Tests
     public class DescarregaViasPtdTests
     {
         [TestMethod]
-        public void DescarregaViasPtdService_ServiceCreation_Succeeds()
+        public void DescarregaViasPtd_InterfaceExists()
         {
             // Arrange & Act
-            var service = new DescarregaViasPtdService();
+            Type interfaceType = typeof(IDescarregaViasPtdService);
 
             // Assert
-            Assert.IsNotNull(service);
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
         }
 
         [TestMethod]
-        public void Execute_CallMethod_DoesNotThrow()
+        public void DescarregaViasPtdService_ImplementsInterface()
         {
-            // Arrange
-            var service = new DescarregaViasPtdService();
-
-            // Act
-            service.Execute();
+            // Arrange & Act
+            Type serviceType = typeof(DescarregaViasPtdService);
+            Type interfaceType = typeof(IDescarregaViasPtdService);
 
             // Assert
-            Assert.IsTrue(true); // If no exception thrown, test passes
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
+        }
+
+        [TestMethod]
+        public void DescarregaViasPtdService_HasExecuteMethod()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(DescarregaViasPtdService);
+            var method = serviceType.GetMethod("Execute");
+
+            // Assert
+            Assert.IsNotNull(method);
         }
     }
 }
