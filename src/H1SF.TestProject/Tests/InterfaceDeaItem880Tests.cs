@@ -1,3 +1,4 @@
+using H1SF.Application.Services.InterfaceSDeItem880;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace H1SF.TestProject.Tests
@@ -6,14 +7,13 @@ namespace H1SF.TestProject.Tests
     public class InterfaceDeaItem880Tests
     {
         [TestMethod]
-        public void InterfaceDeaItem880_ServiceReference_Exists()
+        public void InterfaceSDeItem880_RequiresDbContext_PlaceholderTest()
         {
             // Arrange & Act
-            // Note: InterfaceDeaItem880 service needs to be located in codebase
-            // This is a placeholder test
-
+            // This service requires ApplicationDbContext which should be tested in integration tests
+            
             // Assert
-            Assert.IsTrue(true); // Placeholder - service needs to be found
+            Assert.IsTrue(true); // Placeholder - requires DbContext for full testing
         }
     }
 }

@@ -1,3 +1,4 @@
+using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace H1SF.TestProject.Tests
@@ -6,14 +7,36 @@ namespace H1SF.TestProject.Tests
     public class GravaMensagemMQTests
     {
         [TestMethod]
-        public void GravaMensagemMQ_ServiceReference_Exists()
+        public void GravaMensagemMQ_ServiceCreation_Succeeds()
         {
             // Arrange & Act
-            // Note: GravaMensagemMQ service needs to be located in codebase
-            // This is a placeholder test
+            var service = new GravaMensagemMQ();
 
             // Assert
-            Assert.IsTrue(true); // Placeholder - service needs to be found
+            Assert.IsNotNull(service);
+        }
+
+        [TestMethod]
+        public void GravaMensagemMQ_Executar_DoesNotThrow()
+        {
+            // Arrange
+            var service = new GravaMensagemMQ();
+
+            // Act
+            service.Executar();
+
+            // Assert
+            Assert.IsTrue(true); // If no exception thrown, test passes
+        }
+
+        [TestMethod]
+        public void GravaMensagemMQ_ImplementsInterface_Success()
+        {
+            // Arrange
+            var service = new GravaMensagemMQ();
+
+            // Act & Assert
+            Assert.IsInstanceOfType(service, typeof(IGravaMensagemMQ));
         }
     }
 }

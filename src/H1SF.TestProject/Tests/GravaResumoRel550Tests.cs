@@ -1,3 +1,4 @@
+using H1SF.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace H1SF.TestProject.Tests
@@ -6,14 +7,23 @@ namespace H1SF.TestProject.Tests
     public class GravaResumoRel550Tests
     {
         [TestMethod]
-        public void GravaResumoRel550_ServiceReference_Exists()
+        public void GravaResumoRel550_ServiceCreation_Succeeds()
         {
             // Arrange & Act
-            // Note: GravaResumoRel550 service needs to be located in codebase
-            // This is a placeholder test
+            var service = new GravaResumoRel550();
 
             // Assert
-            Assert.IsTrue(true); // Placeholder - service needs to be found
+            Assert.IsNotNull(service);
+        }
+
+        [TestMethod]
+        public void GravaResumoRel550_ImplementsInterface_Success()
+        {
+            // Arrange
+            var service = new GravaResumoRel550();
+
+            // Act & Assert
+            Assert.IsInstanceOfType(service, typeof(IGravaResumoRel550));
         }
     }
 }
