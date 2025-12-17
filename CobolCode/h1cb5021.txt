@@ -1,0 +1,1157 @@
+       ID DIVISION.
+      *------------*
+       PROGRAM-ID.    H1CB5021.
+       AUTHOR.        PEDRO F. NETO.
+       DATE-WRITTEN.  10/10/00.
+       DATE-COMPILED.
+      *
+      *    *************************************************************
+      *    *                   OBJETIVOS DO PROGRAMA                   *
+      *    *                                                           *
+      *    *   O OBJETIVO DESSE PROGRAMA E FACILITAR O ACESSO EM FILAS *
+      *    *  DE MQSERIES PARA O AMBIENTE AIX.                         *
+      *    *                                                           *
+      *    *************************************************************
+
+      *    *************************************************************
+      *    *                                                           *
+      *    *              SECTION UTILIZADAS PELO PROGRAMA             *
+      *    *                                                           *
+      *    *           NOME DA SECTION                   AUTOR         *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION PARA PROCESSAMENTO CENTRAL                      *
+      *    *  ------------------------------------                     *
+      *    *                                                           *
+      *    *  000-00-ROTINA-PRINCIPAL                  P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION DE PREPARACAO                                   *
+      *    *  -----------------------                                  *
+      *    *                                                           *
+      *    *  100-00-EFETUA-ACESSO-01                  P.F.NETO        *
+      *    *  110-00-EFETUA-ACESSO-02                  P.F.NETO        *
+      *    *  120-00-EFETUA-ACESSO-03                  P.F.NETO        *
+      *    *  130-00-EFETUA-ACESSO-04                  P.F.NETO        *
+      *    *  140-00-EFETUA-ACESSO-05                  P.F.NETO        *
+      *    *  150-00-EFETUA-ACESSO-06                  P.F.NETO        *
+      *    *  160-00-EFETUA-ACESSO-07                  P.F.NETO        *
+      *    *  170-00-EFETUA-ACESSO-08                  P.F.NETO        *
+      *    *  180-00-ADQUIRE-INFO-FILA                 P.F.NETO        *
+      *    *  190-00-VERIFICA-CONN-ATIVA               P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION PARA I-O                                        *
+      *    *  ------------------                                       *
+      *    *                                                           *
+      *    *  500-00-SQL-SELECT-GERD-MQS               P.F.NETO        *
+      *    *  505-00-SQL-SELECT-FILA-MQS               P.F.NETO        *
+      *    *  510-00-ACESSO-MQS-MQCONN                 P.F.NETO        *
+      *    *  515-00-ACESSO-MQS-MQOPEN                 P.F.NETO        *
+      *    *  520-00-ACESSO-MQS-MQGET                  P.F.NETO        *
+      *    *  525-00-ACESSO-MQS-MQINQ                  P.F.NETO        *
+      *    *  530-00-ACESSO-MQS-MQSET                  P.F.NETO        *
+      *    *  535-00-ACESSO-MQS-MQPUT                  P.F.NETO        *
+      *    *  540-00-ACESSO-MQS-MQCLOSE                P.F.NETO        *
+      *    *  545-00-ACESSO-MQS-MQDISC                 P.F.NETO        *
+      *    *  550-00-EMITE-RETURN-CICS                 P.F.NETO        *
+      *    *  555-00-EMITE-ASSIGN-CICS                 P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION COMPLEMENTARES                                  *
+      *    *  ------------------------                                 *
+      *    *                                                           *
+      *    *  900-00-AVALIACAO-COMMAREA                P.F.NETO        *
+      *    *                                                           *
+      *    *************************************************************
+      *
+       ENVIRONMENT DIVISION.
+      *---------------------*
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+                DECIMAL-POINT IS COMMA.
+       DATA DIVISION.
+      *--------------*
+
+       WORKING-STORAGE SECTION.
+      *------------------------*
+      
+      *----------------------------------------------------------------*
+      *          === AREAS PARA CONTROLE DE SQL ===          PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+           EXEC SQL INCLUDE       SQLCA
+                END-EXEC.
+
+      *----------------------------------------------------------------*
+      *     === AREA PARA UTILIZACAO EM COMANDOS SQL ===     PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+           EXEC SQL BEGIN         DECLARE SECTION
+                END-EXEC.
+
+       01  H1CB-MONITOR-GERD-MQSERIES. 
+           05 CB0001-NM-AMBI                 PIC  X(008).
+           05 CB0001-CD-T-AMBI               PIC  X(001).
+           05 CB0001-NM-GERD-MQS             PIC  X(048).
+                
+       01  H1CB-MONITOR-FILA-MQSERIES. 
+           05 CB0002-ID-FILA-MQ              PIC  X(005).
+           05 CB0002-NM-AREA-RSP             PIC  X(030).
+           05 CB0002-NM-AMBI-PRDC            PIC  X(008).
+           05 CB0002-NM-AMBI-TST             PIC  X(008).           
+           05 CB0002-NM-AMBI-QLD             PIC  X(008).           
+           05 CB0002-NM-FILA-MQ              PIC  X(048).
+
+           EXEC SQL END           DECLARE SECTION
+                END-EXEC.
+
+      *----------------------------------------------------------------*
+      *       === AREA PARA CHAVEAMENTO DO PROGRAMA ===      PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WS31-ARE-CHV.
+           05 WS31-CHV-ERRO                  PIC  X(001)
+                                                  VALUE SPACES.
+           05 WS31-CHV-CONN                  PIC  X(001)
+                                                  VALUE SPACES.
+           05 WS31-CHV-NTFD-SQL              PIC  9(004)   VALUE 1403.
+
+      *----------------------------------------------------------------*
+      *      === AREAS PARA INDEXACAO DA TRANSACAO ===       PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WS32-ARE-IND.
+           05 WS32-IND-FILA                  PIC S9(004)   COMP
+                                                  VALUE ZEROS.
+           05 WS32-IND-CONN                  PIC S9(004)   COMP
+                                                  VALUE ZEROS.
+
+      *----------------------------------------------------------------*
+      *    === AREAS PARA TAMANHO A SEREM UTILIZADOS ===     PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WS33-ARE-TAM.
+           05 WS33-UND-TAM-CB                PIC S9(004)   COMP
+                                                  VALUE ZEROS.
+
+      *----------------------------------------------------------------*
+      *            === AREA PARA SALVAR CAMPOS ===           PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WS35-ARE-SLV.
+           05 WS35-CD-ACES                   PIC  X(002).
+           05 WS35-ID-CICS                   PIC  X(008).
+           05 WS35-Q-CONN-ATIV               PIC  9(002)
+                                                  VALUE ZEROS.
+
+      *----------------------------------------------------------------*
+      *        === AREA PARA MONTAGEM DE TABELAS ===         PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WT01-ARE-MQS.
+           05 WT01-ARE-CNT-FILA              PIC  X(170).
+           05 WT01-ARE-CNT-FILA-R            REDEFINES
+              WT01-ARE-CNT-FILA.
+              10 WT01-ARE-OCR  OCCURS  10 TIMES.
+                 15 WT01-CD-ACES             PIC  X(002).
+                 15 WT01-ID-FILA-MQ          PIC  9(005).
+                 15 WT01-ID-HAND-CONN        PIC S9(009)  BINARY.
+                 15 WT01-ID-HAND-OBJT        PIC S9(009)  BINARY.
+                 15 WT01-IC-CVR-MSG          PIC  X(001).
+                 15 WT01-IC-CONN-ATIV        PIC  X(001).
+
+      *----------------------------------------------------------------*
+      *         === AREA DE COMUNICACAO MQSERIES ===         PFN 10/00 *
+      *----------------------------------------------------------------*
+
+           COPY 'MQSERIE1'.
+
+      *----------------------------------------------------------------*
+      *        === AREA PARA CONTROLE DO MQSERIES ===        PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  MQ02-ARE-VARI.
+           05 MQ02-NM-QMGR                   PIC  X(048)  VALUE SPACES.
+           05 MQ02-CD-COMP                   PIC S9(009)  BINARY.
+           05 MQ02-CD-RSON                   PIC S9(009)  BINARY.
+           05 MQ02-CD-RSON-AUX               PIC S9(009)  BINARY.
+           05 MQ02-ID-SELC-CONT              PIC S9(009)  BINARY.
+           05 MQ02-ID-SELC-TBLE.
+              10 FILLER  OCCURS  4  TIMES.
+                 15 MQ02-ID-SELC-HAND        PIC S9(009)  BINARY.
+           05 MQ02-ID-ATTR-CONT              PIC S9(009)  BINARY.
+           05 MQ02-ID-ATTR-TBLE.
+              10 FILLER  OCCURS  4  TIMES.
+                 15 MQ02-ID-ATTR-HAND        PIC S9(009)  BINARY.
+           05 MQ02-ID-ATTR-TAM               PIC S9(009)  BINARY.
+           05 MQ02-ID-ATTR                   PIC  X(100).
+
+
+       LINKAGE SECTION.
+      *---------------*
+
+      *----------------------------------------------------------------*
+      *             === COMMAREA DO PROGRAMA ===             PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  DFHCOMMAREA.
+           05 LK00-ARE-COMA                  PIC  X(25000).
+
+       PROCEDURE DIVISION.
+      *-------------------*
+
+      *----------------------------------------------------------------*
+      *        === ROTINA DE PROCESSAMENTO LOGICO ===        PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       000-00-ROTINA-PRINCIPAL               SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS HANDLE CONDITION
+                                  ERROR      (000-70-ERRO-GERAL-CICS)
+                END-EXEC.
+
+           EXEC SQL WHENEVER      SQLERROR   GOTO :000-80-ERRO-GERAL-SQL
+                END-EXEC.
+
+           PERFORM 900-00-AVALIACAO-COMMAREA.
+
+           IF MQ01-CD-ACES  EQUAL  '01'
+                PERFORM 100-00-EFETUA-ACESSO-01
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '02'
+                PERFORM 110-00-EFETUA-ACESSO-02
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '03'
+                PERFORM 120-00-EFETUA-ACESSO-03
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '04'
+                PERFORM 130-00-EFETUA-ACESSO-04
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '05'
+                PERFORM 140-00-EFETUA-ACESSO-05
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '06'
+                PERFORM 150-00-EFETUA-ACESSO-06
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+ 
+           IF MQ01-CD-ACES  EQUAL  '07'
+                PERFORM 160-00-EFETUA-ACESSO-07
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           IF MQ01-CD-ACES  EQUAL  '08'
+                PERFORM 170-00-EFETUA-ACESSO-08
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           MOVE '01'                         TO MQ01-CD-RETR-ECI.
+           GO                                TO 000-90-RETORNA-CHAMADOR.
+
+       000-70-ERRO-GERAL-CICS.
+
+           MOVE '02'                         TO MQ01-CD-RETR-ECI.
+           GO                                TO 000-90-RETORNA-CHAMADOR.
+      
+       000-80-ERRO-GERAL-SQL.
+ 
+           MOVE '03'                         TO MQ01-CD-RETR-ECI.
+
+       000-90-RETORNA-CHAMADOR.
+
+           MOVE WT01-ARE-CNT-FILA            TO MQ01-ARE-CNT-FILA.
+           MOVE MQ01-ARE-COMA                TO LK00-ARE-COMA.
+           PERFORM 550-00-EMITE-RETURN-CICS.
+           GOBACK.
+
+       000-99-PRINCIPAL-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 01 (ADQUIRE UMA UNICA MENSAGEM).           *
+      *----------------------------------------------------------------*
+
+       100-00-EFETUA-ACESSO-01               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-10-MQSERIES-CONEXAO.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-30-MQSERIES-LEITURA.
+
+           PERFORM 520-00-ACESSO-MQS-MQGET.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-40-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-50-MQSERIES-DISCONEXAO.
+ 
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 100-99-ACESSO-01-EXIT.
+           
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+       100-99-ACESSO-01-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 02 (ADQUIRE VARIAS MENSAGENS UMA A UMA).   *
+      *----------------------------------------------------------------*
+
+       110-00-EFETUA-ACESSO-02               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 110-99-ACESSO-02-EXIT.
+
+       110-10-MQSERIES-CONEXAO.
+
+           IF WS31-CHV-CONN  EQUAL  SPACES
+                GO                           TO 110-30-MQSERIES-LEITURA.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 110-99-ACESSO-02-EXIT.
+
+       110-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 110-99-ACESSO-02-EXIT.
+
+       110-30-MQSERIES-LEITURA.
+
+           PERFORM 520-00-ACESSO-MQS-MQGET.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 110-99-ACESSO-02-EXIT.
+
+       110-99-ACESSO-02-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 03 (ENVIA UMA UNICA MENSAGEM).             *
+      *----------------------------------------------------------------*
+
+       120-00-EFETUA-ACESSO-03               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-10-MQSERIES-CONEXAO.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-30-MQSERIES-GRAVACAO.
+
+           PERFORM 535-00-ACESSO-MQS-MQPUT.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-40-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-50-MQSERIES-DISCONEXAO.
+
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 120-99-ACESSO-03-EXIT.
+
+       120-99-ACESSO-03-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 04 (ENVIA VARIAS MENSAGENS UMA A UMA).     *
+      *----------------------------------------------------------------*
+
+       130-00-EFETUA-ACESSO-04               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                          TO 130-99-ACESSO-04-EXIT.
+
+       130-10-MQSERIES-CONEXAO.
+
+           IF WS31-CHV-CONN  EQUAL  SPACES
+                GO                          TO 130-30-MQSERIES-GRAVACAO.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 130-99-ACESSO-04-EXIT.
+
+       130-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 130-99-ACESSO-04-EXIT.
+
+       130-30-MQSERIES-GRAVACAO.
+
+           PERFORM 535-00-ACESSO-MQS-MQPUT.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 130-99-ACESSO-04-EXIT.
+
+       130-99-ACESSO-04-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 05 (ENCERRA FILA DEPOIS DE ADQUIRIDAS).    *
+      *----------------------------------------------------------------*
+
+       140-00-EFETUA-ACESSO-05               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                          TO 140-99-ACESSO-05-EXIT.
+
+       140-10-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 140-99-ACESSO-05-EXIT.
+
+       140-20-MQSERIES-DISCONEXAO.
+
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 140-99-ACESSO-05-EXIT.
+
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 140-99-ACESSO-05-EXIT.
+
+       140-99-ACESSO-05-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 06 (ENCERRA FILA DEPOIS DE ENVIADAS).      *
+      *----------------------------------------------------------------*
+
+       150-00-EFETUA-ACESSO-06               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                          TO 150-99-ACESSO-06-EXIT.
+
+       150-10-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 150-99-ACESSO-06-EXIT.
+
+       150-20-MQSERIES-DISCONEXAO.
+
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 150-99-ACESSO-06-EXIT.
+
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 150-99-ACESSO-06-EXIT.
+
+       150-99-ACESSO-06-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 07 (ADQUIRE INFORMACOES SOBRE A FILA).     *
+      *----------------------------------------------------------------*
+
+       160-00-EFETUA-ACESSO-07               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                          TO 160-99-ACESSO-07-EXIT.
+
+       160-10-MQSERIES-CONEXAO.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+       160-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+       160-30-MQSERIES-CONSULTA.
+
+           MOVE 4                            TO MQ02-ID-SELC-CONT
+                                                MQ02-ID-ATTR-CONT.
+           MOVE ZEROS                        TO MQ02-ID-ATTR-TAM.
+
+           MOVE MQIA-CURRENT-Q-DEPTH         TO MQ02-ID-SELC-HAND (1).
+           MOVE MQIA-MAX-Q-DEPTH             TO MQ02-ID-SELC-HAND (2).
+           MOVE MQIA-TRIGGER-CONTROL         TO MQ02-ID-SELC-HAND (3).
+           MOVE MQIA-TRIGGER-TYPE            TO MQ02-ID-SELC-HAND (4).
+
+           PERFORM 525-00-ACESSO-MQS-MQINQ.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+       160-40-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+       160-50-MQSERIES-DISCONEXAO.
+
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 160-99-ACESSO-07-EXIT.
+
+       160-99-ACESSO-07-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 08 (ALTERA ESTADO DO TRIGGER MONITOR).     *
+      *----------------------------------------------------------------*
+
+       170-00-EFETUA-ACESSO-08               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 180-00-ADQUIRE-INFO-FILA.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                          TO 170-99-ACESSO-08-EXIT.
+
+       170-10-MQSERIES-CONEXAO.
+
+           PERFORM 510-00-ACESSO-MQS-MQCONN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 170-99-ACESSO-08-EXIT.
+
+       170-20-MQSERIES-ABERTURA.
+
+           PERFORM 515-00-ACESSO-MQS-MQOPEN.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 170-99-ACESSO-08-EXIT.
+
+       170-30-MQSERIES-ALTERA.
+
+           IF MQ01-CD-T-PTI  EQUAL  SPACES
+                MOVE 1                       TO MQ02-ID-SELC-CONT
+                                                MQ02-ID-ATTR-CONT 
+           ELSE
+                MOVE 2                       TO MQ02-ID-SELC-CONT
+                                                MQ02-ID-ATTR-CONT.
+                                                
+           MOVE ZEROS                        TO MQ02-ID-ATTR-TAM.
+
+           MOVE MQIA-TRIGGER-CONTROL         TO MQ02-ID-SELC-HAND (1).
+           MOVE MQIA-TRIGGER-TYPE            TO MQ02-ID-SELC-HAND (2).
+
+           IF MQ01-IC-PTI-ATV  EQUAL  'S'
+                MOVE MQTC-ON                 TO MQ02-ID-ATTR-HAND (1)
+           ELSE     
+                MOVE MQTC-OFF                TO MQ02-ID-ATTR-HAND (1).
+
+           MOVE MQTT-NONE                    TO MQ02-ID-ATTR-HAND (2).
+           IF MQ01-CD-T-PTI  EQUAL  'F'
+                MOVE MQTT-FIRST              TO MQ02-ID-ATTR-HAND (2).
+
+           IF MQ01-CD-T-PTI  EQUAL  'E'
+                MOVE MQTT-EVERY              TO MQ02-ID-ATTR-HAND (2).
+
+           IF MQ01-CD-T-PTI  EQUAL  'D'
+                MOVE MQTT-DEPTH              TO MQ02-ID-ATTR-HAND (2).
+
+           PERFORM 530-00-ACESSO-MQS-MQSET.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 170-99-ACESSO-08-EXIT.
+
+       170-40-MQSERIES-FECHAMENTO.
+
+           PERFORM 540-00-ACESSO-MQS-MQCLOSE.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 170-99-ACESSO-08-EXIT.
+
+       170-50-MQSERIES-DISCONEXAO.
+
+           PERFORM 190-00-VERIFICA-CONN-ATIVA.
+           IF WS35-Q-CONN-ATIV  GREATER  1
+                GO                           TO 170-99-ACESSO-08-EXIT.
+
+           PERFORM 545-00-ACESSO-MQS-MQDISC.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 170-99-ACESSO-08-EXIT.
+              
+       170-99-ACESSO-08-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  ADQUIRE INFORMACOES PARA MANUSEIO DA FILA MQSERIES.           *
+      *----------------------------------------------------------------*
+
+       180-00-ADQUIRE-INFO-FILA              SECTION.
+      *----------------------------------------------*
+
+           MOVE MQ01-ARE-CNT-FILA            TO WT01-ARE-CNT-FILA.
+           MOVE SPACES                       TO WS31-CHV-CONN.
+           MOVE ZEROS                        TO WS32-IND-FILA.
+
+       180-10-LOOP-CTROL-FILA.
+
+           ADD 1                             TO WS32-IND-FILA.
+           IF WS32-IND-FILA  GREATER  10
+                MOVE ZEROS                   TO WS32-IND-FILA
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '02'                    TO MQ01-CD-RETR-ACES
+                GO                           TO 180-99-ADQ-FILA-EXIT.
+
+           IF WT01-CD-ACES    (WS32-IND-FILA)  EQUAL  LOW-VALUES  AND
+              WT01-ID-FILA-MQ (WS32-IND-FILA)  EQUAL  LOW-VALUES
+                GO                           TO 180-20-ACESSA-CADASTRO.
+
+           IF WT01-CD-ACES    (WS32-IND-FILA)  EQUAL  SPACES  AND
+              WT01-ID-FILA-MQ (WS32-IND-FILA)  EQUAL  SPACES
+                GO                           TO 180-20-ACESSA-CADASTRO.
+
+           MOVE MQ01-CD-ACES                 TO WS35-CD-ACES.
+
+           IF MQ01-CD-ACES  EQUAL  '05'
+                MOVE '02'                    TO WS35-CD-ACES.
+
+           IF MQ01-CD-ACES  EQUAL  '06'
+                MOVE '04'                    TO WS35-CD-ACES.
+
+           IF WS35-CD-ACES  NOT EQUAL  WT01-CD-ACES (WS32-IND-FILA)
+                GO                           TO 180-10-LOOP-CTROL-FILA.
+
+           IF MQ01-ID-FILA-MQ NOT EQUAL  WT01-ID-FILA-MQ (WS32-IND-FILA)
+                GO                           TO 180-10-LOOP-CTROL-FILA.
+
+           IF MQ01-CD-ACES  EQUAL  '02'  OR
+              MQ01-CD-ACES  EQUAL  '04'  OR
+              MQ01-CD-ACES  EQUAL  '05'  OR
+              MQ01-CD-ACES  EQUAL  '06'
+                GO                           TO 180-99-ADQ-FILA-EXIT.
+
+       180-20-ACESSA-CADASTRO.
+
+           PERFORM 555-00-EMITE-ASSIGN-CICS.
+
+           MOVE WS35-ID-CICS                 TO CB0001-NM-AMBI.
+           PERFORM 500-00-SQL-SELECT-GERD-MQS.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 180-99-ADQ-FILA-EXIT.
+
+           MOVE CB0001-NM-GERD-MQS           TO MQ02-NM-QMGR.
+
+           MOVE MQ01-ID-FILA-MQ              TO CB0002-ID-FILA-MQ.
+           PERFORM 505-00-SQL-SELECT-FILA-MQS.
+           IF WS31-CHV-ERRO  EQUAL  '*'
+                GO                           TO 180-99-ADQ-FILA-EXIT.
+
+           MOVE CB0002-NM-FILA-MQ            TO MQOD-OBJECTNAME.
+           MOVE MQ01-CD-ACES                 TO WT01-CD-ACES
+                                                (WS32-IND-FILA).
+           MOVE MQ01-ID-FILA-MQ              TO WT01-ID-FILA-MQ
+                                                (WS32-IND-FILA).
+           MOVE '*'                          TO WS31-CHV-CONN.
+
+           IF CB0001-NM-AMBI  NOT EQUAL  CB0002-NM-AMBI-PRDC  AND
+              CB0001-NM-AMBI  NOT EQUAL  CB0002-NM-AMBI-TST  AND
+              CB0001-NM-AMBI  NOT EQUAL  CB0002-NM-AMBI-QLD
+                MOVE '*'                     TO WT01-IC-CVR-MSG
+                                                (WS32-IND-FILA) 
+           ELSE     
+                MOVE SPACES                  TO WT01-IC-CVR-MSG 
+                                                (WS32-IND-FILA). 
+
+       180-99-ADQ-FILA-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  VERIFICA SE EXISTE ALGUMA CONEXAO ATIVA.                      *
+      *----------------------------------------------------------------*
+ 
+       190-00-VERIFICA-CONN-ATIVA            SECTION.
+      *----------------------------------------------*
+ 
+           MOVE ZEROS                        TO WS32-IND-CONN.
+           MOVE ZEROS                        TO WS35-Q-CONN-ATIV.
+ 
+       190-10-LOOP-FILA-ATIVA.
+ 
+           ADD 1                             TO WS32-IND-CONN.
+           IF WS32-IND-CONN  GREATER  10
+                MOVE ZEROS                   TO WS32-IND-CONN
+                GO                           TO 190-99-VER-CONN-EXIT.
+ 
+           IF WT01-IC-CONN-ATIV  (WS32-IND-CONN)  EQUAL  'S'
+                ADD 1                        TO WS35-Q-CONN-ATIV.
+ 
+           GO                                TO 190-10-LOOP-FILA-ATIVA.
+ 
+       190-99-VER-CONN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE LEITURA ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA SQL PARA ADQUIRIR INFORMACOES DO GERENCIADOR MQSERIES. *
+      *----------------------------------------------------------------*
+
+       500-00-SQL-SELECT-GERD-MQS            SECTION.
+      *----------------------------------------------*
+
+            EXEC SQL SELECT *
+                    INTO   :CB0001-NM-AMBI,
+                           :CB0001-CD-T-AMBI,
+                           :CB0001-NM-GERD-MQS
+                    FROM   H1CB.MONITOR_GERD_MQSERIES
+                    WHERE  NM_AMBI = UPPER(:CB0001-NM-AMBI)         
+                END-EXEC.
+
+           IF SQLCODE  EQUAL  WS31-CHV-NTFD-SQL
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '01'                    TO MQ01-CD-RETR-ACES.
+
+       500-99-SQL-SELECT-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE LEITURA ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA SQL PARA ADQUIRIR INFORMACOES DA FILA MQSERIES.        *
+      *----------------------------------------------------------------*
+
+       505-00-SQL-SELECT-FILA-MQS            SECTION.
+      *----------------------------------------------*
+
+           EXEC SQL SELECT ID_FILA_MQ,
+                           NM_AREA_RSP,
+                           LOWER(NM_AMBI_PRDC),
+                           LOWER(NM_AMBI_TST),
+                           LOWER(NM_AMBI_QLD),
+                           NM_FILA_MQ 
+                    INTO   :CB0002-ID-FILA-MQ,
+                           :CB0002-NM-AREA-RSP,
+                           :CB0002-NM-AMBI-PRDC,
+                           :CB0002-NM-AMBI-TST,
+                           :CB0002-NM-AMBI-QLD,
+                           :CB0002-NM-FILA-MQ 
+                    FROM   H1CB.MONITOR_FILA_MQSERIES
+                    WHERE  ID_FILA_MQ = :CB0002-ID-FILA-MQ       
+                END-EXEC.
+
+           IF SQLCODE  EQUAL  WS31-CHV-NTFD-SQL
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '01'                    TO MQ01-CD-RETR-ACES.
+
+       505-99-SQL-SELECT-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA CONEXAO NO GERENCIADOR MQSERIES.                       *
+      *----------------------------------------------------------------*
+
+       510-00-ACESSO-MQS-MQCONN              SECTION.
+      *----------------------------------------------*
+
+           CALL 'MQCONN'           USING     MQ02-NM-QMGR,
+                                             WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+           MOVE MQ02-CD-COMP                 TO MQ02-CD-RSON-AUX.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '03'                    TO MQ01-CD-RETR-ACES.
+                
+           MOVE 'S'                          TO WT01-IC-CONN-ATIV
+                                                (WS32-IND-FILA).     
+
+       510-99-MQS-MQCONN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA ABERTURA DA FILA MQSERIES.                             *
+      *----------------------------------------------------------------*
+
+       515-00-ACESSO-MQS-MQOPEN              SECTION.
+      *----------------------------------------------*
+
+           CALL 'MQOPEN'          USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             MQ01-ARE-OBJ-DESC,
+                                             MQ01-OPC-OPEN,
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '04'                    TO MQ01-CD-RETR-ACES.
+
+       515-99-MQS-MQOPEN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA A LEITURA DE MENSAGEM MQSERIES.                        *
+      *----------------------------------------------------------------*
+
+       520-00-ACESSO-MQS-MQGET               SECTION.
+      *----------------------------------------------*
+
+           ADD MQGMO-CONVERT                 TO MQGMO-OPTIONS.
+           
+           MOVE SPACES                       TO MQ01-TXT-MSG.
+
+           CALL 'MQGET'           USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ01-ARE-MSG-DESC,
+                                             MQ01-ARE-GET-OPTS,
+                                             MQ01-TAM-MSG-MAX,
+                                             MQ01-TXT-MSG,
+                                             MQ01-TAM-MSG-REAL,
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-WARNING 
+                IF MQ02-CD-RSON  EQUAL  MQRC-TRUNCATED-MSG-ACCEPTED
+                     NEXT SENTENCE
+                ELSE
+                     MOVE '*'                TO WS31-CHV-ERRO
+                     MOVE '06'               TO MQ01-CD-RETR-ACES.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                IF MQ02-CD-RSON  EQUAL  MQRC-NO-MSG-AVAILABLE
+                     MOVE '05'               TO MQ01-CD-RETR-ACES
+                ELSE
+                     MOVE '*'                TO WS31-CHV-ERRO
+                     MOVE '06'               TO MQ01-CD-RETR-ACES.
+
+       520-99-MQS-MQGET-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 11/00 *
+      *                                                                *
+      *  EFETUA CONSULTA EM FILAS MQSERIES.                            *
+      *----------------------------------------------------------------*
+
+       525-00-ACESSO-MQS-MQINQ               SECTION.
+      *----------------------------------------------*
+
+           CALL 'MQINQ'           USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ02-ID-SELC-CONT,
+                                             MQ02-ID-SELC-TBLE,
+                                             MQ02-ID-ATTR-CONT,
+                                             MQ02-ID-ATTR-TBLE,
+                                             MQ02-ID-ATTR-TAM,
+                                             MQ02-ID-ATTR,
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-ID-ATTR-HAND (1)        TO MQ01-Q-MSG-FILA.
+           MOVE MQ02-ID-ATTR-HAND (2)        TO MQ01-Q-MAX-MSG-FILA.
+ 
+           IF MQ02-ID-ATTR-HAND (3)  EQUAL  MQTC-ON
+                MOVE 'S'                     TO MQ01-IC-PTI-ATV 
+           ELSE              
+                MOVE 'N'                     TO MQ01-IC-PTI-ATV. 
+
+           IF MQ02-ID-ATTR-HAND (4)  EQUAL  MQTT-NONE
+                MOVE 'N'                     TO MQ01-CD-T-PTI. 
+
+           IF MQ02-ID-ATTR-HAND (4)  EQUAL  MQTT-FIRST
+                MOVE 'F'                     TO MQ01-CD-T-PTI. 
+
+           IF MQ02-ID-ATTR-HAND (4)  EQUAL  MQTT-EVERY
+                MOVE 'E'                     TO MQ01-CD-T-PTI. 
+
+           IF MQ02-ID-ATTR-HAND (4)  EQUAL  MQTT-DEPTH
+                MOVE 'D'                     TO MQ01-CD-T-PTI. 
+           
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '10'                    TO MQ01-CD-RETR-ACES.
+
+       525-99-MQS-MQINQ-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 11/00 *
+      *                                                                *
+      *  EFETUA ALTERACOES EM FILAS MQSERIES.                          *
+      *----------------------------------------------------------------*
+
+       530-00-ACESSO-MQS-MQSET               SECTION.
+      *----------------------------------------------*
+
+            CALL 'MQSET'           USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ02-ID-SELC-CONT,
+                                             MQ02-ID-SELC-TBLE,
+                                             MQ02-ID-ATTR-CONT,
+                                             MQ02-ID-ATTR-TBLE,
+                                             MQ02-ID-ATTR-TAM,
+                                             MQ02-ID-ATTR,
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '11'                    TO MQ01-CD-RETR-ACES.
+
+       530-99-MQS-MQSET-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA A LEITURA DE MENSAGEM MQSERIES.                        *
+      *----------------------------------------------------------------*
+
+       535-00-ACESSO-MQS-MQPUT               SECTION.
+      *----------------------------------------------*
+
+           IF WT01-IC-CVR-MSG (WS32-IND-FILA)  EQUAL  '*' 
+                MOVE MQFMT-STRING            TO MQMD-FORMAT.
+
+           CALL 'MQPUT'           USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ01-ARE-MSG-DESC,
+                                             MQ01-ARE-PUT-OPTS,
+                                             MQ01-TAM-MSG-MAX,
+                                             MQ01-TXT-MSG,
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '07'                    TO MQ01-CD-RETR-ACES.
+
+       535-99-MQS-MQPUT-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA O FECHAMENTO DA FILA MQSERIES.                         *
+      *----------------------------------------------------------------*
+
+       540-00-ACESSO-MQS-MQCLOSE             SECTION.
+      *----------------------------------------------*
+
+           CALL 'MQCLOSE'         USING      WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             WT01-ID-HAND-OBJT
+                                             (WS32-IND-FILA),
+                                             MQ01-OPC-CLOS,
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '08'                    TO MQ01-CD-RETR-ACES.
+
+       540-99-MQS-MQCLOSE-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE ACESSOS ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA A DESCONEXAO DA FILA MQSERIES.                         *
+      *----------------------------------------------------------------*
+
+       545-00-ACESSO-MQS-MQDISC              SECTION.
+      *----------------------------------------------*
+
+           IF MQ02-CD-RSON-AUX  NOT EQUAL   MQRC-ALREADY-CONNECTED
+                 CALL 'MQDISC'     USING     WT01-ID-HAND-CONN
+                                             (WS32-IND-FILA),
+                                             MQ02-CD-COMP,
+                                             MQ02-CD-RSON.
+
+           MOVE MQ02-CD-COMP                 TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON                 TO MQ01-CD-RSON.
+
+           IF MQ02-CD-COMP  EQUAL  MQCC-FAILED  OR
+              MQ02-CD-COMP  EQUAL  MQCC-UNKNOWN
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '09'                    TO MQ01-CD-RETR-ACES.
+
+           MOVE 'N'                          TO WT01-IC-CONN-ATIV
+                                                (WS32-IND-FILA).     
+
+           IF MQ01-CD-ACES  EQUAL  '05' 
+                MOVE LOW-VALUES              TO WT01-ARE-OCR
+                                                (WS32-IND-FILA).
+                                                
+       545-99-MQS-MQDISC-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE COMUNICACAO ===            PFN 10/00 *
+      *                                                                *
+      *  RETORNA O CONTROLE PARA O CICS.                               *
+      *----------------------------------------------------------------*
+
+       550-00-EMITE-RETURN-CICS              SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS RETURN
+                END-EXEC.
+
+       550-99-RETURN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE ASSINALAMENTO ===          PFN 10/00 *
+      *                                                                *
+      *  ROTINA PARA EMITIR ASSIGN DE SISTEMA.                         *
+      *----------------------------------------------------------------*
+
+       555-00-EMITE-ASSIGN-CICS              SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS ASSIGN       APPLID     (WS35-ID-CICS)
+                END-EXEC.
+
+       555-99-ASSIGN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *                 === ROTINA DE PREPARACAO ===         PFN 10/00 *
+      *                                                                *
+      *   AVALIA A COMMAREA PASSADA PELO PROGRAMA CHAMADOR.            *
+      *----------------------------------------------------------------*
+
+       900-00-AVALIACAO-COMMAREA             SECTION.
+      *----------------------------------------------*
+
+           IF EIBCALEN  EQUAL  ZEROS
+                EXEC CICS ABEND   ABCODE     ('LEN1')  END-EXEC.
+
+           IF EIBCALEN  LESS  13000
+                EXEC CICS ABEND   ABCODE     ('LEN2')  END-EXEC.
+
+           IF EIBCALEN  GREATER  25000
+                EXEC CICS ABEND   ABCODE     ('LEN3')  END-EXEC.
+
+           MOVE LK00-ARE-COMA                TO MQ01-ARE-COMA.
+           MOVE ZEROS                        TO MQ01-CD-RETR-ECI
+                                                MQ01-CD-RETR-ACES
+                                                MQ01-CD-COMP
+                                                MQ01-CD-RSON.
+
+       900-99-AVAL-COMMA-EXIT.
+           EXIT.

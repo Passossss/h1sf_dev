@@ -1,0 +1,499 @@
+       ID DIVISION.
+      *------------*
+       PROGRAM-ID.    H1CB5022.
+       AUTHOR.        PEDRO F. NETO.
+       DATE-WRITTEN.  10/10/00.
+       DATE-COMPILED.
+      *
+      *    *************************************************************
+      *    *                   OBJETIVOS DO PROGRAMA                   *
+      *    *                                                           *
+      *    *  O OBJETIVO DESSE PROGRAMA E GERAR LOGS DE SINCRONISMO DE *
+      *    *  DADOS ENTRE OS AMBIENTES CICS/AIX E CICS/ESA, INTERAGIN- *
+      *    *  DO COM O PROGRAMA CHAMADOR ATRAVES DE UMA AREA DE  COMU- *
+      *    *  NICACAO (COMMAREA) COM INFORMACOES DE ACORDO COM O TIPO  *
+      *    *  DE ACESSO.                                               *
+      *    *                                                           *
+      *    *************************************************************
+
+      *    *************************************************************
+      *    *                                                           *
+      *    *              SECTION UTILIZADAS PELO PROGRAMA             *
+      *    *                                                           *
+      *    *           NOME DA SECTION                   AUTOR         *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION PARA PROCESSAMENTO CENTRAL                      *
+      *    *  ------------------------------------                     *
+      *    *                                                           *
+      *    *  000-00-ROTINA-PRINCIPAL                  P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION DE PREPARACAO                                   *
+      *    *  -----------------------                                  *
+      *    *                                                           *
+      *    *  100-00-EFETUA-ACESSO-01                  P.F.NETO        *
+      *    *  110-00-CONSISTE-ACESSO-01                P.F.NETO        *
+      *    *  200-00-GERA-FILA-MQSERIES                P.F.NETO        *
+      *    *  210-00-ADQUIRE-MESSAGE-ID                P.F.NETO        *
+      *    *  220-00-GERA-BACKUP-ORACLE                P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION PARA I-O                                        *
+      *    *  ------------------                                       *
+      *    *                                                           *
+      *    *  500-00-SQL-SELECT-PRIORIDADE             P.F.NETO        *
+      *    *  505-00-SQL-INSERT-BACKUP-LOG             P.F.NETO        *
+      *    *  510-00-EMITE-LINK-H1CB5021               P.F.NETO        *
+      *    *  515-00-EMITE-ASKTIME-ABS                 P.F.NETO        *
+      *    *  520-00-EMITE-RETURN-CICS                 P.F.NETO        *
+      *    *                                                           *
+      *    *                                                           *
+      *    *   SECTION COMPLEMENTARES                                  *
+      *    *  ------------------------                                 *
+      *    *                                                           *
+      *    *  900-00-AVALIACAO-COMMAREA                P.F.NETO        *
+      *    *                                                           *
+      *    *************************************************************
+      *
+       ENVIRONMENT DIVISION.
+      *---------------------*
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+                DECIMAL-POINT IS COMMA.
+       DATA DIVISION.
+      *--------------*
+
+       WORKING-STORAGE SECTION.
+      *------------------------*
+
+      *----------------------------------------------------------------*
+      *          === AREAS PARA CONTROLE DE SQL ===          PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+           EXEC SQL INCLUDE       SQLCA
+                END-EXEC.
+
+      *----------------------------------------------------------------*
+      *     === AREA PARA UTILIZACAO EM COMANDOS SQL ===     PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+           EXEC SQL BEGIN         DECLARE SECTION
+                END-EXEC.
+                
+       01  H1CB-MONITOR-PRIORIDADE. 
+           05 CB0001-ID-FILA-MQ              PIC  X(005).
+           05 CB0001-CHV-PRAD                PIC  X(020).
+           05 CB0001-CD-PRAD                 PIC  X(001).
+
+       01  H1CB-LOG-MSG-MQSERIES.
+           05 CB0002-ID-FILA-MQ              PIC  X(005).
+           05 CB0002-DTC-GRC-MSG             PIC  X(014).
+           05 CB0002-TAM-MSG                 PIC  X(005).
+           05 CB0002-TXT-MSG                 PIC  X(1000).
+
+           EXEC SQL END           DECLARE SECTION
+                END-EXEC.
+
+      *----------------------------------------------------------------*
+      *       === AREA PARA CHAVEAMENTO DO PROGRAMA ===      PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  WS31-ARE-CHV.
+           05 WS31-CHV-NTFD-SQL              PIC  9(004)   VALUE 1403.
+           05 WS31-CHV-ERRO                  PIC  X(001)
+                                                  VALUE SPACES.
+
+      *----------------------------------------------------------------*
+      *            === AREA PARA SALVAR CAMPOS ===           PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+       01  WS35-ARE-SLV.
+           05 WS35-MSG-ID.
+              10 WS35-ID-TASK                PIC  9(007).
+              10 WS35-ID-ABS-TIME            PIC  9(015). 
+              10 WS35-ID-SEQ                 PIC  9(002).
+
+      *----------------------------------------------------------------*
+      *         === AREA PARA DESMEMBRAR DATA E HORA ===     PFN 10/00 *
+      *----------------------------------------------------------------*
+      
+       01  WS36-ARE-DAT-HOR.
+           05 WS36-ID-ABS-TIME               PIC S9(015)   COMP-3.
+
+      *----------------------------------------------------------------*
+      *         === AREA DE COMUNICACAO MQSERIES ===         PFN 10/00 *
+      *----------------------------------------------------------------*
+
+           COPY 'MQSERIE1'.
+
+       LINKAGE SECTION.
+      *---------------*
+
+      *----------------------------------------------------------------*
+      *             === COMMAREA DO PROGRAMA ===             PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       01  DFHCOMMAREA.
+           05 LK00-CD-ACES                   PIC  X(002).
+           05 LK00-CD-RETR-ECI               PIC  X(002).
+           05 LK00-CD-RETR-ACES              PIC  X(002).
+           05 LK01-ARE-CNT-MQS.
+              10 LK01-CD-ACES-MQ             PIC  X(002).
+              10 LK01-ID-FILA-MQ             PIC  9(005).
+              10 LK01-CD-RETR-MQ             PIC  X(002).
+              10 LK01-CD-COMP                PIC  9(004).
+              10 LK01-CD-RSON                PIC  9(004).
+              10 LK01-CHV-PRAD               PIC  X(020).
+              10 LK01-ID-MSG-PRC             PIC  X(024).
+              10 LK01-ID-MSG-AUX             PIC  X(024).
+              10 LK01-ARE-CNT-FILA           PIC  X(150).
+              10 FILLER                      PIC  X(755).
+           05 LK01-ARE-COMA-01.
+              10 LK01-TAM-MSG                PIC  9(004).
+              10 LK01-TXT-MSG                PIC  X(9000).
+
+       PROCEDURE DIVISION.
+      *-------------------*
+
+      *----------------------------------------------------------------*
+      *        === ROTINA DE PROCESSAMENTO LOGICO ===        PFN 10/00 *
+      *----------------------------------------------------------------*
+
+       000-00-ROTINA-PRINCIPAL               SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS HANDLE CONDITION
+                                  ERROR      (000-70-ERRO-GERAL-CICS)
+                END-EXEC.
+ 
+           EXEC SQL WHENEVER      SQLERROR   GOTO :000-80-ERRO-GERAL-SQL
+                END-EXEC.
+
+
+           PERFORM 900-00-AVALIACAO-COMMAREA.
+
+           IF LK00-CD-ACES  EQUAL  '01'
+                PERFORM 100-00-EFETUA-ACESSO-01
+                GO                           TO 000-90-RETORNA-CHAMADOR.
+
+           MOVE '01'                         TO LK00-CD-RETR-ECI.
+           GO                                TO 000-90-RETORNA-CHAMADOR.
+
+       000-70-ERRO-GERAL-CICS.
+
+           MOVE '02'                         TO LK00-CD-RETR-ECI.
+           GO                                TO 000-90-RETORNA-CHAMADOR.
+      
+       000-80-ERRO-GERAL-SQL.
+ 
+           EXEC CICS WRITEQ TS QUEUE ('H1CB5022')
+                               FROM  (SQLERRMC)
+                END-EXEC.
+
+           MOVE '06'                         TO LK00-CD-RETR-ECI.
+
+       000-90-RETORNA-CHAMADOR.
+
+           PERFORM 520-00-EMITE-RETURN-CICS.
+           GOBACK.
+
+       000-99-PRINCIPAL-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO  ===            PFN 10/00 *
+      *                                                                *
+      *  EFETUA ACESSO TIPO 01.                                        *
+      *----------------------------------------------------------------*
+
+       100-00-EFETUA-ACESSO-01               SECTION.
+      *----------------------------------------------*
+
+           PERFORM 110-00-CONSISTE-ACESSO-01.
+           IF WS31-CHV-ERRO  NOT EQUAL  SPACES
+                MOVE SPACES                  TO WS31-CHV-ERRO
+                GO                           TO 100-99-ACESSO-01-EXIT.
+
+           IF LK01-CHV-PRAD  EQUAL  SPACES  OR
+              LK01-CHV-PRAD  EQUAL  LOW-VALUES
+                MOVE ZEROS                   TO CB0001-CD-PRAD
+                PERFORM 200-00-GERA-FILA-MQSERIES
+                GO                           TO 100-99-ACESSO-01-EXIT.
+ 
+           MOVE LK01-ID-FILA-MQ              TO CB0001-ID-FILA-MQ.
+           MOVE LK01-CHV-PRAD                TO CB0001-CHV-PRAD.
+           PERFORM 500-00-SQL-SELECT-PRIORIDADE.
+           PERFORM 200-00-GERA-FILA-MQSERIES.
+
+       100-99-ACESSO-01-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO ===             PFN 10/00 *
+      *                                                                *
+      *  VERIFICA PARAMETROS PARA O ACESSO TIPO 01.                    *
+      *----------------------------------------------------------------*
+
+       110-00-CONSISTE-ACESSO-01             SECTION.
+      *----------------------------------------------*
+
+           IF LK01-CD-ACES-MQ  NOT EQUAL  '03'  AND
+              LK01-CD-ACES-MQ  NOT EQUAL  '04'  AND
+              LK01-CD-ACES-MQ  NOT EQUAL  '06'
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '03'                    TO LK00-CD-RETR-ECI
+                GO                           TO 110-99-CONSISTE-EXIT.
+
+           IF LK01-ID-FILA-MQ  NOT GREATER  ZEROS OR
+              LK01-ID-FILA-MQ  NOT NUMERIC
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '04'                    TO LK00-CD-RETR-ECI
+                GO                           TO 110-99-CONSISTE-EXIT.
+
+           IF LK01-TAM-MSG  NOT GREATER  ZEROS OR
+              LK01-TAM-MSG  NOT NUMERIC
+                MOVE '*'                     TO WS31-CHV-ERRO
+                MOVE '05'                    TO LK00-CD-RETR-ECI
+                GO                           TO 110-99-CONSISTE-EXIT.
+
+       110-99-CONSISTE-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO ===             PFN 10/00 *
+      *                                                                *
+      *  PREPARACAO PARA GRAVACAO DE MENSAGEM MQSERIES.                *
+      *----------------------------------------------------------------*
+
+       200-00-GERA-FILA-MQSERIES             SECTION.
+      *----------------------------------------------*
+
+           MOVE LK01-CD-ACES-MQ              TO MQ01-CD-ACES.
+           MOVE LK01-ID-FILA-MQ              TO MQ01-ID-FILA-MQ.
+           MOVE LK01-ARE-CNT-FILA            TO MQ01-ARE-CNT-FILA.
+           MOVE LK01-TAM-MSG                 TO MQ01-TAM-MSG-MAX.
+           MOVE LK01-TXT-MSG                 TO MQ01-TXT-MSG.
+
+           ADD ZEROS                            MQOO-OUTPUT
+                                                MQOO-FAIL-IF-QUIESCING
+                                                GIVING MQ01-OPC-OPEN.
+
+           ADD ZEROS                            MQOO-FAIL-IF-QUIESCING
+                                                MQPMO-SYNCPOINT
+                                                GIVING MQPMO-OPTIONS.
+
+           MOVE MQCO-NONE                    TO MQ01-OPC-CLOS.
+
+           IF LK01-ID-MSG-PRC  EQUAL  SPACES  OR
+              LK01-ID-MSG-PRC  EQUAL  LOW-VALUES
+                PERFORM 210-00-ADQUIRE-MESSAGE-ID. 
+                 
+           MOVE LK01-ID-MSG-PRC              TO MQMD-MSGID.
+
+           IF LK01-ID-MSG-AUX  EQUAL  SPACES
+                MOVE MQMI-NONE               TO MQMD-CORRELID
+           ELSE
+                MOVE LK01-ID-MSG-AUX         TO MQMD-CORRELID.
+
+           MOVE CB0001-CD-PRAD               TO MQMD-PRIORITY.
+
+           PERFORM 510-00-EMITE-LINK-H1CB5021.
+
+           IF MQ01-CD-RETR-ECI   EQUAL  ZEROS  AND
+              MQ01-CD-RETR-ACES  EQUAL  ZEROS
+                PERFORM 220-00-GERA-BACKUP-ORACLE.
+
+           IF MQ01-CD-RETR-ECI   NOT EQUAL  ZEROS  OR
+              MQ01-CD-RETR-ACES  NOT EQUAL  ZEROS
+                MOVE ZEROS                   TO LK00-CD-RETR-ECI
+                MOVE '01'                    TO LK00-CD-RETR-ACES.
+
+           IF MQ01-CD-RETR-ECI  NOT EQUAL  ZEROS  
+                MOVE MQ01-CD-RETR-ECI        TO LK01-CD-RETR-MQ. 
+ 
+           IF MQ01-CD-RETR-ACES  NOT EQUAL  ZEROS  
+                MOVE MQ01-CD-RETR-ACES       TO LK01-CD-RETR-MQ. 
+
+           MOVE MQ01-CD-COMP                 TO LK01-CD-COMP.
+           MOVE MQ01-CD-RSON                 TO LK01-CD-RSON.
+           MOVE MQ01-ARE-CNT-FILA            TO LK01-ARE-CNT-FILA.
+
+       200-99-GERA-FILA-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO ===             PFN 10/00 *
+      *                                                                *
+      *  ADQUIRE MESSAGE ID PARA A MENSAGEM, QUANDO NAO INFORMADA.     *
+      *----------------------------------------------------------------*
+
+       210-00-ADQUIRE-MESSAGE-ID             SECTION.
+      *----------------------------------------------*
+
+           MOVE EIBTASKN                     TO WS35-ID-TASK. 
+           PERFORM 515-00-EMITE-ASKTIME-ABS.
+           MOVE WS36-ID-ABS-TIME             TO WS35-ID-ABS-TIME.
+           ADD 1                             TO WS35-ID-SEQ.
+           MOVE WS35-MSG-ID                  TO LK01-ID-MSG-PRC.
+
+       210-99-ADQ-MSGID-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE PREPARACAO ===             PFN 10/00 *
+      *                                                                *
+      *  GERA BACKUP EM ORACLE DA MENSAGEM MQSERIES.                   *
+      *----------------------------------------------------------------*
+
+       220-00-GERA-BACKUP-ORACLE             SECTION.
+      *----------------------------------------------*
+
+           IF LK01-ID-FILA-MQ  EQUAL  00004  OR
+              LK01-ID-FILA-MQ  EQUAL  00005  OR
+              LK01-ID-FILA-MQ  EQUAL  00009  OR
+              LK01-ID-FILA-MQ  EQUAL  00026  OR
+              LK01-ID-FILA-MQ  EQUAL  00036  OR
+              LK01-ID-FILA-MQ  EQUAL  00042  OR
+              LK01-ID-FILA-MQ  EQUAL  00010  OR
+              LK01-ID-FILA-MQ  EQUAL  00051  OR
+              LK01-ID-FILA-MQ  EQUAL  00012  OR
+              LK01-ID-FILA-MQ  EQUAL  00013
+                PERFORM 505-00-SQL-INSERT-BACKUP-LOG.
+
+       220-99-GERA-BKP-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE LEITURA ===               PFN 10/00 *
+      *                                                                *
+      *  EFETUA SQL PARA ADQUIRIR INFORMACOES DAS PRIORIDADES MQSERIES.*
+      *----------------------------------------------------------------*
+
+       500-00-SQL-SELECT-PRIORIDADE          SECTION.
+      *----------------------------------------------*
+
+           EXEC SQL SELECT *
+                    INTO   :CB0001-ID-FILA-MQ,
+                           :CB0001-CHV-PRAD,
+                           :CB0001-CD-PRAD
+                    FROM   H1CB.MONITOR_PRIORIDADE
+                    WHERE  ID_FILA_MQ = :CB0001-ID-FILA-MQ   AND
+                           CHV_PRAD   = :CB0001-CHV-PRAD      
+                END-EXEC.
+
+           IF SQLCODE  EQUAL  WS31-CHV-NTFD-SQL
+                MOVE ZEROS                   TO CB0001-CD-PRAD.
+
+       500-99-SQL-SELECT-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *              === ROTINA DE LEITURA ===               PFN 03/01 *
+      *                                                                *
+      *  EFETUA SQL PARA INSERIR BACKUP DE LOG DE SINCRONISMO.         *
+      *----------------------------------------------------------------*
+
+       505-00-SQL-INSERT-BACKUP-LOG          SECTION.
+      *----------------------------------------------*
+
+           MOVE LK01-ID-FILA-MQ              TO CB0002-ID-FILA-MQ.
+           MOVE LK01-TAM-MSG                 TO CB0002-TAM-MSG.
+           MOVE LK01-TXT-MSG                 TO CB0002-TXT-MSG.
+
+           EXEC SQL INSERT
+                    INTO   H1CB.LOG_MSG_MQSERIES
+                           (ID_FILA_MQ,
+                            DTC_GRC_MSG,
+                            TAM_MSG,
+                            TXT_MSG)
+                    VALUES (:CB0002-ID-FILA-MQ,
+                            SYSDATE,
+                            :CB0002-TAM-MSG,
+                            :CB0002-TXT-MSG)
+                END-EXEC.
+
+       505-99-SQL-INSERT-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE COMUNICACAO ===            PFN 10/00 *
+      *                                                                *
+      *  EMITE LINK PARA EXECUTAR O PROGRAMA H1CB5021.                 *
+      *----------------------------------------------------------------*
+
+       510-00-EMITE-LINK-H1CB5021            SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS LINK         PROGRAM    ('H1CB5021')
+                                  COMMAREA   (MQ01-ARE-COMA)
+                                  LENGTH     (LENGTH OF MQ01-ARE-COMA)
+                END-EXEC.
+
+       510-99-LINK-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *               === ROTINA DE ACESSO ===               PFN 10/00 *
+      *                                                                *
+      *  EMITE ASKTIME PARA ADQUIRIR DATAS.                            *
+      *----------------------------------------------------------------*
+
+       515-00-EMITE-ASKTIME-ABS              SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS  ASKTIME     ABSTIME    (WS36-ID-ABS-TIME)
+                END-EXEC.
+
+       515-99-ASKTIME-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *             === ROTINA DE COMUNICACAO ===            PFN 10/00 *
+      *                                                                *
+      *  RETORNA O CONTROLE PARA O CICS.                               *
+      *----------------------------------------------------------------*
+
+       520-00-EMITE-RETURN-CICS              SECTION.
+      *----------------------------------------------*
+
+           EXEC CICS RETURN
+                END-EXEC.
+
+       520-99-RETURN-EXIT.
+           EXIT.
+
+      *----------------------------------------------------------------*
+      *                 === ROTINA DE PREPARACAO ===         PFN 10/00 *
+      *                                                                *
+      *   AVALIA A COMMAREA PASSADA PELO PROGRAMA CHAMADOR.            *
+      *----------------------------------------------------------------*
+
+       900-00-AVALIACAO-COMMAREA             SECTION.
+      *----------------------------------------------*
+
+           MOVE ZEROS                        TO LK00-CD-RETR-ECI
+                                                LK00-CD-RETR-ACES.
+
+           IF EIBCALEN  EQUAL  ZEROS
+                EXEC CICS ABEND   ABCODE     ('LEN1')  END-EXEC.
+
+           IF LK00-CD-ACES  EQUAL  '01'
+                GO                           TO 900-01-COMMA-ACESSO-01.
+
+           MOVE '01'                         TO LK00-CD-RETR-ECI.
+           PERFORM 520-00-EMITE-RETURN-CICS.
+
+       900-01-COMMA-ACESSO-01.
+
+           IF EIBCALEN  LESS  8000
+                EXEC CICS ABEND   ABCODE     ('LEN2')  END-EXEC.
+
+           IF EIBCALEN  GREATER  10000
+                EXEC CICS ABEND   ABCODE     ('LEN3')  END-EXEC.
+
+           GO                                TO 900-99-AVAL-COMMA-EXIT.
+
+       900-99-AVAL-COMMA-EXIT.
+           EXIT.
+

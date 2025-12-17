@@ -1,0 +1,27 @@
+"You are an expert COBOL programmer and technical writer. Your task is to provide a complete and comprehensive documentation of the following COBOL program. The documentation should be suitable for both modern developers and business analysts who need to understand the system's logic and structure.
+The output should cover the following sections:
+Overview & Summary: A high-level description of the program's purpose, main function, and any immediate dependencies (e.g., databases, files, other programs).
+Program Structure Analysis:
+IDENTIFICATION DIVISION: Program ID, author, installation, and security (if applicable).
+ENVIRONMENT DIVISION: Input-Output sections, file-control, and special names.
+DATA DIVISION: A breakdown of WORKING-STORAGE SECTION variables with their PIC clauses, usage (e.g., COMP), values, and a brief explanation of their purpose. Include LINKAGE SECTION details if present.
+PROCEDURE DIVISION: A detailed, step-by-step explanation of the logic flow, breaking down SECTIONS and PARAGRAPHS. Describe the sequence of operations and decisions.
+Business Logic & Rules: Clearly state the core business rules and logic embedded within the code in plain, non-technical language.
+Flowchart/Diagram (Textual or Mermaid): Generate a visual representation of the program control flow, either using text-based description or Mermaid syntax if the tool supports it.
+Dependencies & Interfaces: List any external files, databases (DB2, CICS), copybooks, or sub-programs called, including their data mappings.
+Code Comments (Inline): Provide the original COBOL code with generated, clear, and concise inline comments added throughout the program to explain key lines or blocks of logic.
+Please ensure the documentation is structured, easy to read, and accurately reflects the provided COBOL source code in HTML format.
+
+Create document header table with 1 line and 3 columns.
+Header background color have to be something like Left side Dark Blue fade into Black in Right Side.
+Coloumn 1: Image logo with path "images/3conlogo.png";
+Columns 2: Document Title and Subtitle
+Coloumn 3: Image logo with path "images/catlogo.jpeg";
+
+COBOL code file in attachment, 5033.txt.
+
+Output have to be in HTML.
+
+Generate full HTML document
+
+Give me HTML Code to download."
