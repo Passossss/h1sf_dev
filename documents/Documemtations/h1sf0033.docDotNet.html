@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <title>H1SF — COBOL → C# Implementation Documentation</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+  :root{
+    --bg-gradient: linear-gradient(90deg, #0d47a1 0%, #0b2a66 35%, #061a3f 70%, #000000 100%);
+    --title-color: #ffffff;
+    --accent: #0d47a1;
+    --muted: #eef3ff;
+    --code-bg: #0b1e39;
+    --code-border: #133b72;
+    --code-text: #e6f0ff;
+  }
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+    color:#0f172a;
+    background:#ffffff;
+  }
+  /* Header table — gradient from left dark blue to right black */
+  .doc-header{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--bg-gradient);
+    color: var(--title-color);
+  }
+  .doc-header td{
+    padding:18px 16px;
+    vertical-align:middle;
+  }
+  .doc-header .logo{
+    width:160px;
+  }
+  .doc-header img{
+    max-height:64px;
+    max-width:160px;
+    display:block;
+    object-fit:contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .doc-header .titles{
+    text-align:center;
+  }
+  .doc-header h1{
+    margin:.15rem 0 .25rem;
+    font-size:1.65rem;
+    letter-spacing:.02em;
+  }
+  .doc-header h2{
+    margin:0;
+    font-size:1rem;
+    font-weight:500;
+    opacity:.9;
+  }
+
+  /* Content styling */
+  main{
+    max-width:1160px;
+    margin:24px auto 80px;
+    padding:0 20px;
+  }
+  h3{
+    margin:28px 0 10px;
+    font-size:1.25rem;
+    color:#0b2a66;
+    border-left:6px solid var(--accent);
+    padding-left:12px;
+  }
+  h4{ margin:20px 0 6px; font-size:1.05rem; color:#0b2a66;}
+  p{ margin:.35rem 0 .7rem;}
+  .callout{
+    background:var(--muted);
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:18px;
+  }
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0 16px;
+    font-size:.95rem;
+  }
+  .table th, .table td{
+    border:1px solid #e5e7eb;
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  .table th{
+    background:#f8fafc;
+    color:#0b2a66;
+    text-transform:uppercase;
+    font-size:.8rem;
+    letter-spacing:.03em;
+  }
+  .code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border:1px solid var(--code-border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow:auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  pre{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.92rem; }
+  code{ white-space:pre; }
+  .mermaid{
+    background:#f9fafb;
+    border:1px dashed #cbd5e1;
+    padding:10px;
+    border-radius:8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    color:#111827;
+    overflow:auto;
+  }
+  .small{ font-size:.92rem; color:#334155;}
+  .foot{
+    margin-top:36px; color:#475569; font-size:.92rem;
+  }
+  .badge{
+    display:inline-block;
+    background:#e5f0ff;
+    color:#0b2a66;
+    border:1px solid #bfd3ff;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:.78rem;
+    margin-right:6px;
+  }
+
+    :root{
+      --bg:#fff; --muted:#666; --accent:#4e79a7; --accent-2:#667eea; --card:#f8f9fb;
+      --mono: "Segoe UI Mono", "Courier New", monospace;
+    }
+    body{font-family:Segoe UI, Arial, Helvetica, sans-serif;background:var(--bg);color:#222;margin:20px;line-height:1.45}
+    header{display:flex;align-items:center;gap:16px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:6px 0 16px;color:var(--muted)}
+    nav{margin:18px 0;padding:12px;border-radius:8px;background:var(--card);display:flex;flex-wrap:wrap;gap:8px}
+    nav a{color:var(--accent);text-decoration:none;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:#fff;border:1px solid #e6e9ee;border-radius:8px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+    table{width:100%;border-collapse:collapse;margin:8px 0}
+    th,td{border:1px solid #e6e9ee;padding:8px;text-align:left;font-size:13px}
+    th{background:#fafcff}
+    .muted{color:var(--muted);font-size:13px}
+    pre{background:#0f1724;color:#dbeafe;padding:12px;border-radius:6px;overflow:auto;font-family:var(--mono);font-size:12px}
+    ul{margin:8px 0 12px 18px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--accent-2);color:white;font-size:12px}
+    .section-title{margin-top:18px;margin-bottom:8px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+
+</head>
+<body>
+  <table class="doc-header">
+    <tr>
+      <td class="logo">
+        <img src="images/3conlogo.png" />
+      </td>
+      <td class="titles">
+
+    <h1>H1SF — COBOL → C# Implementation Documentation</h1>
+    <h2>Summary of flow, rules, services, tasks, validations and error handling</h2>
+  <h2>This document synthesizes the analysis in the provided solution (COBOL h1sf0033.txt → C# projects). It lists flows, mapped services, business rules, validations, error handling patterns, mock areas and recommended next steps in a concise, actionable format.</h2>
+
+	<h2>System Archtect: Bruno D'Alessio (3Con)</h2>
+      </td>
+      <td class="logo" style="text-align:right;">
+	<img src="images/catlogo.jpeg" />
+      </td>
+    </tr>
+  </table>
+
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#main-flow">Main Flow</a>
+    <a href="#services-catalog">Services Catalog</a>
+    <a href="#business-rules">Business Rules & Validations</a>
+    <a href="#error-handling">Error Handling</a>
+    <a href="#data-structures">Data Structures</a>
+    <a href="#mocks-unmapped">Mocks & Unmapped</a>
+    <a href="#tests">Tests & Coverage</a>
+    <a href="#recommendations">Recommendations</a>
+  </nav>
+
+  <div class="grid">
+    <main class="card">
+      <section id="overview">
+        <h2 class="section-title">Overview</h2>
+        <p class="muted">Source baseline: one monolithic COBOL program (~14.7K lines). Target: C# solution (≈278 files across 7 projects). The C# implementation converts COBOL sections to services, DTOs and repositories, achieving ~78.3% functional coverage.</p>
+        <ul>
+          <li><strong>Total COBOL sections identified:</strong> 106</li>
+          <li><strong>C# mapped services:</strong> 75 (≈70.8% section coverage)</li>
+          <li><strong>Top categories:</strong> Document Processing, Integration, Data Access, Accounting, Configuration</li>
+        </ul>
+      </section>
+
+      <section id="architecture">
+        <h2 class="section-title">Architecture & Patterns</h2>
+        <ul>
+          <li>Layered design: API → Application (services) → Domain (entities/DTOs) → Infrastructure (data/repositories)</li>
+          <li>Dependency Injection used across services for testability</li>
+          <li>Async/await adopted where relevant (integration/IO bound)</li>
+          <li>Repository pattern for data access; services encapsulate business rules</li>
+        </ul>
+      </section>
+
+      <section id="main-flow">
+        <h2 class="section-title">Main Processing Flow (high level)</h2>
+        <p>Canonical path reconstructed from COBOL and mapped C# components:</p>
+        <ol>
+          <li>Bootstrap: 000-00-ROTINA-PRINCIPAL → RotinaPrincipalBootstrap</li>
+          <li>Core orchestration: 100-00-PROCESSAMENTO-LOGICO → ProcessadorFaturamentoService</li>
+          <li>Data reads: LE-PROTOCOLO / RECUPERA-* services (LeitorProtocolo, RecuperadorEmitente, RecuperadorDataHora, etc.)</li>
+          <li>Business validations: VerificaDeltaService, InterfaceCmeItem855Service, VerificaDeaService</li>
+          <li>Document assembly: DanfeService, MontadorPckList720Service, MontadorPckListResService</li>
+          <li>Accounting & logging: GravaLancamentosCtService, ContabilizaItemService, MontaLogNfTotal79000</li>
+          <li>Transaction management / syncpoints: EmissorSyncpoint, IniciadorTransacaoSf30/Sf31</li>
+          <li>Output/persistence and monitoring updates</li>
+        </ol>
+      </section>
+
+      <section id="services-catalog">
+        <h2 class="section-title">Services Catalog — COBOL section → C# service (selected)</h2>
+        <table>
+          <thead><tr><th>COBOL Section</th><th>Business Function</th><th>C# Service / Class</th><th>Category</th></tr></thead>
+          <tbody>
+            <tr><td>000-00-ROTINA-PRINCIPAL</td><td>Main orchestration</td><td>RotinaPrincipalBootstrap</td><td>Orchestration</td></tr>
+            <tr><td>100-00-PROCESSAMENTO-LOGICO</td><td>Processing flow</td><td>ProcessadorFaturamentoService</td><td>Core Logic</td></tr>
+            <tr><td>120-00-DEFINE-IMPRESSORAS</td><td>Printer config</td><td>ImpressoraService</td><td>Configuration</td></tr>
+            <tr><td>500-00-LE-PROTOCOLO</td><td>Read protocol</td><td>LeitorProtocolo</td><td>Data Access</td></tr>
+            <tr><td>542-00-GRAVA-LANCAMENTOS-CT</td><td>Accounting record</td><td>GravaLancamentosCtService</td><td>Accounting</td></tr>
+            <tr><td>545-00-GRAVA-DETALHE-REL</td><td>Report detail</td><td>DetalheRelatorioService</td><td>Reporting</td></tr>
+            <tr><td>705-00-MONTA-DANFE</td><td>Build DANFE</td><td>DanfeService</td><td>Document Processing</td></tr>
+            <tr><td>855-00/860-00</td><td>CME interfaces</td><td>InterfaceCmeItem855Service / InterfaceCmeDanfe860Service</td><td>Integration</td></tr>
+            <tr><td>900-00-REGISTRA-ERRO-TRNS</td><td>Register error</td><td>RegistraErroTrns</td><td>Error Handling</td></tr>
+            <tr><td>960-00-INSTRUCAO-ESPECIAL</td><td>Special instructions rules</td><td>InstrucaoEspecialService</td><td>Business Rules</td></tr>
+          </tbody>
+        </table>
+        <p class="muted">Full mapping is present in the solution comparison (see mapping tables). Use the mapping as the source of truth for service-to-section traceability.</p>
+      </section>
+
+      <section id="business-rules">
+        <h2 class="section-title">Business Rules & Validations</h2>
+        <p>Business rules were lifted from COBOL and implemented as service-level validations that produce domain-level results or errors.</p>
+        <table>
+          <thead><tr><th>Rule</th><th>COBOL Origin</th><th>C# Implementation</th><th>Behavior / Validation</th></tr></thead>
+          <tbody>
+            <tr><td>Fiscal Class Validation</td><td>520-00</td><td>RecuperaClasIncentivoService</td><td>Validate fiscal class and map incentive classifications</td></tr>
+            <tr><td>Incentive Research</td><td>150-00</td><td>PesquisaIncentivoService</td><td>Lookup incentive eligibility and attributes</td></tr>
+            <tr><td>Delta Verification</td><td>600-00</td><td>VerificaDeltaService</td><td>Detects changed records / remanufactured parts, signals business flags</td></tr>
+            <tr><td>CME Verification</td><td>605-00</td><td>InterfaceCmeItem855Service</td><td>Validation against CME rules and external reference</td></tr>
+            <tr><td>DEA Verification</td><td>607-00</td><td>VerificaDeaService (mocked)</td><td>DEA checks (external), currently a placeholder in some implementations</td></tr>
+          </tbody>
+        </table>
+        <h4>Validation patterns</h4>
+        <ul>
+          <li>Services expose result objects (success / errors / diagnostic codes) rather than throwing on business errors.</li>
+          <li>Cross-checks against reference data happen in data-access services (Recuperador* services) using repositories.</li>
+          <li>Formatting and conversion (e.g., currency, UF/state codes) are centralized in domain helpers or replaced by .NET types.</li>
+        </ul>
+      </section>
+
+      <section id="error-handling">
+        <h2 class="section-title">Error Handling & Monitoring</h2>
+        <p>Strategy in the C# implementation:</p>
+        <ul>
+          <li>Business errors returned as structured results (DTOs) including error codes and messages.</li>
+          <li>Operational exceptions are logged and rethrown or translated to application-specific errors at service boundaries.</li>
+          <li>Transaction-level errors use EmissorSyncpoint and IniciadorTransacao* services to commit/rollback and record syncpoints.</li>
+          <li>Dedicated error registration: <strong>RegistraErroTrns</strong> maps to COBOL 900-00 and centralizes transaction error storage.</li>
+        </ul>
+        <table>
+          <thead><tr><th>Area</th><th>Class / Service</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>Error registration</td><td>RegistraErroTrns</td><td>Persist transaction-level errors and diagnostics</td></tr>
+            <tr><td>MQ messaging (errors/alerts)</td><td>GravaMensagemMQ</td><td>Queue messages for downstream processing / alerts (sometimes mocked)</td></tr>
+            <tr><td>Monitoring updates</td><td>AtualizadorMonitor, AtualizadorFaseLbrcImps</td><td>Update processing phase / metrics</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="data-structures">
+        <h2 class="section-title">Key Data Structures (mapping)</h2>
+        <table>
+          <thead><tr><th>COBOL Structure</th><th>Purpose</th><th>C# Entity / DTO</th><th>Location</th></tr></thead>
+          <tbody>
+            <tr><td>H1SF-PTD-PROTODSP</td><td>Protocol dispatch</td><td>ProtocoloDespacho, DadosProtocolo</td><td>H1SF.Domain.Entities.Protocolo</td></tr>
+            <tr><td>H1SF-ITD-ITMFATURADO</td><td>Invoiced item</td><td>ItemFaturado</td><td>H1SF.Domain.Entities.Faturamento</td></tr>
+            <tr><td>H1SF-CTB-LANCAMENTOS</td><td>Accounting entries</td><td>ContabilizaItemInput</td><td>H1SF.Application.DTOs.ContabilizaItem</td></tr>
+            <tr><td>Copybooks (CC0001 / SF0001)</td><td>Shared DTO formats</td><td>CC0001 / SF0001 classes (duplicate occurrences)</td><td>Multiple namespaces — consider centralization</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mocks-unmapped">
+        <h2 class="section-title">Mocks, Placeholders & Unmapped Sections</h2>
+        <p class="muted">Some COBOL sections were mocked or not explicitly mapped in C#; these are candidates for implementation or confirmation.</p>
+        <table>
+          <thead><tr><th>C# Class</th><th>COBOL Section</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>RegistraErroTrns</td><td>900-00</td><td>Implemented (may include CICS legacy handling, review integration behavior)</td></tr>
+            <tr><td>GravaMensagemMQ</td><td>555-00</td><td>Mocked in places — needs real MQ client integration for production</td></tr>
+            <tr><td>PclDetalhe740</td><td>740-00</td><td>Stubbed for PCL/CICS specific printing behavior</td></tr>
+            <tr><td>VerificaDeaService</td><td>607-00</td><td>Mocked — dependency on external DEA interface</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Not yet explicitly mapped (examples)</h4>
+        <ul>
+          <li>180-00-DEFINE-VIA-IMPRESS — print path definitions</li>
+          <li>530-00 / 532-00 / 533-00 — parameter and RCBM item retrievals</li>
+          <li>715-00 / 730-00 / 735-00 — protocol & packing-list body variants</li>
+          <li>Barcode & legal messages (920–950 series) — possibly moved to configuration</li>
+        </ul>
+      </section>
+
+      <section id="tests">
+        <h2 class="section-title">Tests & Coverage</h2>
+        <p class="muted">Project contains unit/integration tests — test namespace and counts reported in analysis.</p>
+        <ul>
+          <li>~25 test files and 34 test classes (H1SF.TestProject)</li>
+          <li>Mocked components should have dedicated integration tests to validate replacements (MQ, DEA, CICS-like behavior)</li>
+          <li>Suggested: add contract tests for integration points and golden-file tests for document assembly (DANFE, packing list)</li>
+        </ul>
+      </section>
+
+      <section id="recommendations">
+        <h2 class="section-title">Recommendations & Next Steps</h2>
+        <ol>
+          <li>Confirm unmapped sections: review each listed in "Unmapped" and decide implement/retire/consolidate.</li>
+          <li>Centralize DTOs copied across namespaces (CC0001, SF0001, etc.) to one shared assembly to avoid drift.</li>
+          <li>Replace mocked services (GravaMensagemMQ, VerificaDeaService, PclDetalhe740) with production integrations and add integration tests.</li>
+          <li>Ensure RegistraErroTrns stores structured diagnostics and correlate with monitoring/alerting systems.</li>
+          <li>Document service contracts (inputs/outputs) for each mapped COBOL section for traceability (section → service → API endpoint).</li>
+          <li>Add end-to-end tests for main workflows: Main Processing → Document Assembly → Accounting → Integration.</li>
+        </ol>
+      </section>
+
+      <footer>
+        <div class="muted">Generated: December 17, 2025 — use this document as a concise map from COBOL sections to C# services and for planning implementation gaps.</div>
+      </footer>
+    </main>
+
+    <aside>
+      <div class="card">
+        <h3 style="margin:0 0 8px">Quick Reference</h3>
+        <p class="muted">Top PERFORM targets (COBOL → canonical C# service)</p>
+        <table>
+          <thead><tr><th>Target</th><th>C#</th></tr></thead>
+          <tbody>
+            <tr><td>545-00-GRAVA-DETALHE-REL</td><td>DetalheRelatorioService</td></tr>
+            <tr><td>900-00-REGISTRA-ERRO-TRNS</td><td>RegistraErroTrns</td></tr>
+            <tr><td>555-00-GRAVA-MENSAGEM-MQ</td><td>GravaMensagemMQ</td></tr>
+            <tr><td>170-00-DEFINE-VIAS-ORDENACAO</td><td>DefineVIasOrdenacao</td></tr>
+            <tr><td>620-00-GRAVA-INTERFACE-DEA</td><td>InterfaceDeaDanfe870Service</td></tr>
+          </tbody>
+        </table>
+
+        <h4 style="margin-top:12px">Coverage snapshot</h4>
+        <p class="muted"><span class="badge">78.3%</span> Overall implementation coverage — weighted metrics across sections, rules, core features and structures.</p>
+
+        <h4 style="margin-top:12px">Risk areas</h4>
+        <ul class="muted">
+          <li>Mocked external integrations (MQ, DEA)</li>
+          <li>Duplicate DTO definitions across namespaces</li>
+          <li>Unmapped small utility sections (print paths, barcode builders)</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h4 style="margin:0 0 8px">Traceability advice</h4>
+        <ol class="muted">
+          <li>Maintain a mapping file: COBOL-section → C# service → tests → API endpoint.</li>
+          <li>Use integration tests to exercise real external contracts.</li>
+          <li>Centralize shared copybook-derived DTOs.</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

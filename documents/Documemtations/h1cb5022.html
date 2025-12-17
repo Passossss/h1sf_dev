@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technical Documentation — COBOL Program H1CB5022</title>
+<style>
+  :root{
+    --bg-gradient: linear-gradient(90deg, #0d47a1 0%, #0b2a66 40%, #071d44 70%, #000000 100%);
+    --title-color: #ffffff;
+    --accent: #0d47a1;
+    --muted: #eef3ff;
+    --code-bg: #0b1e39;
+    --code-border: #133b72;
+    --code-text: #e6f0ff;
+  }
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+    color:#0f172a;
+    background:#ffffff;
+  }
+  /* Header table — gradient from left dark blue to right black */
+  .doc-header{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--bg-gradient);
+    color: var(--title-color);
+  }
+  .doc-header td{
+    padding:18px 16px;
+    vertical-align:middle;
+  }
+  .doc-header .logo{
+    width:160px;
+  }
+  .doc-header img{
+    max-height:64px;
+    max-width:160px;
+    display:block;
+    object-fit:contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .doc-header .titles{
+    text-align:center;
+  }
+  .doc-header h1{
+    margin:.15rem 0 .25rem;
+    font-size:1.65rem;
+    letter-spacing:.02em;
+  }
+  .doc-header h2{
+    margin:0;
+    font-size:1rem;
+    font-weight:500;
+    opacity:.9;
+  }
+
+  /* Content styling */
+  main{
+    max-width:1160px;
+    margin:24px auto 80px;
+    padding:0 20px;
+  }
+  h3{
+    margin:28px 0 10px;
+    font-size:1.25rem;
+    color:#0b2a66;
+    border-left:6px solid var(--accent);
+    padding-left:12px;
+  }
+  h4{ margin:20px 0 6px; font-size:1.05rem; color:#0b2a66;}
+  p{ margin:.35rem 0 .7rem;}
+  .callout{
+    background:var(--muted);
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:18px;
+  }
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0 16px;
+    font-size:.95rem;
+  }
+  .table th, .table td{
+    border:1px solid #e5e7eb;
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  .table th{
+    background:#f8fafc;
+    color:#0b2a66;
+    text-transform:uppercase;
+    font-size:.8rem;
+    letter-spacing:.03em;
+  }
+  .code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border:1px solid var(--code-border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow:auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  pre{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.92rem; }
+  code{ white-space:pre; }
+  .mermaid{
+    background:#f9fafb;
+    border:1px dashed #cbd5e1;
+    padding:10px;
+    border-radius:8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    color:#111827;
+    overflow:auto;
+  }
+  .small{ font-size:.92rem; color:#334155;}
+  .foot{
+    margin-top:36px; color:#475569; font-size:.92rem;
+  }
+  .badge{
+    display:inline-block;
+    background:#e5f0ff;
+    color:#0b2a66;
+    border:1px solid #bfd3ff;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:.78rem;
+    margin-right:6px;
+  }
+</style>
+</head>
+
+<body>
+  <!-- Document Header Table (1 row, 3 columns). Background: Left Dark Blue fading into Black to the right -->
+  <table class="doc-header">
+    <tr>
+      <td class="logo">
+        <img src="images/3conlogo.png" />
+      </td>
+      <td class="titles">
+        <h1>H1CB5022 — MQSeries Sync Log Generator</h1>
+        <h2>COBOL Program Documentation (for developers & business analysts)</h2>
+	<h2>System Archtect: Bruno D'Alessio (3Con)</h2>
+      </td>
+      <td class="logo" style="text-align:right;">
+	<img src="images/catlogo.jpeg" />
+      </td>
+    </tr>
+  </table>
+
+  <main>
+    <section id="overview">
+      <h3>Overview &amp; Summary</h3>
+      <p>
+        <strong>Program ID:</strong> <code>H1CB5022</code>. Author: <em>Pedro F. Neto</em>. Date written: <em>10/10/2000</em>. The program’s objective is to <strong>generate synchronization logs</strong> of data between the <em>CICS/AIX</em> and <em>CICS/ESA</em> environments, interacting with the caller through a <strong>COMMAREA</strong> and building MQSeries messages according to the access type. /h1cb5022.txt)
+      </p>
+      <p>
+        <strong>Immediate Dependencies:</strong> CICS (LINK, RETURN, ASKTIME, ABEND), IBM MQ (message headers and options via copybook), and DB2 tables for monitoring and logging (<code>H1CB.MONITOR_PRIORIDADE</code>, <code>H1CB.LOG_MSG_MQSERIES</code>). It also calls the program <code>H1CB5021</code> to handle MQ operations. /h1cb5022.txt)
+      </p>
+      <div class="callout small">
+        <span class="badge">Formatting</span>
+        <code>SPECIAL-NAMES</code> declares <em>DECIMAL-POINT IS COMMA</em> — numeric fields use Brazilian decimal comma. /h1cb5022.txt)
+      </div>
+    </section>
+
+    <section id="structure">
+      <h3>Program Structure Analysis</h3>
+
+      <h4>IDENTIFICATION DIVISION</h4>
+      <ul>
+        <li><strong>PROGRAM-ID</strong>: <code>H1CB5022</code> /h1cb5022.txt)</li>
+        <li><strong>AUTHOR</strong>: <code>PEDRO F. NETO</code> /h1cb5022.txt)</li>
+        <li><strong>DATE-WRITTEN</strong>: <code>10/10/00</code> /h1cb5022.txt)</li>
+        <li><strong>Purpose</strong>: synchronize logs between CICS environments with MQSeries and DB2 support. /h1cb5022.txt)</li>
+      </ul>
+
+      <h4>ENVIRONMENT DIVISION</h4>
+      <ul>
+        <li><strong>CONFIGURATION SECTION / SPECIAL-NAMES</strong>: <code>DECIMAL-POINT IS COMMA</code>. /h1cb5022.txt)</li>
+        <li><strong>Input-Output</strong>: No <code>FILE-CONTROL</code> is used; interaction occurs via <strong>CICS</strong> commands (LINK, ASKTIME, RETURN), <strong>DB2 SQL</strong> (EXEC SQL selectors/inserts), and <strong>MQSeries</strong> (copybook-driven structures and options). /h1cb5022.txt)</li>
+      </ul>
+
+      <h4>DATA DIVISION</h4>
+      <p>Key groups and fields (representative subset with purpose):</p>
+
+      <table class="table">
+        <thead>
+          <tr><th>Group / Section</th><th>Purpose</th><th>Representative Fields</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>EXEC SQL INCLUDE SQLCA</code></td>
+            <td>DB2 communication area for SQL status and error text. /h1cb5022.txt)</td>
+            <td><em>Implicit</em> (SQLCODE, SQLERRMC used in error path). /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>H1CB-MONITOR-PRIORIDADE</code></td>
+            <td>Parameters to fetch MQ message priority. /h1cb5022.txt)</td>
+            <td>
+              <code>CB0001-ID-FILA-MQ PIC X(005)</code>, 
+              <code>CB0001-CHV-PRAD PIC X(020)</code>, 
+              <code>CB0001-CD-PRAD PIC X(001)</code> /h1cb5022.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>H1CB-LOG-MSG-MQSERIES</code></td>
+            <td>Buffer for logging MQ message backups into DB2. /h1cb5022.txt)</td>
+            <td>
+              <code>CB0002-ID-FILA-MQ PIC X(005)</code>, 
+              <code>CB0002-DTC-GRC-MSG PIC X(014)</code>, 
+              <code>CB0002-TAM-MSG PIC X(005)</code>, 
+              <code>CB0002-TXT-MSG PIC X(1000)</code> /h1cb5022.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>WS31-ARE-CHV</code></td>
+            <td>Program switches & default SQL “not found” code. /h1cb5022.txt)</td>
+            <td><code>WS31-CHV-NTFD-SQL PIC 9(004) VALUE 1403</code>, <code>WS31-CHV-ERRO PIC X(001)</code> /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS35-ARE-SLV / WS35-MSG-ID</code></td>
+            <td>Constructs a unique MESSAGE-ID (task + absolute time + seq). /h1cb5022.txt)</td>
+            <td>
+              <code>WS35-ID-TASK PIC 9(007)</code>, 
+              <code>WS35-ID-ABS-TIME PIC 9(015)</code>, 
+              <code>WS35-ID-SEQ PIC 9(002)</code> /h1cb5022.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>WS36-ARE-DAT-HOR</code></td>
+            <td>Stores <em>absolute time</em> from CICS ASKTIME. /h1cb5022.txt)</td>
+            <td><code>WS36-ID-ABS-TIME PIC S9(015) COMP-3</code> /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>COPY 'MQSERIE1'</code></td>
+            <td>MQSeries message structures & constants (MQMD, options). /h1cb5022.txt)</td>
+            <td>Used fields in code: <code>MQ01-*</code>, <code>MQMD-MSGID</code>, <code>MQMD-CORRELID</code>, <code>MQOO-*</code>, <code>MQPMO-*</code>, <code>MQCO-NONE</code>, <code>MQMI-NONE</code>. /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>LINKAGE SECTION / DFHCOMMAREA</code></td>
+            <td>Caller communication area with routing & MQ content. /h1cb5022.txt)</td>
+            <td>
+              Header: <code>LK00-CD-ACES / -CD-RETR-ECI / -CD-RETR-ACES</code>; <br />
+              MQ control: <code>LK01-CD-ACES-MQ</code>, <code>LK01-ID-FILA-MQ PIC 9(005)</code>, <code>LK01-TAM-MSG PIC 9(004)</code>, <code>LK01-TXT-MSG PIC X(9000)</code>, IDs & fields for message, reason, completion codes. /h1cb5022.txt)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>PROCEDURE DIVISION (Step-by-step)</h4>
+      <ol>
+        <li><strong>000-00-ROTINA-PRINCIPAL</strong>: Set CICS/SQL error handlers, evaluate COMMAREA (<code>900-00</code>), and if <code>LK00-CD-ACES = '01'</code>, execute access type 01 (<code>100-00</code>) then return to caller; else set <code>LK00-CD-RETR-ECI</code> appropriately and return. SQL errors write <code>SQLERRMC</code> to TS queue <code>'H1CB5022'</code>, then set <code>LK00-CD-RETR-ECI = '06'</code>. /h1cb5022.txt)</li>
+        <li><strong>100-00-EFETUA-ACESSO-01</strong>: Validate parameters (<code>110-00</code>). If invalid, clear error flag and exit. If <code>LK01-CHV-PRAD</code> is blank, default priority and build MQ message (<code>200-00</code>). Otherwise, move keys into <code>CB0001-*</code>, fetch priority (<code>500-00</code>), then build MQ message (<code>200-00</code>). /h1cb5022.txt)</li>
+        <li><strong>110-00-CONSISTE-ACESSO-01</strong>: Guards:
+          <ul>
+            <li><code>LK01-CD-ACES-MQ</code> must be one of ‘03’, ‘04’, or ‘06’; otherwise set error (<code>LK00-CD-RETR-ECI = '03'</code>). /h1cb5022.txt)</li>
+            <li><code>LK01-ID-FILA-MQ</code> must be numeric &gt; 0; else set <code>LK00-CD-RETR-ECI = '04'</code>. /h1cb5022.txt)</li>
+            <li><code>LK01-TAM-MSG</code> must be numeric &gt; 0; else set <code>LK00-CD-RETR-ECI = '05'</code>. /h1cb5022.txt)</li>
+          </ul>
+        </li>
+        <li><strong>200-00-GERA-FILA-MQSERIES</strong>: Populate MQ structures from COMMAREA, set open/put options (<code>MQOO-OUTPUT</code>, <code>MQPMO-SYNCPOINT</code>), default close option (<code>MQCO-NONE</code>). Acquire MESSAGE-ID when not provided (<code>210-00</code>); set <code>MQMD-MSGID</code> and <code>MQMD-CORRELID</code>; set <code>MQMD-PRIORITY</code>. LINK to <code>H1CB5021</code>. If MQ returns no error codes, also generate an Oracle backup (<code>220-00</code>); otherwise reflect MQ return codes back to COMMAREA. /h1cb5022.txt)</li>
+        <li><strong>210-00-ADQUIRE-MESSAGE-ID</strong>: Build a unique message ID from <code>EIBTASKN</code> + ASKTIME absolute time + an incrementing sequence; store into <code>LK01-ID-MSG-PRC</code>. /h1cb5022.txt)</li>
+        <li><strong>220-00-GERA-BACKUP-ORACLE</strong>: For selected queue IDs (e.g., 00004, 00005, 00009, 00026, etc.), insert a backup record into <code>LOG_MSG_MQSERIES</code> using <code>SYSDATE</code>. /h1cb5022.txt)</li>
+        <li><strong>500-00-SQL-SELECT-PRIORIDADE</strong>: Try to fetch <code>CD_PRAD</code> (priority) by <code>ID_FILA_MQ</code> and <code>CHV_PRAD</code>; if <code>SQLCODE = 1403</code> (not found), set priority to zero. /h1cb5022.txt)</li>
+        <li><strong>505-00-SQL-INSERT-BACKUP-LOG</strong>: Insert the MQ message (queue id, generated date, length, payload) into <code>LOG_MSG_MQSERIES</code>. /h1cb5022.txt)</li>
+        <li><strong>510-00-EMITE-LINK-H1CB5021</strong>: <code>EXEC CICS LINK PROGRAM('H1CB5021')</code> passing the MQ COMMAREA. /h1cb5022.txt)</li>
+        <li><strong>515-00-EMITE-ASKTIME-ABS</strong>: <code>EXEC CICS ASKTIME</code> to obtain absolute time. /h1cb5022.txt)</li>
+        <li><strong>520-00-EMITE-RETURN-CICS</strong>: <code>EXEC CICS RETURN</code>. /h1cb5022.txt)</li>
+        <li><strong>900-00-AVALIACAO-COMMAREA</strong>: Initialize return codes; validate <code>EIBCALEN</code> and <code>LK00-CD-ACES</code>; enforce minimum/maximum COMMAREA length; on invalid cases, <code>EXEC CICS ABEND</code> with ABCODE <code>'LEN1'</code>/<code>'LEN2'</code>/<code>'LEN3'</code>. /h1cb5022.txt)</li>
+      </ol>
+    </section>
+
+    <section id="business">
+      <h3>Business Logic &amp; Rules (Plain language)</h3>
+      <ul>
+        <li><strong>Supported access type:</strong> Access <code>'01'</code> is implemented. The caller sets <code>LK00-CD-ACES='01'</code> and passes MQ parameters in <code>LK01-*</code>. The program validates inputs and proceeds to message generation. /h1cb5022.txt)</li>
+        <li><strong>Message priority:</strong> If a priority key (<code>CHV_PRAD</code>) is provided, DB2 is queried to determine the MQ <em>message priority</em>. If not provided or not found, priority defaults to zero. /h1cb5022.txt)</li>
+        <li><strong>Message identity:</strong> When the caller has not supplied a <code>MSGID</code>, the program synthesizes a unique one from the CICS task number, current absolute time, and a short sequence to avoid collision. /h1cb5022.txt)</li>
+        <li><strong>Persistence & audit:</strong> Selected queues trigger an Oracle-backed DB2 log insert capturing payload and timestamp; this acts as an audit trail for synchronization. /h1cb5022.txt)</li>
+        <li><strong>Error propagation:</strong> MQ completion and reason codes are copied back to the COMMAREA (<code>LK01-CD-COMP</code>, <code>LK01-CD-RSON</code>), alongside ECI/ACES return markers so that the caller can react accordingly. /h1cb5022.txt)</li>
+        <li><strong>Strict COMMAREA contract:</strong> The program aborts if the COMMAREA is missing (<code>EIBCALEN=0</code>) or outside the expected length range (less than <code>8000</code> or greater than <code>10000</code> bytes). /h1cb5022.txt)</li>
+      </ul>
+    </section>
+
+    <section id="flow">
+      <h3>Flowchart (Mermaid)</h3>
+      <div class="mermaid">
+<pre><code class="language-mermaid">flowchart TD
+  A[Start: 000-00 ROTINA-PRINCIPAL] --> B[Set CICS HANDLE CONDITION; SQL WHENEVER]
+  B --> C[900-00 AVALIACAO-COMMAREA]
+  C -->|LK00-CD-ACES = '01'| D[100-00 EFETUA-ACESSO-01]
+  C -->|else| R1[Set LK00-CD-RETR-ECI='01'; 520-00 RETURN] --> END
+
+  D --> E[110-00 CONSISTE-ACESSO-01]
+  E -->|invalid| R2[Clear WS31-CHV-ERRO; Exit 100-00] --> Z[520-00 RETURN] --> END
+  E -->|valid & CHV-PRAD blank| F[200-00 GERA-FILA-MQSERIES] --> K
+  E -->|valid & CHV-PRAD present| G[Move keys; 500-00 SQL-SELECT-PRIORIDADE] --> F
+
+  F --> H[510-00 LINK H1CB5021]
+  H --> I{MQ return codes?}
+  I -- none --> J[220-00 GERA-BACKUP-ORACLE]
+  I -- present --> S[Reflect codes back to COMMAREA]
+
+  J --> K[520-00 EMITE-RETURN-CICS]
+  S --> K
+  K --> END[End]</code></pre>
+      </div>
+      <p class="small">Primary control flow derived from PROCEDURE DIVISION sections. /h1cb5022.txt)</p>
+    </section>
+
+    <section id="dependencies">
+      <h3>Dependencies &amp; Interfaces</h3>
+      <div class="grid">
+        <div>
+          <h4>CICS</h4>
+          <ul>
+            <li><code>HANDLE CONDITION ERROR</code> → routes to error handlers. /h1cb5022.txt)</li>
+            <li><code>LINK PROGRAM('H1CB5021')</code> → execute MQ handling. /h1cb5022.txt)</li>
+            <li><code>ASKTIME ABSTIME</code> → absolute time for message ID. /h1cb5022.txt)</li>
+            <li><code>RETURN</code> and <code>ABEND ABCODE</code> → exit & validation guards. /h1cb5022.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>DB2</h4>
+          <ul>
+            <li><code>H1CB.MONITOR_PRIORIDADE</code> — priority lookup (<code>ID_FILA_MQ</code>, <code>CHV_PRAD</code> → <code>CD_PRAD</code>). /h1cb5022.txt)</li>
+            <li><code>H1CB.LOG_MSG_MQSERIES</code> — message backup insert (<code>SYSDATE</code>, size, payload). /h1cb5022.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>MQSeries</h4>
+          <ul>
+            <li>Copybook <code>MQSERIE1</code> — MQMD, open/put/close options and COMMAREA layout. /h1cb5022.txt)</li>
+            <li>Options used: <code>MQOO-OUTPUT</code>, <code>MQPMO-SYNCPOINT</code>, <code>MQCO-NONE</code>, <code>MQMI-NONE</code>. /h1cb5022.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Sub-programs</h4>
+          <ul>
+            <li><code>H1CB5021</code> — invoked via CICS LINK for MQ operations with COMMAREA <code>MQ01-ARE-COMA</code>. /h1cb5022.txt)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>Selected Data Mappings</h4>
+      <table class="table">
+        <thead>
+          <tr><th>From</th><th>To / Use</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>LK01-CHV-PRAD</code>, <code>LK01-ID-FILA-MQ</code></td>
+            <td><code>CB0001-*</code> &rarr; DB2 SELECT priority</td>
+            <td>If not found, set <code>CD_PRAD=0</code>. /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>LK01-ID-MSG-PRC</code></td>
+            <td><code>MQMD-MSGID</code></td>
+            <td>Generated when blank using task+time+seq. /h1cb5022.txt)</td>
+          </tr>
+          <tr>
+            <td><code>MQ01-CD-RETR-ECI/ACES</code></td>
+            <td><code>LK00-*/LK01-*</code></td>
+            <td>Result codes reflected back to caller. /h1cb5022.txt)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="inline-code">
+      <h3>Original COBOL Code (inline comments added)</h3>
+      <p class="small">Below is the original source with explanatory comments (<code>*&gt;</code>) added at key lines and sections. The content was taken directly from <code>h1cb5022.txt</code>. /h1cb5022.txt)</p>
+
+      <div class="code"><pre><code>       ID DIVISION.
+       PROGRAM-ID. H1CB5022.                                 *> Program identifier  /h1cb5022.txt)
+       AUTHOR. PEDRO F. NETO.                                *> Author metadata     /h1cb5022.txt)
+       DATE-WRITTEN. 10/10/00.                               *> Original creation   /h1cb5022.txt)
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.                           *> Use comma as decimal separator  /h1cb5022.txt)
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+
+       * === SQL control & declare areas ===
+       EXEC SQL INCLUDE SQLCA END-EXEC.                      *> DB2 communication area  /h1cb5022.txt)
+
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01 H1CB-MONITOR-PRIORIDADE.
+          05 CB0001-ID-FILA-MQ PIC X(005).                   *> Queue id key        /h1cb5022.txt)
+          05 CB0001-CHV-PRAD   PIC X(020).                   *> Priority key        /h1cb5022.txt)
+          05 CB0001-CD-PRAD    PIC X(001).                   *> Priority value      /h1cb5022.txt)
+       01 H1CB-LOG-MSG-MQSERIES.
+          05 CB0002-ID-FILA-MQ PIC X(005).
+          05 CB0002-DTC-GRC-MSG PIC X(014).
+          05 CB0002-TAM-MSG PIC X(005).
+          05 CB0002-TXT-MSG PIC X(1000).
+       EXEC SQL END DECLARE SECTION END-EXEC.                *> End SQL declare      /h1cb5022.txt)
+
+       * === Program switches (defaults) ===
+       01 WS31-ARE-CHV.
+          05 WS31-CHV-NTFD-SQL PIC 9(004) VALUE 1403.        *> SQL NOT FOUND       /h1cb5022.txt)
+          05 WS31-CHV-ERRO      PIC X(001) VALUE SPACES.      *> Error flag          /h1cb5022.txt)
+
+       * === Message-ID components ===
+       01 WS35-ARE-SLV.
+          05 WS35-MSG-ID.
+             10 WS35-ID-TASK     PIC 9(007).                 *> CICS task number    /h1cb5022.txt)
+             10 WS35-ID-ABS-TIME PIC 9(015).                 *> Absolute time       /h1cb5022.txt)
+             10 WS35-ID-SEQ      PIC 9(002).                 *> Small running seq   /h1cb5022.txt)
+
+       * === ASKTIME absolute time buffer ===
+       01 WS36-ARE-DAT-HOR.
+          05 WS36-ID-ABS-TIME PIC S9(015) COMP-3.            *> Packed decimal abs time /h1cb5022.txt)
+
+       * === MQSeries interface ===
+       COPY 'MQSERIE1'.                                      *> MQ copybook          /h1cb5022.txt)
+
+       LINKAGE SECTION.
+       * === COMMAREA contract with caller ===
+       01 DFHCOMMAREA.
+          05 LK00-CD-ACES      PIC X(002).                   *> Access type ('01')   /h1cb5022.txt)
+          05 LK00-CD-RETR-ECI  PIC X(002).                   *> ECI return to caller /h1cb5022.txt)
+          05 LK00-CD-RETR-ACES PIC X(002).                   *> ACES return          /h1cb5022.txt)
+          05 LK01-ARE-CNT-MQS.
+             10 LK01-CD-ACES-MQ  PIC X(002).                 *> MQ op code (03/04/06) /h1cb5022.txt)
+             10 LK01-ID-FILA-MQ  PIC 9(005).                 *> Queue id             /h1cb5022.txt)
+             10 LK01-CD-RETR-MQ  PIC X(002).
+             10 LK01-CD-COMP     PIC 9(004).                 *> MQ completion code   /h1cb5022.txt)
+             10 LK01-CD-RSON     PIC 9(004).                 *> MQ reason code       /h1cb5022.txt)
+             10 LK01-CHV-PRAD    PIC X(020).                 *> Priority key         /h1cb5022.txt)
+             10 LK01-ID-MSG-PRC  PIC X(024).                 *> Message id (primary) /h1cb5022.txt)
+             10 LK01-ID-MSG-AUX  PIC X(024).                 *> Correlation id       /h1cb5022.txt)
+             10 LK01-ARE-CNT-FILA PIC X(150).                *> Queue control area   /h1cb5022.txt)
+             10 FILLER           PIC X(755).
+          05 LK01-ARE-COMA-01.
+             10 LK01-TAM-MSG     PIC 9(004).                 *> Message length       /h1cb5022.txt)
+             10 LK01-TXT-MSG     PIC X(9000).                *> Message payload      /h1cb5022.txt)
+
+       PROCEDURE DIVISION.
+
+       * === Main control ===
+       000-00-ROTINA-PRINCIPAL SECTION.
+           EXEC CICS HANDLE CONDITION ERROR (000-70-ERRO-GERAL-CICS) END-EXEC.  *> CICS error trap  /h1cb5022.txt)
+           EXEC SQL WHENEVER SQLERROR GOTO :000-80-ERRO-GERAL-SQL END-EXEC.     *> SQL error trap   /h1cb5022.txt)
+
+           PERFORM 900-00-AVALIACAO-COMMAREA.                                  *> Validate input    /h1cb5022.txt)
+           IF LK00-CD-ACES EQUAL '01'
+              PERFORM 100-00-EFETUA-ACESSO-01
+              GO TO 000-90-RETORNA-CHAMADOR.
+           MOVE '01' TO LK00-CD-RETR-ECI.
+           GO TO 000-90-RETORNA-CHAMADOR.
+
+       000-70-ERRO-GERAL-CICS.
+           MOVE '02' TO LK00-CD-RETR-ECI.                                       *> CICS error code  /h1cb5022.txt)
+           GO TO 000-90-RETORNA-CHAMADOR.
+
+       000-80-ERRO-GERAL-SQL.
+           EXEC CICS WRITEQ TS QUEUE('H1CB5022') FROM(SQLERRMC) END-EXEC.       *> Persist SQL text /h1cb5022.txt)
+           MOVE '06' TO LK00-CD-RETR-ECI.                                       *> SQL error code   /h1cb5022.txt)
+
+       000-90-RETORNA-CHAMADOR.
+           PERFORM 520-00-EMITE-RETURN-CICS.
+           GOBACK.
+
+       * === Access type 01 ===
+       100-00-EFETUA-ACESSO-01 SECTION.
+           PERFORM 110-00-CONSISTE-ACESSO-01.                                   *> Parameter checks /h1cb5022.txt)
+           IF WS31-CHV-ERRO NOT EQUAL SPACES
+              MOVE SPACES TO WS31-CHV-ERRO
+              GO TO 100-99-ACESSO-01-EXIT.
+
+           IF LK01-CHV-PRAD EQUAL SPACES OR LK01-CHV-PRAD EQUAL LOW-VALUES
+              MOVE ZEROS TO CB0001-CD-PRAD
+              PERFORM 200-00-GERA-FILA-MQSERIES
+              GO TO 100-99-ACESSO-01-EXIT.
+
+           MOVE LK01-ID-FILA-MQ TO CB0001-ID-FILA-MQ.
+           MOVE LK01-CHV-PRAD   TO CB0001-CHV-PRAD.
+           PERFORM 500-00-SQL-SELECT-PRIORIDADE.                                *> Read priority     /h1cb5022.txt)
+           PERFORM 200-00-GERA-FILA-MQSERIES.                                   *> Build MQ message  /h1cb5022.txt)
+       100-99-ACESSO-01-EXIT. EXIT.
+
+       * === Validate inputs for 01 ===
+       110-00-CONSISTE-ACESSO-01 SECTION.
+           IF LK01-CD-ACES-MQ NOT EQUAL '03' AND
+              LK01-CD-ACES-MQ NOT EQUAL '04' AND
+              LK01-CD-ACES-MQ NOT EQUAL '06'
+              MOVE '*' TO WS31-CHV-ERRO
+              MOVE '03' TO LK00-CD-RETR-ECI
+              GO TO 110-99-CONSISTE-EXIT.
+
+           IF LK01-ID-FILA-MQ NOT GREATER ZEROS OR
+              LK01-ID-FILA-MQ NOT NUMERIC
+              MOVE '*' TO WS31-CHV-ERRO
+              MOVE '04' TO LK00-CD-RETR-ECI
+              GO TO 110-99-CONSISTE-EXIT.
+
+           IF LK01-TAM-MSG NOT GREATER ZEROS OR
+              LK01-TAM-MSG NOT NUMERIC
+              MOVE '*' TO WS31-CHV-ERRO
+              MOVE '05' TO LK00-CD-RETR-ECI
+              GO TO 110-99-CONSISTE-EXIT.
+       110-99-CONSISTE-EXIT. EXIT.
+
+       * === Prepare MQ put ===
+       200-00-GERA-FILA-MQSERIES SECTION.
+           MOVE LK01-CD-ACES-MQ  TO MQ01-CD-ACES.
+           MOVE LK01-ID-FILA-MQ  TO MQ01-ID-FILA-MQ.
+           MOVE LK01-ARE-CNT-FILA TO MQ01-ARE-CNT-FILA.
+           MOVE LK01-TAM-MSG     TO MQ01-TAM-MSG-MAX.
+           MOVE LK01-TXT-MSG     TO MQ01-TXT-MSG.
+
+           ADD ZEROS MQOO-OUTPUT MQOO-FAIL-IF-QUIESCING GIVING MQ01-OPC-OPEN.   *> MQ open opts      /h1cb5022.txt)
+           ADD ZEROS MQOO-FAIL-IF-QUIESCING MQPMO-SYNCPOINT GIVING MQPMO-OPTIONS.*> MQ put opts       /h1cb5022.txt)
+           MOVE MQCO-NONE TO MQ01-OPC-CLOS.                                      *> Close opt        /h1cb5022.txt)
+
+           IF LK01-ID-MSG-PRC EQUAL SPACES OR LK01-ID-MSG-PRC EQUAL LOW-VALUES
+              PERFORM 210-00-ADQUIRE-MESSAGE-ID.
+           MOVE LK01-ID-MSG-PRC TO MQMD-MSGID.
+
+           IF LK01-ID-MSG-AUX EQUAL SPACES
+              MOVE MQMI-NONE TO MQMD-CORRELID
+           ELSE
+              MOVE LK01-ID-MSG-AUX TO MQMD-CORRELID.
+
+           MOVE CB0001-CD-PRAD TO MQMD-PRIORITY.                                 *> Set priority     /h1cb5022.txt)
+
+           PERFORM 510-00-EMITE-LINK-H1CB5021.                                   *> Do MQ via LINK   /h1cb5022.txt)
+
+           IF MQ01-CD-RETR-ECI EQUAL ZEROS AND MQ01-CD-RETR-ACES EQUAL ZEROS
+              PERFORM 220-00-GERA-BACKUP-ORACLE.                                 *> Audit backup     /h1cb5022.txt)
+
+           IF MQ01-CD-RETR-ECI NOT EQUAL ZEROS OR MQ01-CD-RETR-ACES NOT EQUAL ZEROS
+              MOVE ZEROS TO LK00-CD-RETR-ECI
+              MOVE '01'  TO LK00-CD-RETR-ACES.
+
+           IF MQ01-CD-RETR-ECI NOT EQUAL ZEROS
+              MOVE MQ01-CD-RETR-ECI TO LK01-CD-RETR-MQ.
+           IF MQ01-CD-RETR-ACES NOT EQUAL ZEROS
+              MOVE MQ01-CD-RETR-ACES TO LK01-CD-RETR-MQ.
+
+           MOVE MQ01-CD-COMP     TO LK01-CD-COMP.
+           MOVE MQ01-CD-RSON     TO LK01-CD-RSON.
+           MOVE MQ01-ARE-CNT-FILA TO LK01-ARE-CNT-FILA.
+       200-99-GERA-FILA-EXIT. EXIT.
+
+       * === Acquire message id ===
+       210-00-ADQUIRE-MESSAGE-ID SECTION.
+           MOVE EIBTASKN TO WS35-ID-TASK.
+           PERFORM 515-00-EMITE-ASKTIME-ABS.
+           MOVE WS36-ID-ABS-TIME TO WS35-ID-ABS-TIME.
+           ADD 1 TO WS35-ID-SEQ.
+           MOVE WS35-MSG-ID TO LK01-ID-MSG-PRC.
+       210-99-ADQ-MSGID-EXIT. EXIT.
+
+       * === Oracle/DB2 backup of payload ===
+       220-00-GERA-BACKUP-ORACLE SECTION.
+           IF LK01-ID-FILA-MQ EQUAL 00004 OR LK01-ID-FILA-MQ EQUAL 00005 OR
+              LK01-ID-FILA-MQ EQUAL 00009 OR LK01-ID-FILA-MQ EQUAL 00026 OR
+              LK01-ID-FILA-MQ EQUAL 00036 OR LK01-ID-FILA-MQ EQUAL 00042 OR
+              LK01-ID-FILA-MQ EQUAL 00010 OR LK01-ID-FILA-MQ EQUAL 00051 OR
+              LK01-ID-FILA-MQ EQUAL 00012 OR LK01-ID-FILA-MQ EQUAL 00013
+              PERFORM 505-00-SQL-INSERT-BACKUP-LOG.
+       220-99-GERA-BKP-EXIT. EXIT.
+
+       * === DB2 select for priority ===
+       500-00-SQL-SELECT-PRIORIDADE SECTION.
+           EXEC SQL
+              SELECT *
+              INTO :CB0001-ID-FILA-MQ, :CB0001-CHV-PRAD, :CB0001-CD-PRAD
+              FROM H1CB.MONITOR_PRIORIDADE
+              WHERE ID_FILA_MQ = :CB0001-ID-FILA-MQ AND
+                    CHV_PRAD   = :CB0001-CHV-PRAD
+           END-EXEC.
+           IF SQLCODE EQUAL WS31-CHV-NTFD-SQL
+              MOVE ZEROS TO CB0001-CD-PRAD.
+       500-99-SQL-SELECT-EXIT. EXIT.
+
+       * === DB2 insert for log backup ===
+       505-00-SQL-INSERT-BACKUP-LOG SECTION.
+           MOVE LK01-ID-FILA-MQ TO CB0002-ID-FILA-MQ.
+           MOVE LK01-TAM-MSG    TO CB0002-TAM-MSG.
+           MOVE LK01-TXT-MSG    TO CB0002-TXT-MSG.
+           EXEC SQL
+              INSERT INTO H1CB.LOG_MSG_MQSERIES
+                 (ID_FILA_MQ, DTC_GRC_MSG, TAM_MSG, TXT_MSG)
+              VALUES (:CB0002-ID-FILA-MQ, SYSDATE, :CB0002-TAM-MSG, :CB0002-TXT-MSG)
+           END-EXEC.
+       505-99-SQL-INSERT-EXIT. EXIT.
+
+       * === Call H1CB5021 via LINK with MQ COMMAREA ===
+       510-00-EMITE-LINK-H1CB5021 SECTION.
+           EXEC CICS LINK PROGRAM('H1CB5021')
+                       COMMAREA (MQ01-ARE-COMA)
+                       LENGTH (LENGTH OF MQ01-ARE-COMA)
+           END-EXEC.
+       510-99-LINK-EXIT. EXIT.
+
+       * === Get absolute time ===
+       515-00-EMITE-ASKTIME-ABS SECTION.
+           EXEC CICS ASKTIME ABSTIME (WS36-ID-ABS-TIME) END-EXEC.
+       515-99-ASKTIME-EXIT. EXIT.
+
+       * === Return to CICS ===
+       520-00-EMITE-RETURN-CICS SECTION.
+           EXEC CICS RETURN END-EXEC.
+       520-99-RETURN-EXIT. EXIT.
+
+       * === COMMAREA evaluation and length checks ===
+       900-00-AVALIACAO-COMMAREA SECTION.
+           MOVE ZEROS TO LK00-CD-RETR-ECI LK00-CD-RETR-ACES.
+           IF EIBCALEN EQUAL ZEROS
+              EXEC CICS ABEND ABCODE('LEN1') END-EXEC.
+           IF LK00-CD-ACES EQUAL '01'
+              GO TO 900-01-COMMA-ACESSO-01.
+           MOVE '01' TO LK00-CD-RETR-ECI.
+           PERFORM 520-00-EMITE-RETURN-CICS.
+
+       900-01-COMMA-ACESSO-01.
+           IF EIBCALEN LESS 8000
+              EXEC CICS ABEND ABCODE('LEN2') END-EXEC.
+           IF EIBCALEN GREATER 10000
+              EXEC CICS ABEND ABCODE('LEN3') END-EXEC.
+           GO TO 900-99-AVAL-COMMA-EXIT.
+
+       900-99-AVAL-COMMA-EXIT. EXIT.
+</code></pre></div>
+    </section>
+
+    <section id="footer" class="foot">
+      <p>Documentation generated by <em>M365 Copilot</em> based on the provided COBOL source file <code>h1cb5022.txt</code>. /h1cb5022.txt)</p>
+    </section>
+  </main>
+</body>

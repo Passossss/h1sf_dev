@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technical Documentation — COBOL Program H1SF0033</title>
+<style>
+  :root{
+    --bg-gradient: linear-gradient(90deg, #0d47a1 0%, #0b2a66 35%, #061a3f 70%, #000000 100%);
+    --title-color: #ffffff;
+    --accent: #0d47a1;
+    --muted: #eef3ff;
+    --code-bg: #0b1e39;
+    --code-border: #133b72;
+    --code-text: #e6f0ff;
+  }
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+    color:#0f172a;
+    background:#ffffff;
+  }
+  /* Header table — gradient from left dark blue to right black */
+  .doc-header{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--bg-gradient);
+    color: var(--title-color);
+  }
+  .doc-header td{
+    padding:18px 16px;
+    vertical-align:middle;
+  }
+  .doc-header .logo{
+    width:160px;
+  }
+  .doc-header img{
+    max-height:64px;
+    max-width:160px;
+    display:block;
+    object-fit:contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .doc-header .titles{
+    text-align:center;
+  }
+  .doc-header h1{
+    margin:.15rem 0 .25rem;
+    font-size:1.65rem;
+    letter-spacing:.02em;
+  }
+  .doc-header h2{
+    margin:0;
+    font-size:1rem;
+    font-weight:500;
+    opacity:.9;
+  }
+
+  /* Content styling */
+  main{
+    max-width:1160px;
+    margin:24px auto 80px;
+    padding:0 20px;
+  }
+  h3{
+    margin:28px 0 10px;
+    font-size:1.25rem;
+    color:#0b2a66;
+    border-left:6px solid var(--accent);
+    padding-left:12px;
+  }
+  h4{ margin:20px 0 6px; font-size:1.05rem; color:#0b2a66;}
+  p{ margin:.35rem 0 .7rem;}
+  .callout{
+    background:var(--muted);
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:18px;
+  }
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0 16px;
+    font-size:.95rem;
+  }
+  .table th, .table td{
+    border:1px solid #e5e7eb;
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  .table th{
+    background:#f8fafc;
+    color:#0b2a66;
+    text-transform:uppercase;
+    font-size:.8rem;
+    letter-spacing:.03em;
+  }
+  .code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border:1px solid var(--code-border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow:auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  pre{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.92rem; }
+  code{ white-space:pre; }
+  .mermaid{
+    background:#f9fafb;
+    border:1px dashed #cbd5e1;
+    padding:10px;
+    border-radius:8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    color:#111827;
+    overflow:auto;
+  }
+  .small{ font-size:.92rem; color:#334155;}
+  .foot{
+    margin-top:36px; color:#475569; font-size:.92rem;
+  }
+  .badge{
+    display:inline-block;
+    background:#e5f0ff;
+    color:#0b2a66;
+    border:1px solid #bfd3ff;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:.78rem;
+    margin-right:6px;
+  }
+</style>
+</head>
+
+<body>
+  <!-- Document Header Table (1 row, 3 columns). Background: Left Dark Blue fading into Black to the right -->
+  <table class="doc-header">
+    <tr>
+      <td class="logo">
+        <img src="images/3conlogo.png" />
+      </td>
+      <td class="titles">
+        <h1>H1SF0033 — DANFE & Dispatch Protocol Generator</h1>
+        <h2>COBOL Program Documentation (for developers & business analysts)</h2>
+	<h2>System Archtect: Bruno D'Alessio (3Con)</h2>
+      </td>
+      <td class="logo" style="text-align:right;">
+	<img src="images/catlogo.jpeg" />
+      </td>
+    </tr>
+  </table>
+
+  <main>
+    <section id="overview">
+      <h3>Overview &amp; Summary</h3>
+      <p>
+        <strong>Program ID:</strong> <code>H1SF0033</code>. Author: <em>Alex C. Andreatta</em>. Date written: <em>23/08/2000</em>. Purpose: assemble and print <abbr title="Documento Auxiliar da Nota Fiscal Eletrônica">DANFEs</abbr> (auxiliary NFe documents), dispatch protocols (Protocolos de Despacho), and related lists such as packing lists; drive printer behavior via HP <abbr title="Printer Job Language">PJL</abbr>; perform data retrieval/update in DB2; interact with CICS (syncpoints, returns) and MQSeries; and update/record accounting and monitoring artifacts. /h1sf0033.txt)
+      </p>
+      <p>
+        <strong>Immediate Dependencies:</strong> DB2 tables (e.g., <code>H1ST.TIPO_RECOLHIMENTO</code>, <code>H1SF.ITD_ITMFATURADO</code>, <code>H1SF.SFT_SELECAO_FTRM</code>, <code>H1CB.IMPRESSORA</code>), VSAM datasets via copybooks, MQSeries interface (<code>MQSERIE1</code>), and several sub-programs/copybooks (<code>ARCB5010</code>, <code>ARCB5022</code>, <code>ARCB5035</code>) used for business operations and error logging. /h1sf0033.txt)
+      </p>
+      <div class="callout small">
+        <span class="badge">Note</span>
+        The program sets <code>SPECIAL-NAMES</code> <em>DECIMAL-POINT IS COMMA</em>, meaning numeric literals and formatted data use “comma” as the decimal separator, aligning with Brazilian formatting. /h1sf0033.txt)
+      </div>
+    </section>
+
+    <section id="structure">
+      <h3>Program Structure Analysis</h3>
+
+      <h4>IDENTIFICATION DIVISION</h4>
+      <ul>
+        <li><strong>PROGRAM-ID</strong>: <code>H1SF0033</code> /h1sf0033.txt)</li>
+        <li><strong>AUTHOR</strong>: <code>ALEX C. ANDREATTA</code> /h1sf0033.txt)</li>
+        <li><strong>DATE-WRITTEN</strong>: <code>23/08/00</code> /h1sf0033.txt)</li>
+        <li><strong>Security/Installation notes</strong>: Header warns that due to special PCL characters, the program must be edited with WinSCP’s native editor (not UltraEdit) to avoid print errors. /h1sf0033.txt)</li>
+      </ul>
+
+      <h4>ENVIRONMENT DIVISION</h4>
+      <ul>
+        <li><strong>CONFIGURATION SECTION</strong> with <code>SPECIAL-NAMES</code> declaring <code>DECIMAL-POINT IS COMMA</code>. /h1sf0033.txt)</li>
+        <li><strong>Input/Output</strong>: data access is predominantly via <strong>EXEC SQL</strong> (DB2) and CICS commands; VSAM datasets and MQSeries are included through copybooks. No explicit FILE-CONTROL is shown in the excerpt; files are abstracted by copybooks such as <code>ST800141</code>, <code>SF800311</code>, etc. /h1sf0033.txt)</li>
+      </ul>
+
+      <h4>DATA DIVISION</h4>
+      <p>Key areas (summarized) — each group contains multiple fields with <code>PIC</code> clauses and various computational usages:</p>
+
+      <table class="table">
+        <thead>
+          <tr><th>Group / Section</th><th>Purpose</th><th>Representative Fields (PIC / USAGE)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>EXEC SQL INCLUDE SQLCA</code></td>
+            <td>Standard DB2 SQL communication area.</td>
+            <td>Controls <code>SQLCODE</code>, <code>SQLERRMC</code> etc. /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>H1SF-PTD-PROTODSP</code></td>
+            <td>Dispatch protocol header totals (weights/values).</td>
+            <td>
+              <code>SF0001-PTD-PESO-TTL-LQD-LOG PIC S9(012)V999 COMP-3</code>, 
+              <code>SF0001-PTD-V-TTL-MRCD-LOG PIC S9(015)V99 COMP-3</code>, 
+              <code>SF0001-PTD-IC-DSP-IMPS PIC X(001)</code> /h1sf0033.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>H1SF-ITD-ITMFATURADO</code></td>
+            <td>Invoiced item data spanning pricing, freight, surcharges, and APIs.</td>
+            <td>
+              <code>SF0002-ITD-PERC-DSCT PIC X(005)</code>, 
+              <code>SF0002-ITD-V-FRT PIC X(013)</code> + redef splitting, 
+              <code>SF0002-ITD-PESO-LQD-PECA PIC X(008)</code>, 
+              <code>SF0002-ITD-V-CAS-RMAN-ODA PIC X(013)</code> etc. /h1sf0033.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>H1SF-SFT-SELECAO-FTRM</code></td>
+            <td>Selection parameters driving printer choice & phase triggers.</td>
+            <td>
+              <code>SF0005-SFT-CD-T-REC PIC X(002)</code>, 
+              <code>SF0005-SFT-ID-IMPR-FTRM PIC X(010)</code>, 
+              <code>SF0005-SFT-IC-NACZ-ICPN-BT PIC X(001)</code> /h1sf0033.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>H1CB-IMPRESSORA</code></td>
+            <td>Printer catalog (AIX name used in PJL commands).</td>
+            <td><code>CB0003-NM-IMPR-AIX PIC X(010)</code> /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS01-ARE-AUX</code> &amp; derived WS areas</td>
+            <td>Extensive working storage for masks, PCL/PJL lines, barcodes, sequencing, pagination, totals, and text composition.</td>
+            <td>Examples: 
+              <code>WS01-PJL-SET-AUX PIC X(020)</code>, 
+              <code>WS01-PJL-CMD-AUX PIC X(025)</code>, 
+              <code>WS01-DRE-CN-LNH-REL PIC X(500)</code>, 
+              <code>WS01-PESO-BRUTO-KG-TOT PIC S9(013)V9999 COMP-3</code> /h1sf0033.txt)
+            </td>
+          </tr>
+          <tr>
+            <td><code>WS31-ARE-CHV</code></td>
+            <td>Program switches (flags) and control keys.</td>
+            <td><code>WS31-CHV-CANCELADO PIC X(001)</code>, <code>WS31-CHV-CME</code>, <code>WS31-CHV-DEA</code>, <code>WS31-CHV-COMANDO-PJL</code> etc. /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS36-ARE-RECEIVE</code></td>
+            <td>COMMAREA-style input parameters received from driver process.</td>
+            <td><code>WS36-CD-MERC-DST PIC X(001)</code>, <code>WS36-DTC-SEL-FTRM PIC X(014)</code>, <code>WS36-LGON-FUNC PIC X(008)</code>, <code>WS36-FASE-FTRM PIC X(001)</code> /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>LINKAGE SECTION</code> (printing buffer)</td>
+            <td>Large table used to accumulate rendered output lines for printing.</td>
+            <td><code>WS01-TAB-IMPRESSAO OCCURS 57600 TIMES; WS01-LIN-IMPR PIC X(120)</code> /h1sf0033.txt)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>PROCEDURE DIVISION (Step-by-step)</h4>
+      <ol>
+        <li><strong>000-00-ROTINA-PRINCIPAL</strong>: sets CICS/SQL error handlers; declares DB; performs main processing; returns to CICS on completion or error (via <code>595-00-EMITE-RETURN-CICS</code>). /h1sf0033.txt)</li>
+        <li><strong>100-00-PROCESSAMENTO-LOGICO</strong>: retrieve runtime parameters, define printers, update monitor, allocate/fetch transactional context (<code>GETMAIN</code>/<code>FREEMAIN</code>), populate date/time and emitente (issuer) data, read protocol, decide flows for export vs domestic documents, update related sub-systems (LBRC/IMPS), optionally start phase SF30/SF31, finalize pending receipt items, and issue Syncpoint. /h1sf0033.txt)</li>
+        <li><strong>110-00-PESQUISA-SUB-TRIB</strong>: attempts substitution-tax class resolution by progressively truncating NCM/HS codes until a match is found (loop up to 6 passes). /h1sf0033.txt)</li>
+        <li><strong>120-00-DEFINE-IMPRESSORAS</strong>: retrieves recolhimento rule and printer by <code>ID_IMPR_FTRM</code>; validates; sets <code>WS01-IMPRESSORA-LASER</code>. /h1sf0033.txt)</li>
+        <li><strong>130/135-00-DEFINE-PJL-OUTBIN-S</strong>: builds PJL command sequences (e.g., <code>FINISH=STAPLE</code>, <code>ORIENTATION=LANDSCAPE</code>, <code>OUTBIN=OPTIONALOUTBIN1/2</code>) to line buffers for printing and stapling; writes to detail records via <code>545-00-GRAVA-DETALHE-REL</code>. /h1sf0033.txt)</li>
+        <li><strong>140-00-DEFINE-PJL-OUTBIN-P</strong>: sets PJL for “Protocol” (unless specific rules/transport modes) and stores protocol number in DOF import protocol; emits command lines similar to 130/135. /h1sf0033.txt)</li>
+        <li><strong>145-00-DEFINE-PJL-OUTBIN-P</strong>: sets PJL for “PACKLIST” including multi-via logic and stapling/orientation/outbin variations; handles special cases of transport modes. /h1sf0033.txt)</li>
+        <li><strong>160-00-VERIFICA-SE-PECA-REMAN</strong>: calls subroutine <code>H1CB5035</code> to verify if a part is “reman”; logs error if the subroutine fails. /h1sf0033.txt)</li>
+        <li><strong>500–645 sections</strong>: cover protocol reading, issuer retrieval, classification lookups, parameter recovery, item/ledger updates, detail/resumo writing, message MQ emission, monitor update, phase starts (SF30/SF31), enqueue/dequeue control, delays, etc. /h1sf0033.txt)</li>
+        <li><strong>590-00-EMITE-SYNCPOINT</strong> and <strong>595-00-EMITE-RETURN-CICS</strong>: commit work and safely return control to the CICS region. /h1sf0033.txt)</li>
+      </ol>
+    </section>
+
+    <section id="business">
+      <h3>Business Logic &amp; Rules (Plain language)</h3>
+      <ul>
+        <li><strong>Document types &amp; phases</strong>: When merchandise destination <code>WS36-CD-MERC-DST</code> = ‘E’ (export context), and phase <code>WS36-FASE-FTRM</code> = ‘1’, the program may <em>start phase SF30</em> (set phase to ‘2’) depending on recolhimento rule (<code>ST0001-CD-REGR-FTRM</code> not in {J, N}) and transport modality; otherwise it updates LBRC/IMPS monitoring. /h1sf0033.txt)</li>
+        <li><strong>Domestic entry with IC RIS</strong>: If destination ‘D’ and phase ‘1’ with flag <code>SF0005-SFT-IC-NACZ-ICPN-BT</code> = ‘S’, the program triggers <code>ENTRADA-NF-IC-RIS</code> and possibly kicks off <em>SF31</em> using original selection parameters. /h1sf0033.txt)</li>
+        <li><strong>Printer selection</strong>: Printers are selected by the field <code>SFT-ID-IMPR-FTRM</code> from the selection table, mapping to <code>H1CB.IMPRESSORA.NM_IMPR_AIX</code>. /h1sf0033.txt)</li>
+        <li><strong>Stapling/Orientation/Output bin</strong>: PJL commands are systematically added to the output buffer to configure finishing (<code>FINISH=STAPLE</code>), stapling option (<code>STAPLEOPTION=ONE</code>), print orientation (<code>ORIENTATION=LANDSCAPE</code>), and output bin (<code>OPTIONALOUTBIN1/2</code>) per via and report type (Protocol vs Packlist). /h1sf0033.txt)</li>
+        <li><strong>Totals &amp; logging</strong>: The program accumulates totals for weights and values in packed forms (<code>COMP-3</code>), builds detail/resumo lines, and writes accounting entries and monitoring records; it also produces logs and may interact with interfaces CME, DEA, SAP, and export control modules (per sections 840–895). /h1sf0033.txt)</li>
+      </ul>
+    </section>
+
+    <section id="flow">
+      <h3>Flowchart (Mermaid)</h3>
+      <div class="mermaid">
+<pre><code class="language-mermaid">flowchart TD
+  A[Start: 000-00-ROTINA-PRINCIPAL] --> B[Set CICS/SQL handlers]
+  B --> C[100-00-PROCESSAMENTO-LOGICO]
+  C --> C1[570-00 RETRIEVE-PARAMETRO]
+  C1 --> C2[120-00 DEFINE-IMPRESSORAS]
+  C2 --> C3[560-00 ATUALIZA-MONITOR]
+  C3 --> C4{WS31-CHV-CANCELADO ?}
+  C4 -- Yes --> Z[595-00 EMITE-RETURN-CICS] --> END
+  C4 -- No --> C5[610-00 GETMAIN-TRSC]
+  C5 --> C6[535-00 ATUALIZA-PWS]
+  C6 --> C7[510-00 RECUPERA-DATA-HORA]
+  C7 --> C8[572-00 SQL-RECUPERA-CNPJ]
+  C8 --> C9[505-00 RECUPERA-EMITENTE]
+  C9 --> D[500-00 LE-PROTOCOLO]
+  D --> E{COMANDO > 0 ?}
+  E -- Yes --> E1[546-00 INSERT-DETALHE] --> E2[615-00 FREEMAIN-TRSC]
+  E -- No --> F[Decision: CD-MERC-DST / FASE-FTRM / REGR-FTRM]
+  F -- Export + Phase1 + rule ok --> G[Set FASE=2; 625-00 START-SF30]
+  F -- Export otherwise --> H[565-00 ATUALIZA-LBRC-IMPS]
+  F -- Domestic + IC RIS --> I[573-00 ENTRADA-NF-IC-RIS; 645-00 START-SF31]
+  G --> J[537-00 FINALIZA-ITEM-REC-PEND]
+  H --> J
+  I --> J
+  J --> K[590-00 EMITE-SYNCPOINT]
+  K --> Z[595-00 EMITE-RETURN-CICS]
+  Z --> END[End]</code></pre>
+      </div>
+      <p class="small">Primary control flow synthesized from the PROCEDURE DIVISION sections. /h1sf0033.txt)</p>
+    </section>
+
+    <section id="dependencies">
+      <h3>Dependencies &amp; Interfaces</h3>
+      <div class="grid">
+        <div>
+          <h4>DB2 Tables (Read/Write)</h4>
+          <ul>
+            <li><code>H1ST.TIPO_RECOLHIMENTO</code> — recolhimento rule &amp; service type. /h1sf0033.txt)</li>
+            <li><code>H1SF.ITD_ITMFATURADO</code> — invoiced items, pricing/freight/taxes. /h1sf0033.txt)</li>
+            <li><code>H1SF.SFT_SELECAO_FTRM</code> — selection entries incl. printer ID, flags. /h1sf0033.txt)</li>
+            <li><code>H1CB.IMPRESSORA</code> — printer name resolution (<code>NM_IMPR_AIX</code>). /h1sf0033.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Copybooks / Sub-programs</h4>
+          <ul>
+            <li><code>ARCB5010</code>, <code>ARCB5022</code>, <code>ARCB5035</code> — accounting/logging/part checks. /h1sf0033.txt)</li>
+            <li><code>MQSERIE1</code> — MQSeries communication area. /h1sf0033.txt)</li>
+            <li>VSAM copybooks: <code>ST800141</code>, <code>ST800151</code>, <code>ST8001D1</code>, <code>RRBMQ008</code>, <code>RRBMQ010</code>, <code>SF800311</code>, <code>SF800321</code>, <code>SF800421</code>, <code>SE900511</code>, <code>SE900521</code>, <code>SE902511</code>, <code>SE902521</code>, <code>SE900411</code>, <code>SE900431</code>, <code>SE902411</code>, <code>SE902431</code>. /h1sf0033.txt)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>Key Data Mappings (examples)</h4>
+      <table class="table">
+        <thead>
+          <tr><th>From</th><th>To / Use</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>SFT-ID-IMPR-FTRM</code> (DB2)</td>
+            <td><code>CB0003-NM-IMPR-AIX</code> via <code>H1CB.IMPRESSORA</code></td>
+            <td>Printer to emit PJL commands and render lines. /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS36-*</code> COMMAREA</td>
+            <td>Flow decisions (phases, report type)</td>
+            <td>Drives SF30/SF31, export/domestic branches. /h1sf0033.txt)</td>
+          </tr>
+          <tr>
+            <td><code>SF0002-ITD-CD-MOD-TRSP</code></td>
+            <td>PJL output/stapling/OUTBIN logic</td>
+            <td>Alters via handling &amp; bin selection. /h1sf0033.txt)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="inline-code">
+      <h3>Original COBOL Code (inline comments added)</h3>
+      <p class="small">Selected core excerpts below with inline comments (<code>*&gt;</code>). The full source is very large; these blocks cover the principal control and printing logic discussed above. /h1sf0033.txt)</p>
+
+      <!-- IDENTIFICATION / ENVIRONMENT -->
+      <div class="code"><pre><code>       IDENTIFICATION DIVISION.
+       PROGRAM-ID. H1SF0033.                                  *> Program identifier  /h1sf0033.txt)
+       AUTHOR. ALEX C. ANDREATTA.                             *> Author metadata     /h1sf0033.txt)
+       DATE-WRITTEN. 23/08/00.                                *> Original creation   /h1sf0033.txt)
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.                            *> Brazilian numeric format (comma)  /h1sf0033.txt)
+</code></pre></div>
+
+      <!-- DATA DIVISION (key WS areas) -->
+      <div class="code"><pre><code>       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+
+       EXEC SQL INCLUDE SQLCA END-EXEC.                       *> DB2 SQL communication area  /h1sf0033.txt)
+
+       *-- Printer command buffers (PJL)
+       01 WS01-ARE-AUX.
+          05 WS01-PJL-SET-AUX    PIC X(020) VALUE SPACES.     *> Holds "@PJL SET " prefix        /h1sf0033.txt)
+          05 WS01-PJL-CMD-AUX    PIC X(025) VALUE SPACES.     *> Holds specific PJL command body  /h1sf0033.txt)
+          05 WS01-DRE-CN-LNH-REL PIC X(500) VALUE SPACES.     *> Output line buffer for rel.      /h1sf0033.txt)
+
+       *-- Control switches
+       01 WS31-ARE-CHV.
+          05 WS31-CHV-CANCELADO  PIC X(001) VALUE SPACES.     *> Cancel/abort flag                /h1sf0033.txt)
+          05 WS31-CHV-COMANDO-PJL PIC X(001) VALUE SPACES.    *> Whether PJL command should emit  /h1sf0033.txt)
+
+       *-- COMMAREA-like inputs
+       01 WS36-ARE-RECEIVE.
+          05 WS36-CD-MERC-DST    PIC X(001).                  *> Destination (E/D)                /h1sf0033.txt)
+          05 WS36-DTC-SEL-FTRM   PIC X(014).                  *> Selection datetime               /h1sf0033.txt)
+          05 WS36-LGON-FUNC      PIC X(008).                  *> User login                       /h1sf0033.txt)
+          05 WS36-FASE-FTRM      PIC X(001).                  *> Phase (1/2)                      /h1sf0033.txt)
+
+       LINKAGE SECTION.
+       01 WS01-ARE-IMPRESSAO.
+          05 WS01-TAB-IMPRESSAO OCCURS 57600 TIMES.
+             10 WS01-LIN-IMPR    PIC X(120).                  *> Line table used for printing     /h1sf0033.txt)
+</code></pre></div>
+
+      <!-- MAIN CONTROL -->
+      <div class="code"><pre><code>       PROCEDURE DIVISION.
+
+       000-00-ROTINA-PRINCIPAL SECTION.
+           EXEC CICS HANDLE CONDITION
+                ERROR (000-70-ERRO-GERAL-CICS)
+           END-EXEC.                                          *> Trap CICS errors and redirect    /h1sf0033.txt)
+
+           EXEC SQL WHENEVER SQLERROR
+                GOTO :000-80-ERRO-GERAL-SQL
+           END-EXEC.                                          *> Trap SQL errors to handler       /h1sf0033.txt)
+
+           EXEC SQL DECLARE CCPR DATABASE END-EXEC.           *> Declare database context         /h1sf0033.txt)
+
+           PERFORM 100-00-PROCESSAMENTO-LOGICO.               *> Main routine                     /h1sf0033.txt)
+           GO TO 000-95-RETORNA-CICS.                         *> Final CICS return                /h1sf0033.txt)
+
+       000-70-ERRO-GERAL-CICS.
+           EXEC CICS WRITEQ TS QUEUE('H1SF0033')
+                FROM(WS35-AUX-TS)
+           END-EXEC.                                          *> Put diagnostic to TS queue       /h1sf0033.txt)
+           MOVE 'H1SF0033' TO WS35-ID-PGM.
+           MOVE '01'       TO WS35-CD-ACES-ERRO.
+           MOVE '02'       TO WS35-CD-ERRO-ECI.
+           MOVE '00'       TO WS35-CD-ERRO-ACES.
+           PERFORM 900-00-REGISTRA-ERRO-TRNS.                 *> Log transaction error            /h1sf0033.txt)
+           GO TO 000-95-RETORNA-CICS.
+
+       000-80-ERRO-GERAL-SQL.
+           EXEC CICS WRITEQ TS QUEUE('H1SF0033')
+                FROM(WS35-AUX-TS)
+           END-EXEC.
+           EXEC CICS WRITEQ TS QUEUE('H1SF0033')
+                FROM(SQLERRMC)
+           END-EXEC.                                          *> Also store SQL message text      /h1sf0033.txt)
+           MOVE 'H1SF0033' TO WS35-ID-PGM.
+           MOVE '01' TO WS35-CD-ACES-ERRO.
+           MOVE '03' TO WS35-CD-ERRO-ECI.
+           MOVE '00' TO WS35-CD-ERRO-ACES.
+           PERFORM 900-00-REGISTRA-ERRO-TRNS.
+           GO TO 000-95-RETORNA-CICS.
+
+       000-95-RETORNA-CICS.
+           PERFORM 595-00-EMITE-RETURN-CICS.                  *> Clean return to CICS             /h1sf0033.txt)
+           GOBACK.
+</code></pre></div>
+
+      <!-- DEFINE IMPRESSORAS -->
+      <div class="code"><pre><code>       120-00-DEFINE-IMPRESSORAS SECTION.
+           EXEC SQL
+               SELECT SFT_CD_T_REC,
+                      SFT_ID_IMPR_FTRM,
+                      SFT_IC_FTRM_TRGD,
+                      NVL(SFT_IC_NACZ_ICPN_BT,'N'),
+                      SFT_CD_MERC_DST_ORIG,
+                      SFT_DTC_SEL_FTRM_ORIG,
+                      SFT_LGON_FUNC_ORIG
+               INTO :SF0005-SFT-CD-T-REC,
+                    :SF0005-SFT-ID-IMPR-FTRM :WI01-SFT-ID-IMPR-FTRM,
+                    :SF0005-SFT-IC-FTRM-TRGD :WI01-SFT-IC-FTRM-TRGD,
+                    :SF0005-SFT-IC-NACZ-ICPN-BT :WI01-SFT-IC-NACZ-ICPN-BT,
+                    :SF0005-SFT-CD-MERC-DST-ORIG :WI01-SFT-CD-MERC-DST-ORIG,
+                    :SF0005-SFT-DTC-SEL-FTRM-ORIG :WI01-SFT-DTC-SEL-FTRM-ORIG,
+                    :SF0005-SFT-LGON-FUNC-ORIG :WI01-SFT-LGON-FUNC-ORIG
+               FROM H1SF.SFT_SELECAO_FTRM
+               WHERE SFT_CD_MERC_DST = :WQ02-CD-MERC-DST
+                 AND SFT_DTC_SEL_FTRM = :WQ02-DTC-SEL-FTRM
+                 AND SFT_LGON_FUNC     = :WQ02-LGON-FUNC
+                 AND ROWNUM = 1
+           END-EXEC.                                          *> Load selection/printer params    /h1sf0033.txt)
+
+           EXEC SQL
+               SELECT NM_IMPR_AIX
+               INTO :CB0003-NM-IMPR-AIX
+               FROM H1CB.IMPRESSORA
+               WHERE ID_IMPR = :SF0005-SFT-ID-IMPR-FTRM
+                 AND ROWNUM = 1
+           END-EXEC.                                          *> Resolve printer name             /h1sf0033.txt)
+
+           MOVE CB0003-NM-IMPR-AIX TO WS01-IMPRESSORA-LASER.  *> Store printer for output         /h1sf0033.txt)
+</code></pre></div>
+
+      <!-- DEFINE PJL -->
+      <div class="code"><pre><code>       135-00-DEFINE-PJL-OUTBIN-S SECTION.
+           MOVE '@PJL SET '                  TO WS01-PJL-SET-AUX.
+           MOVE ' FINISH=STAPLE'             TO WS01-PJL-CMD-AUX.         *> Staple finishing       /h1sf0033.txt)
+           MOVE SPACES                       TO CB0002-DRE-CN-LNH-REL.
+           MOVE WS01-PJL-AUX                 TO CB0002-DRE-CN-LNH-REL.
+           PERFORM 545-00-GRAVA-DETALHE-REL.                               *> Persist line           /h1sf0033.txt)
+
+           MOVE '@PJL SET '                  TO WS01-PJL-SET-AUX.
+           MOVE ' STAPLEOPTION=ONE'          TO WS01-PJL-CMD-AUX.         *> One staple             /h1sf0033.txt)
+           MOVE SPACES                       TO CB0002-DRE-CN-LNH-REL.
+           MOVE WS01-PJL-AUX                 TO CB0002-DRE-CN-LNH-REL.
+           PERFORM 545-00-GRAVA-DETALHE-REL.
+
+           MOVE '@PJL SET '                  TO WS01-PJL-SET-AUX.
+           MOVE ' ORIENTATION=LANDSCAPE'     TO WS01-PJL-CMD-AUX.         *> Landscape orientation  /h1sf0033.txt)
+           MOVE SPACES                       TO CB0002-DRE-CN-LNH-REL.
+           MOVE WS01-PJL-AUX                 TO CB0002-DRE-CN-LNH-REL.
+           PERFORM 545-00-GRAVA-DETALHE-REL.
+
+           MOVE '@PJL SET '                  TO WS01-PJL-SET-AUX.
+           MOVE ' OUTBIN=OPTIONALOUTBIN2'    TO WS01-PJL-CMD-AUX.         *> Output bin selection   /h1sf0033.txt)
+           MOVE SPACES                       TO CB0002-DRE-CN-LNH-REL.
+           MOVE WS01-PJL-AUX                 TO CB0002-DRE-CN-LNH-REL.
+           PERFORM 545-00-GRAVA-DETALHE-REL.
+</code></pre></div>
+
+      <!-- VERIFICA REMAN -->
+      <div class="code"><pre><code>       160-00-VERIFICA-SE-PECA-REMAN SECTION.
+           PERFORM 581-00-EMITE-LINK-H1CB5035.               *> Call external subroutine         /h1sf0033.txt)
+           IF ACB5035-CD-RTOR-ERRO EQUAL ZEROS
+               GO TO 160-99-VER-REMAN-EXIT.
+           MOVE '** ERRO - SUBROTINA H1CB5035 ==>' TO WS35-MSG-ERRO-LIT.
+           MOVE ACB5035-CD-RTOR-ERRO TO WS35-MSG-ERRO-VAR.
+           PERFORM 900-00-REGISTRA-ERRO-TRNS.                 *> Register error details           /h1sf0033.txt)
+       160-99-VER-REMAN-EXIT.
+           EXIT.
+</code></pre></div>
+    </section>
+
+    <section id="appendix">
+      <h3>Appendix — Notable Flags &amp; Fields</h3>
+      <div class="grid-3">
+        <div>
+          <h4>Destination & Phase</h4>
+          <ul class="small">
+            <li><code>WS36-CD-MERC-DST</code>: ‘E’ (export), ‘D’ (domestic). /h1sf0033.txt)</li>
+            <li><code>WS36-FASE-FTRM</code>: phase indicator (e.g., 1 → 2). /h1sf0033.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Printer & PJL</h4>
+          <ul class="small">
+            <li><code>CB0003-NM-IMPR-AIX</code>: printer name. /h1sf0033.txt)</li>
+            <li><code>WS01-PJL-SET-AUX</code> / <code>WS01-PJL-CMD-AUX</code>: PJL lines. /h1sf0033.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Totals (packed)</h4>
+          <ul class="small">
+            <li><code>WS01-PRECO-TOTAL-M-TOT</code>: S9(15)V99 COMP-3. /h1sf0033.txt)</li>
+            <li><code>WS01-PESO-BRUTO-KG-TOT</code>: S9(13)V9999 COMP-3. /h1sf0033.txt)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="footer" class="foot">
+      <p><strong>Editing Note:</strong> Due to special PCL print characters, modify this source only with WinSCP’s native editor; saving with UltraEdit may corrupt print output. /h1sf0033.txt)</p>
+      <p>Documentation generated by <em>M365 Copilot</em>. Program logic and artifacts synthesized directly from the provided COBOL source file <code>h1sf0033.txt</code>. /h1sf0033.txt)</p>
+    </section>
+  </main>
+</body>
+</html>

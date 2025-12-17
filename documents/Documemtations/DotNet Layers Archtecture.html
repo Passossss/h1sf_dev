@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Architecture Layers – Document Paper</title>
+  <style>
+    :root{
+      --bg:#0b1221;
+      --text:#e6e6e6;
+      --muted:#bfc7d5;
+      --accent:#5fa8ff;
+      --border:#2a3448;
+    }
+
+    /* Basic reset & typography */
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#0c0f16;color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif}
+    h1,h2,h3{margin:0 0 .5rem}
+    h1{font-size:1.6rem}
+    h2{font-size:1.25rem}
+    h3{font-size:1.1rem}
+    p{margin:.25rem 0 .75rem}
+    ul{margin:.25rem 0 1rem;padding-left:1.2rem}
+    a{color:var(--accent)}
+    img{max-width:100%;height:auto}
+
+    /* Page container */
+    .paper{
+      max-width:1000px;
+      margin:32px auto;
+      padding:24px;
+      background:#0f1422;
+      border:1px solid var(--border);
+      border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+
+    /* Header table */
+    .doc-header{
+      width:100%;
+      border-collapse:collapse;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:12px;
+      margin-bottom:22px;
+      background:linear-gradient(90deg, #0f3b6b 0%, #0a2a4e 40%, #0a0f18 70%, #000000 100%);
+    }
+    .doc-header td{
+      padding:14px 16px;
+      vertical-align:middle;
+    }
+    .doc-header .col-logo{
+      width:140px;
+      text-align:center;
+    }
+    .doc-header .col-title{
+      text-align:center;
+      color:#ffffff;
+    }
+    .doc-title{
+      font-weight:700;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+    }
+    .doc-subtitle{
+      color:#d7e3ff;
+      font-weight:500;
+      margin-top:6px;
+      opacity:.9;
+    }
+    .logo{
+      max-height:64px;
+      filter:drop-shadow(0 2px 6px rgba(0,0,0,.35));
+    }
+
+    /* Meta & sections */
+    .meta{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:.95rem;
+      border-bottom:1px dashed var(--border);
+      padding-bottom:10px;
+      margin-bottom:18px;
+    }
+    .section{
+      background:#121828;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+      margin:14px 0;
+    }
+    .section h2{
+      color:#cfe2ff;
+    }
+    .callout{
+      background:#0d1426;
+      border-left:4px solid #5fa8ff;
+      padding:12px 14px;
+      border-radius:10px;
+      margin:10px 0 16px;
+      color:#cbd6ea;
+    }
+
+    /* Image frame */
+    .figure{
+      background:#0b111f;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      text-align:center;
+      margin:18px 0;
+    }
+    .figure figcaption{
+      font-size:.92rem;
+      color:var(--muted);
+      margin-top:8px;
+    }
+
+    /* Layer badges */
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:.85rem;
+      margin:.25rem 0 8px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(95,168,255,.09);
+      color:#d7e9ff;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width:680px){
+      .doc-header .col-logo{width:96px}
+      .logo{max-height:52px}
+      .doc-title{font-size:1.1rem}
+      .doc-subtitle{font-size:.95rem}
+    }
+
+    /* Print */
+    @media print{
+      body{background:#fff;color:#000}
+      .paper{box-shadow:none;border-color:#ddd;background:#fff}
+      .doc-header{background:#0f3b6b}
+      .doc-header td{color:#fff}
+      a{text-decoration:none;color:#000}
+    }
+  </style>
+</head>
+<body>
+  <main class="paper" role="main" aria-label="Architecture Layers Document">
+
+    <!-- Header table: 1 row, 3 columns with left-to-right gradient -->
+    <table class="doc-header" role="presentation" aria-label="Document header">
+      <tr>
+        <td class="col-logo">
+          <img src="images/3conlogo.png" />
+        </td>
+        <td class="col-title">
+          <div class="doc-title">Layers Architecture</div>
+          <div class="doc-subtitle">Clean separation of concerns across UI, Application, Services, Domain, and Repository</div>
+        </td>
+        <td class="col-logo">          
+          <img src="images/catlogo.jpeg" />
+        </td>
+      </tr>
+    </table>
+
+    <!-- Quick meta -->
+    <section class="meta" aria-label="Document meta">
+      <div><strong>System Archtect:</strong> Bruno D'Alessio</div>
+      <div><strong>Version:</strong> 1.0</div>
+    </section>
+
+    <!-- Visual reference from the attachment -->
+    <figure class="figure">
+      <img src="images/DotNet Layers Archtecture.png" />
+      <figcaption>Figure 1 — Visual overview of the architecture layers.</figcaption>
+    </figure>
+
+    <!-- Overview -->
+    <section class="section">
+      <h2>Overview</h2>
+      <p>
+        The architecture organizes the solution into layered boundaries that promote <em>separation of concerns</em>,
+        <em>testability</em>, and <em>maintainability</em>. Each layer has a clear responsibility and communicates through
+        well‑defined interfaces and data contracts (DTOs), reducing coupling between UI, business logic, domain models,
+        and infrastructure.
+      </p>
+      <div class="callout">
+        <strong>Key Principles:</strong> Encapsulation of responsibilities, explicit interfaces, DTOs for boundary crossing,
+        and infrastructure isolation behind repositories.
+      </div>
+    </section>
+
+    <!-- UI / ConsoleApp -->
+    <section class="section" id="ui-layer">
+      <span class="badge">1 — UI / ConsoleApp</span>
+      <h2>UI / ConsoleApp (UI/UX Layer)</h2>
+      <p>
+        Represents the presentation concerns: user interaction, input/output, navigation, and view composition. It should remain
+        free of business rules—delegating operations to the <strong>Application Layer</strong>.
+      </p>
+      <ul>
+        <li>Handles user workflows and command routing.</li>
+        <li>Formats data for display and collects user input.</li>
+        <li>Calls application services; no direct access to repositories or domain persistence.</li>
+      </ul>
+    </section>
+
+    <!-- Application Layer -->
+    <section class="section" id="application-layer">
+      <span class="badge">2 — Application Layer</span>
+      <h2>Application Layer (Services &amp; Business Rules Implementations)</h2>
+      <p>
+        Implements <em>use cases</em> and <em>business rules</em> that orchestrate domain operations, abstracting UI concerns.
+        It coordinates interactions between the UI, Service interfaces, and Domain models.
+      </p>
+      <ul>
+        <li>Exposes application services with clear, task‑oriented methods.</li>
+        <li>Applies business rules and validations across use cases.</li>
+        <li>Maps between view models and DTOs; manages transactions where applicable.</li>
+      </ul>
+    </section>
+
+    <!-- Service Layer -->
+    <section class="section" id="service-layer">
+      <span class="badge">3 — Service Layer</span>
+      <h2>Service Layer (Service Interfaces)</h2>
+      <p>
+        Contains service <strong>interfaces</strong> defining contracts used by the Application Layer.
+        Implementations may live alongside the Application Layer (for application services) or be proxied to external systems.
+      </p>
+      <ul>
+        <li>Defines interfaces for application and domain services.</li>
+        <li>Encourages dependency inversion, enabling test doubles and mocking.</li>
+        <li>No infrastructure knowledge; focuses on behavior contracts.</li>
+      </ul>
+    </section>
+
+    <!-- Domain Layer -->
+    <section class="section" id="domain-layer">
+      <span class="badge">4 — Domain Layer</span>
+      <h2>Domain Layer (Entities, Repositories Interfaces, DTOs)</h2>
+      <p>
+        Encapsulates the core business model: entities, value objects, domain events, and repository <strong>interfaces</strong>.
+        DTOs used to cross boundaries also belong here to avoid leaking persistence details into higher layers.
+      </p>
+      <ul>
+        <li>Entities &amp; value objects model core business rules and invariants.</li>
+        <li>Repository interfaces define persistence operations without concrete technology choices.</li>
+        <li>DTOs specify data contracts for inter‑layer communication.</li>
+      </ul>
+    </section>
+
+    <!-- Repository Layer -->
+    <section class="section" id="repository-layer">
+      <span class="badge">5 — Repository Layer</span>
+      <h2>Repository Layer (Data Access Implementations)</h2>
+      <p>
+        Provides concrete <strong>data access implementations</strong> for the repository interfaces defined in the Domain.
+        It isolates infrastructure (database providers, ORMs, caches, APIs) from higher layers.
+      </p>
+      <ul>
+        <li>Implements repository interfaces against databases or external services.</li>
+        <li>Manages persistence concerns (mapping, transactions, caching).</li>
+        <li>Never exposes infrastructure types beyond the boundary; returns domain entities/DTOs.</li>
+      </ul>
+    </section>
+
+    <!-- Interaction flow -->
+    <section class="section">
+      <h2>Typical Interaction Flow</h2>
+      <ol>
+        <li><strong>UI / ConsoleApp</strong> captures input and calls an <strong>Application Service</strong>.</li>
+        <li><strong>Application Layer</strong> validates, applies rules, and uses <strong>Service interfaces</strong> and <strong>Domain models</strong>.</li>
+        <li><strong>Domain Layer</strong> enforces invariants; requests persisted via <strong>Repository interfaces</strong>.</li>
+        <li><strong>Repository Layer</strong> performs data access and returns entities/DTOs to the domain/application.</li>
+        <li>Results are mapped and presented back through the <strong>UI</strong>.</li>
+      </ol>
+    </section>
+
+    <!-- Notes -->
+    <section class="section">
+      <h2>Notes &amp; Recommendations</h2>
+      <ul>
+        <li>Use dependency injection to bind interfaces (Service/Repository) to implementations.</li>
+        <li>Keep business rules in Application/Domain layers; avoid leaking them into UI or Repository.</li>
+        <li>Adopt DTOs/ViewModels to prevent UI or infrastructure types from crossing boundaries.</li>
+        <li>Write unit tests around Domain and Application layers; use mocks for interfaces.</li>
+      </ul>
+    </section>
+
+    <!-- Footer -->
+    <section class="meta" aria-label="Document footer">
+      <div>&copy; 2025 • Layers Architecture Document Paper</div>
+      <div>Contact: bruno.campos.dalessio@example.com</div>
+    </section>
+  </main>
+</body>
+</html>

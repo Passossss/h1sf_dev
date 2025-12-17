@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technical Documentation — COBOL Program H1CB5021</title>
+<style>
+  :root{
+    --bg-gradient: linear-gradient(90deg, #0d47a1 0%, #0b2a66 40%, #071d44 70%, #000000 100%);
+    --title-color: #ffffff;
+    --accent: #0d47a1;
+    --muted: #eef3ff;
+    --code-bg: #0b1e39;
+    --code-border: #133b72;
+    --code-text: #e6f0ff;
+  }
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55;
+    color:#0f172a;
+    background:#ffffff;
+  }
+  /* Header table — gradient from left dark blue to right black */
+  .doc-header{
+    width:100%;
+    border-collapse:collapse;
+    background: var(--bg-gradient);
+    color: var(--title-color);
+  }
+  .doc-header td{
+    padding:18px 16px;
+    vertical-align:middle;
+  }
+  .doc-header .logo{
+    width:160px;
+  }
+  .doc-header img{
+    max-height:64px;
+    max-width:160px;
+    display:block;
+    object-fit:contain;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.3));
+  }
+  .doc-header .titles{
+    text-align:center;
+  }
+  .doc-header h1{
+    margin:.15rem 0 .25rem;
+    font-size:1.65rem;
+    letter-spacing:.02em;
+  }
+  .doc-header h2{
+    margin:0;
+    font-size:1rem;
+    font-weight:500;
+    opacity:.9;
+  }
+
+  /* Content styling */
+  main{
+    max-width:1160px;
+    margin:24px auto 80px;
+    padding:0 20px;
+  }
+  h3{
+    margin:28px 0 10px;
+    font-size:1.25rem;
+    color:#0b2a66;
+    border-left:6px solid var(--accent);
+    padding-left:12px;
+  }
+  h4{ margin:20px 0 6px; font-size:1.05rem; color:#0b2a66;}
+  p{ margin:.35rem 0 .7rem;}
+  .callout{
+    background:var(--muted);
+    border-left:4px solid var(--accent);
+    padding:10px 14px;
+    border-radius:6px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:18px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:18px;
+  }
+  .table{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0 16px;
+    font-size:.95rem;
+  }
+  .table th, .table td{
+    border:1px solid #e5e7eb;
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  .table th{
+    background:#f8fafc;
+    color:#0b2a66;
+    text-transform:uppercase;
+    font-size:.8rem;
+    letter-spacing:.03em;
+  }
+  .code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border:1px solid var(--code-border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow:auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+  }
+  pre{ margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:.92rem; }
+  code{ white-space:pre; }
+  .mermaid{
+    background:#f9fafb;
+    border:1px dashed #cbd5e1;
+    padding:10px;
+    border-radius:8px;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    color:#111827;
+    overflow:auto;
+  }
+  .small{ font-size:.92rem; color:#334155;}
+  .foot{
+    margin-top:36px; color:#475569; font-size:.92rem;
+  }
+  .badge{
+    display:inline-block;
+    background:#e5f0ff;
+    color:#0b2a66;
+    border:1px solid #bfd3ff;
+    border-radius:4px;
+    padding:2px 6px;
+    font-size:.78rem;
+    margin-right:6px;
+  }
+</style>
+</head>
+
+<body>
+  <!-- Document Header Table (1 row, 3 columns). Background: Left Dark Blue fading into Black to the right -->
+  <table class="doc-header">
+    <tr>
+      <td class="logo">
+        <img src="images/3conlogo.png" />
+      </td>
+      <td class="titles">
+        <h1>H1CB5021 — MQSeries Queue Access Helper (AIX)</h1>
+        <h2>COBOL Program Documentation (for developers & business analysts)</h2>
+	<h2>System Archtect: Bruno D'Alessio (3Con)</h2>
+      </td>
+      <td class="logo" style="text-align:right;">
+	<img src="images/catlogo.jpeg" />
+      </td>
+    </tr>
+  </table>
+
+  <main>
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h3>Overview &amp; Summary</h3>
+      <p>
+        <strong>Program ID:</strong> <code>H1CB5021</code>. Author: <em>Pedro F. Neto</em>. Date written: <em>10/10/2000</em>. This module centralizes and simplifies access to IBM MQSeries queues from the AIX environment, providing standardized routines to connect, open, inquire, get, put, close, and disconnect queues, with robust error handling and COMMAREA-based interaction with the calling programs. /h1cb5021.txt)
+      </p>
+      <p>
+        <strong>Main functions:</strong> Interpret an incoming MQ access request (<code>MQ01-CD-ACES</code>), execute the corresponding operation (types 01–08), load environment and queue metadata from DB2 (<code>MONITOR_GERD_MQSERIES</code>, <code>MONITOR_FILA_MQSERIES</code>), and return results plus completion/reason codes back to the caller via COMMAREA. /h1cb5021.txt)
+      </p>
+      <p>
+        <strong>Immediate dependencies:</strong> <em>CICS</em> (HANDLE CONDITION, RETURN, ASSIGN, ABEND), <em>DB2</em> (EXEC SQL for environment/queue resolution), and <em>IBM MQ</em> routines (<code>MQCONN</code>, <code>MQOPEN</code>, <code>MQINQ</code>, <code>MQGET</code>, <code>MQPUT</code>, <code>MQSET</code>, <code>MQCLOSE</code>, <code>MQDISC</code>) defined through copybook <code>MQSERIE1</code>. /h1cb5021.txt)
+      </p>
+      <div class="callout small">
+        <span class="badge">Formatting</span>
+        <code>SPECIAL-NAMES</code> declares <em>DECIMAL-POINT IS COMMA</em> — numeric packed fields adhere to Brazilian decimal conventions. /h1cb5021.txt)
+      </div>
+    </section>
+
+    <!-- PROGRAM STRUCTURE -->
+    <section id="structure">
+      <h3>Program Structure Analysis</h3>
+
+      <h4>IDENTIFICATION DIVISION</h4>
+      <ul>
+        <li><strong>PROGRAM-ID</strong>: <code>H1CB5021</code> /h1cb5021.txt)</li>
+        <li><strong>AUTHOR</strong>: <code>PEDRO F. NETO</code> /h1cb5021.txt)</li>
+        <li><strong>DATE-WRITTEN</strong>: <code>10/10/00</code> /h1cb5021.txt)</li>
+        <li><strong>Objective</strong>: “Facilitar o acesso em filas de MQSeries para o ambiente AIX.” /h1cb5021.txt)</li>
+      </ul>
+
+      <h4>ENVIRONMENT DIVISION</h4>
+      <ul>
+        <li><strong>CONFIGURATION SECTION / SPECIAL-NAMES</strong>: <code>DECIMAL-POINT IS COMMA</code>. /h1cb5021.txt)</li>
+        <li><strong>Input-Output</strong>: This program does not declare file I/O; it operates through <strong>CICS</strong> commands and <strong>MQ</strong> call interfaces, plus <strong>DB2</strong> queries encapsulated in EXEC SQL blocks. /h1cb5021.txt)</li>
+      </ul>
+
+      <h4>DATA DIVISION — Key areas & variables</h4>
+      <p>Below is a curated breakdown of major groups, typical <code>PIC</code> clauses/usage, and purpose.</p>
+
+      <table class="table">
+        <thead>
+          <tr><th>Group / Field</th><th>PIC / USAGE / Value</th><th>Purpose / Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>SQLCA</code></td>
+            <td>Included via <code>EXEC SQL INCLUDE SQLCA</code></td>
+            <td>Standard DB2 status; errors drive CICS ABEND or return codes. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>H1CB-MONITOR-GERD-MQSERIES</code></td>
+            <td>
+              <code>CB0001-NM-AMBI PIC X(008)</code>; <code>CB0001-CD-T-AMBI PIC X(001)</code>; <code>CB0001-NM-GERD-MQS PIC X(048)</code>
+            </td>
+            <td>Environment → Queue Manager name resolution. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>H1CB-MONITOR-FILA-MQSERIES</code></td>
+            <td>
+              <code>CB0002-ID-FILA-MQ PIC X(005)</code>; <code>CB0002-NM-FILA-MQ PIC X(048)</code>; plus environment labels (PRDC/TST/QLD). 
+            </td>
+            <td>Queue metadata from DB2 used to open/inquire/set. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS31-ARE-CHV</code></td>
+            <td><code>WS31-CHV-ERRO PIC X(001)</code>; <code>WS31-CHV-CONN PIC X(001)</code>; <code>WS31-CHV-NTFD-SQL PIC 9(004) VALUE 1403</code></td>
+            <td>Switches: error flag, connection mark, SQL “not found” constant. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS32-ARE-IND</code></td>
+            <td><code>WS32-IND-FILA PIC S9(004) COMP</code>; <code>WS32-IND-CONN PIC S9(004) COMP</code></td>
+            <td>Indices for queue table loops and connection scans. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WS35-ARE-SLV</code></td>
+            <td><code>WS35-CD-ACES PIC X(002)</code>; <code>WS35-ID-CICS PIC X(008)</code>; <code>WS35-Q-CONN-ATIV PIC 9(002)</code></td>
+            <td>Derived access code, CICS APPLID, count of active connections. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>WT01-ARE-MQS</code> (control table)</td>
+            <td>
+              <code>WT01-ARE-CNT-FILA PIC X(170)</code> redefined; OCCURS 10:<br />
+              <code>WT01-CD-ACES PIC X(002)</code>, <code>WT01-ID-FILA-MQ PIC 9(005)</code>, <code>WT01-ID-HAND-CONN PIC S9(009) BINARY</code>, <code>WT01-ID-HAND-OBJT PIC S9(009) BINARY</code>, flags for convert and connection active.
+            </td>
+            <td>Per-queue working slots with handles & flags (convert, active). /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>COPY 'MQSERIE1'</code></td>
+            <td>MQMD/MQOD/MQGMO/MQPMO etc.; constants like <code>MQOO-*</code>, <code>MQCC-*</code>, <code>MQRC-*</code>, <code>MQIA-*</code>, <code>MQTC-*</code>, <code>MQTT-*</code>.</td>
+            <td>Provides structure layouts and constants for MQ calls. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>MQ02-ARE-VARI</code></td>
+            <td><code>MQ02-NM-QMGR PIC X(048)</code>; comp/reason codes S9(009) BINARY; arrays of attribute/selector handles; attribute buffer. </td>
+            <td>Scratch area used by MQCONN/MQOPEN/MQINQ/MQSET etc. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><strong>LINKAGE SECTION</strong> / <code>DFHCOMMAREA</code></td>
+            <td><code>LK00-ARE-COMA PIC X(25000)</code></td>
+            <td>Caller COMMAREA; moved to <code>MQ01-ARE-COMA</code> after length checks. /h1cb5021.txt)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>PROCEDURE DIVISION — Sections & paragraphs</h4>
+      <ol>
+        <li><strong>000-00-ROTINA-PRINCIPAL</strong>: Sets CICS and SQL error handlers, validates COMMAREA (<code>900-00</code>), routes by <code>MQ01-CD-ACES</code> to the appropriate access section (01..08), then prepares output areas and returns to CICS. Non-recognized access sets <code>MQ01-CD-RETR-ECI='01'</code>; CICS errors set <code>'02'</code>; SQL errors set <code>'03'</code>. /h1cb5021.txt)</li>
+        <li><strong>Access Types</strong>:
+          <ul>
+            <li><strong>100-00</strong> — Acquire single message (CONN → OPEN → GET → CLOSE → optional DISC). /h1cb5021.txt)</li>
+            <li><strong>110-00</strong> — Acquire multiple messages one by one (may reuse existing connection). /h1cb5021.txt)</li>
+            <li><strong>120-00</strong> — Put single message. /h1cb5021.txt)</li>
+            <li><strong>130-00</strong> — Put multiple messages one by one. /h1cb5021.txt)</li>
+            <li><strong>140-00</strong> — Close & (optionally) disconnect after reads. /h1cb5021.txt)</li>
+            <li><strong>150-00</strong> — Close & (optionally) disconnect after writes. /h1cb5021.txt)</li>
+            <li><strong>160-00</strong> — Inquire queue attributes (current depth, max depth, trigger). /h1cb5021.txt)</li>
+            <li><strong>170-00</strong> — Alter trigger monitor state/type on the queue (MQSET). /h1cb5021.txt)</li>
+          </ul>
+        </li>
+        <li><strong>180-00-ADQUIRE-INFO-FILA</strong>: Loads WT01 slot from incoming control, fetches Queue Manager and Queue names from DB2 via <code>500-00</code> and <code>505-00</code>; marks if payload must be converted (<code>WT01-IC-CVR-MSG</code>) depending on environment match. /h1cb5021.txt)</li>
+        <li><strong>190-00-VERIFICA-CONN-ATIVA</strong>: Counts active connections marked in WT01 to decide whether to disconnect. /h1cb5021.txt)</li>
+        <li><strong>500-00 / 505-00</strong>: DB2 lookups for QMGR and queue metadata; set <code>WS31-CHV-ERRO='*'</code> and return codes if not found. /h1cb5021.txt)</li>
+        <li><strong>510-00..545-00</strong>: Wrapper calls to MQ verbs (MQCONN/Open/Get/Inquiry/Set/Put/Close/Disc) moving completion and reason codes back to <code>MQ01</code> area; map failures to <code>MQ01-CD-RETR-ACES</code> (e.g., '03' for CONN, '04' for OPEN, '06' for GET, '07' for PUT, '08' for CLOSE, '09' for DISC, '10' for INQ, '11' for SET). /h1cb5021.txt)</li>
+        <li><strong>550-00</strong>: CICS RETURN. <strong>555-00</strong>: CICS ASSIGN APPLID captured in <code>WS35-ID-CICS</code>. <strong>900-00</strong>: COMMAREA validation (len 13,000–25,000), copy to internal area and zero return codes. /h1cb5021.txt)</li>
+      </ol>
+    </section>
+
+    <!-- BUSINESS LOGIC -->
+    <section id="business">
+      <h3>Business Logic &amp; Rules (Plain language)</h3>
+      <ul>
+        <li><strong>Access type dispatch:</strong> The caller specifies <code>MQ01-CD-ACES</code> (‘01’..‘08’). The program executes the associated sequence (connect/open/get/put/etc.), sets completion/reason codes, and returns via COMMAREA. Unknown types yield <code>MQ01-CD-RETR-ECI='01'</code>. /h1cb5021.txt)</li>
+        <li><strong>Environment-driven resolution:</strong> The Queue Manager and Queue names are not hardcoded; they’re obtained from DB2 using the CICS APPLID (<code>ASSIGN APPLID</code>) and queue id, ensuring the correct endpoints for PRDC/TST/QLD. /h1cb5021.txt)</li>
+        <li><strong>Message conversion flag:</strong> If the caller’s environment differs from the queue’s registered environment, the program marks <code>WT01-IC-CVR-MSG='*'</code> to enforce string format on <code>MQMD-FORMAT</code> when putting messages. /h1cb5021.txt)</li>
+        <li><strong>Trigger management:</strong> In inquiry (<code>MQINQ</code>) and set (<code>MQSET</code>), the program reads and modifies <em>trigger control</em> (<code>MQTC ON/OFF</code>) and <em>trigger type</em> (<code>MQTT NONE/FIRST/EVERY/DEPTH</code>) based on <code>MQ01-IC-PTI-ATV</code> and <code>MQ01-CD-T-PTI</code>. /h1cb5021.txt)</li>
+        <li><strong>Connection lifecycle:</strong> For single-shot operations, the program optionally disconnects after verifying active connections; for multi-message operations, it can reuse connection handles. /h1cb5021.txt)</li>
+        <li><strong>Error model:</strong> Each MQ verb wrapper maps failures to a specific <code>MQ01-CD-RETR-ACES</code> code; CICS and SQL issues map to <code>MQ01-CD-RETR-ECI</code>, making diagnostics consistent for the caller. /h1cb5021.txt)</li>
+        <li><strong>Strict COMMAREA contract:</strong> The program abends if the COMMAREA length is 0 (<code>LEN1</code>), less than 13,000 bytes (<code>LEN2</code>), or greater than 25,000 bytes (<code>LEN3</code>). /h1cb5021.txt)</li>
+      </ul>
+    </section>
+
+    <!-- FLOWCHART -->
+    <section id="flow">
+      <h3>Flowchart (Mermaid)</h3>
+      <div class="mermaid">
+<pre><code class="language-mermaid">flowchart TD
+  A[Start: 000-00 ROTINA-PRINCIPAL] --> B[HANDLE CONDITION / WHENEVER SQL]
+  B --> C[900-00 AVALIACAO-COMMAREA (len checks, copy, zero RCs)]
+  C --> D{MQ01-CD-ACES}
+  D -- '01' --> E1[100-00 Get one: CONN→OPEN→GET→CLOSE→(DISC?)]
+  D -- '02' --> E2[110-00 Get many: (re)CONN?→OPEN→GET loop]
+  D -- '03' --> E3[120-00 Put one: CONN→OPEN→PUT→CLOSE→(DISC?)]
+  D -- '04' --> E4[130-00 Put many: (re)CONN?→OPEN→PUT loop]
+  D -- '05' --> E5[140-00 Close/Disc after reads]
+  D -- '06' --> E6[150-00 Close/Disc after writes]
+  D -- '07' --> E7[160-00 Inquire: CONN→OPEN→INQ→CLOSE→(DISC?)]
+  D -- '08' --> E8[170-00 Set trigger: CONN→OPEN→SET→CLOSE→(DISC?)]
+  D -- else --> F[Set MQ01-CD-RETR-ECI='01']
+  E1 --> R[Prepare output; RETURN CICS]
+  E2 --> R
+  E3 --> R
+  E4 --> R
+  E5 --> R
+  E6 --> R
+  E7 --> R
+  E8 --> R
+  F --> R
+  R --> END[End]</code></pre>
+      </div>
+      <p class="small">Control flow synthesized directly from the PROCEDURE DIVISION sections and routing logic. /h1cb5021.txt)</p>
+    </section>
+
+    <!-- DEPENDENCIES -->
+    <section id="dependencies">
+      <h3>Dependencies &amp; Interfaces</h3>
+      <div class="grid">
+        <div>
+          <h4>CICS</h4>
+          <ul>
+            <li><code>HANDLE CONDITION ERROR</code>, <code>RETURN</code>, <code>ASSIGN APPLID</code>, <code>ABEND ABCODE</code>. /h1cb5021.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>DB2</h4>
+          <ul>
+            <li><code>H1CB.MONITOR_GERD_MQSERIES</code> → resolves Queue Manager per environment. /h1cb5021.txt)</li>
+            <li><code>H1CB.MONITOR_FILA_MQSERIES</code> → resolves queue name & environment labels. /h1cb5021.txt)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>IBM MQ (via <code>MQSERIE1</code>)</h4>
+          <ul>
+            <li>APIs: <code>MQCONN</code>, <code>MQOPEN</code>, <code>MQINQ</code>, <code>MQGET</code>, <code>MQPUT</code>, <code>MQSET</code>, <code>MQCLOSE</code>, <code>MQDISC</code>. /h1cb5021.txt)</li>
+            <li>Structures & options: MQMD/MQOD/MQGMO/MQPMO, constants <code>MQOO-*</code>, <code>MQCC-*</code>, <code>MQRC-*</code>, <code>MQIA-*</code>, <code>MQTC-*</code>, <code>MQTT-*</code>. /h1cb5021.txt)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h4>Selected Data Mappings</h4>
+      <table class="table">
+        <thead>
+          <tr><th>From</th><th>To / Use</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>WS35-ID-CICS</code> (APPLID via ASSIGN)</td>
+            <td><code>CB0001-NM-AMBI</code> → DB2 lookup for <code>NM_GERD_MQS</code></td>
+            <td>Determines Queue Manager name per environment. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td><code>MQ01-ID-FILA-MQ</code> (queue id)</td>
+            <td><code>CB0002-*</code> → DB2 select for queue details</td>
+            <td>Resolves actual <code>MQOD-OBJECTNAME</code>. /h1cb5021.txt)</td>
+          </tr>
+          <tr>
+            <td>MQ completion & reason codes</td>
+            <td><code>MQ01-CD-COMP</code>, <code>MQ01-CD-RSON</code>, <code>MQ01-CD-RETR-ACES</code></td>
+            <td>Propagated to caller for diagnostics. /h1cb5021.txt)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- INLINE CODE WITH COMMENTS -->
+    <section id="inline-code">
+      <h3>Original COBOL Code (inline comments added)</h3>
+      <p class="small">Key excerpts from <code>h1cb5021.txt</code> with explanatory comments (<code>*&gt;</code>) to clarify intent and side effects. /h1cb5021.txt)</p>
+
+      <!-- ID/ENV -->
+      <div class="code"><pre><code>       ID DIVISION.
+       PROGRAM-ID. H1CB5021.                                 *> Program identifier (AIX MQ helper)  /h1cb5021.txt)
+       AUTHOR. PEDRO F. NETO.                                *> Author metadata                     /h1cb5021.txt)
+       DATE-WRITTEN. 10/10/00.                               *> Original creation date              /h1cb5021.txt)
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.                           *> Brazilian numeric formatting        /h1cb5021.txt)
+</code></pre></div>
+
+      <!-- DATA (DB2 & switches) -->
+      <div class="code"><pre><code>       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+
+       EXEC SQL INCLUDE SQLCA END-EXEC.                      *> DB2 SQL communication area          /h1cb5021.txt)
+
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01 H1CB-MONITOR-GERD-MQSERIES.
+          05 CB0001-NM-AMBI     PIC X(008).                  *> Environment (APPLID)                /h1cb5021.txt)
+          05 CB0001-CD-T-AMBI   PIC X(001).
+          05 CB0001-NM-GERD-MQS PIC X(048).                  *> Queue Manager name                  /h1cb5021.txt)
+
+       01 H1CB-MONITOR-FILA-MQSERIES.
+          05 CB0002-ID-FILA-MQ  PIC X(005).                  *> Queue id                            /h1cb5021.txt)
+          05 CB0002-NM-FILA-MQ  PIC X(048).                  *> Queue name                          /h1cb5021.txt)
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+       01 WS31-ARE-CHV.
+          05 WS31-CHV-ERRO      PIC X(001) VALUE SPACES.     *> '*' when an error occurs            /h1cb5021.txt)
+          05 WS31-CHV-CONN      PIC X(001) VALUE SPACES.     *> marks existing connection           /h1cb5021.txt)
+          05 WS31-CHV-NTFD-SQL  PIC 9(004) VALUE 1403.       *> SQL NOT FOUND constant              /h1cb5021.txt)
+</code></pre></div>
+
+      <!-- MAIN CONTROL -->
+      <div class="code"><pre><code>       PROCEDURE DIVISION.
+
+       000-00-ROTINA-PRINCIPAL SECTION.
+           EXEC CICS HANDLE CONDITION ERROR (000-70-ERRO-GERAL-CICS) END-EXEC.  *> Trap CICS errors  /h1cb5021.txt)
+           EXEC SQL WHENEVER SQLERROR GOTO :000-80-ERRO-GERAL-SQL END-EXEC.     *> Trap SQL errors   /h1cb5021.txt)
+
+           PERFORM 900-00-AVALIACAO-COMMAREA.                                  *> Validate COMMAREA /h1cb5021.txt)
+
+           IF MQ01-CD-ACES EQUAL '01' PERFORM 100-00-EFETUA-ACESSO-01
+              GO TO 000-90-RETORNA-CHAMADOR.
+           ...                                                                  *> Routes for '02'..'08'  /h1cb5021.txt)
+
+           MOVE '01' TO MQ01-CD-RETR-ECI.                                       *> Unknown access   /h1cb5021.txt)
+           GO TO 000-90-RETORNA-CHAMADOR.
+
+       000-70-ERRO-GERAL-CICS.
+           MOVE '02' TO MQ01-CD-RETR-ECI.                                       *> CICS error code  /h1cb5021.txt)
+
+       000-80-ERRO-GERAL-SQL.
+           MOVE '03' TO MQ01-CD-RETR-ECI.                                       *> SQL error code   /h1cb5021.txt)
+
+       000-90-RETORNA-CHAMADOR.
+           MOVE WT01-ARE-CNT-FILA TO MQ01-ARE-CNT-FILA.                         *> Return table     /h1cb5021.txt)
+           MOVE MQ01-ARE-COMA     TO LK00-ARE-COMA.                              *> Send COMMAREA    /h1cb5021.txt)
+           PERFORM 550-00-EMITE-RETURN-CICS.                                     *> Return to CICS   /h1cb5021.txt)
+           GOBACK.
+</code></pre></div>
+
+      <!-- MQ verbs (examples) -->
+      <div class="code"><pre><code>       510-00-ACESSO-MQS-MQCONN SECTION.
+           CALL 'MQCONN' USING MQ02-NM-QMGR, WT01-ID-HAND-CONN(WS32-IND-FILA),
+                                MQ02-CD-COMP, MQ02-CD-RSON.                     *> Connect to QMGR  /h1cb5021.txt)
+           MOVE MQ02-CD-COMP TO MQ01-CD-COMP.
+           MOVE MQ02-CD-RSON TO MQ01-CD-RSON.
+           IF MQ02-CD-COMP EQUAL MQCC-FAILED OR MQCC-UNKNOWN
+              MOVE '*'  TO WS31-CHV-ERRO
+              MOVE '03' TO MQ01-CD-RETR-ACES.                                   *> Map error         /h1cb5021.txt)
+</code></pre></div>
+
+      <div class="code"><pre><code>       520-00-ACESSO-MQS-MQGET SECTION.
+           ADD MQGMO-CONVERT TO MQGMO-OPTIONS.                                  *> Force conversion  /h1cb5021.txt)
+           CALL 'MQGET' USING WT01-ID-HAND-CONN(WS32-IND-FILA),
+                                WT01-ID-HAND-OBJT(WS32-IND-FILA),
+                                MQ01-ARE-MSG-DESC, MQ01-ARE-GET-OPTS,
+                                MQ01-TAM-MSG-MAX, MQ01-TXT-MSG,
+                                MQ01-TAM-MSG-REAL, MQ02-CD-COMP, MQ02-CD-RSON.  *> Get message       /h1cb5021.txt)
+           IF MQ02-CD-COMP EQUAL MQCC-FAILED OR MQCC-UNKNOWN
+              IF MQ02-CD-RSON EQUAL MQRC-NO-MSG-AVAILABLE
+                 MOVE '05' TO MQ01-CD-RETR-ACES                                 *> No message        /h1cb5021.txt)
+              ELSE
+                 MOVE '*'  TO WS31-CHV-ERRO
+                 MOVE '06' TO MQ01-CD-RETR-ACES.                                *> Failure           /h1cb5021.txt)
+</code></pre></div>
+    </section>
+
+    <!-- FOOTER -->
+    <section id="footer" class="foot">
+      <p>Documentation generated from the provided COBOL source file <code>h1cb5021.txt</code>. All program facts and code snippets reflect the attached file contents. /h1cb5021.txt)</p>
+    </section>
+  </main>
+</body>
+</html>
