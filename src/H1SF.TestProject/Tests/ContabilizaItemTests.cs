@@ -1,6 +1,7 @@
 using H1SF.Application.DTOs.ContabilizaItem;
 using H1SF.Application.Services.ContabilizaItem;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace H1SF.TestProject.Tests
@@ -9,26 +10,29 @@ namespace H1SF.TestProject.Tests
     public class ContabilizaItemTests
     {
         [TestMethod]
-        public void ContabilizaItemService_ServiceCreation_Succeeds()
+        public void ContabilizaItemInput_CanBeCreated()
         {
             // Arrange & Act
-            // Note: Full testing requires DbContext which should be done in integration tests
-            // This test verifies the service interface exists and can be referenced
-
-            // Assert
-            Assert.IsTrue(true); // Placeholder - requires DB integration test
-        }
-
-        [TestMethod]
-        public void ContabilizaItemService_HasValidInterface_Success()
-        {
-            // Arrange & Act
-            // Verify the interface and DTOs exist
-            var input = new ContabilizaItemInput();
+            var input = new ContabilizaItemInput
+            {
+                DataSelecaoFaturamento = DateTime.Now,
+                NumeroNotaContabil = "12345"
+            };
 
             // Assert
             Assert.IsNotNull(input);
-            Assert.IsInstanceOfType(input, typeof(ContabilizaItemInput));
+            Assert.IsNotNull(input.DataSelecaoFaturamento);
+            Assert.AreEqual("12345", input.NumeroNotaContabil);
+        }
+
+        [TestMethod]
+        public void ContabilizaItemOutput_CanBeCreated()
+        {
+            // Arrange & Act
+            var output = new ContabilizaItemOutput();
+
+            // Assert
+            Assert.IsNotNull(output);
         }
     }
 }

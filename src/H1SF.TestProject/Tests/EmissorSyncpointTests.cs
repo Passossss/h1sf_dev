@@ -1,5 +1,4 @@
 using H1SF.Application.Services.Transacao;
-using H1SF.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -10,20 +9,38 @@ namespace H1SF.TestProject.Tests
     [TestClass]
     public class EmissorSyncpointTests
     {
-        // EmissorSyncpoint requires DbContext configuration which is complex to mock
-        // These tests verify the service can be instantiated and called
-        // Full integration tests should be done separately with proper DB setup
-        
-        private ILogger<T> CreateLogger<T>() => LoggerFactory.Create(builder => { }).CreateLogger<T>();
+        [TestMethod]
+        public void EmissorSyncpoint_InterfaceExists()
+        {
+            // Arrange & Act
+            // Verify the IEmissorSyncpoint interface exists and is properly defined
+            Type interfaceType = typeof(IEmissorSyncpoint);
+
+            // Assert
+            Assert.IsNotNull(interfaceType);
+            Assert.IsTrue(interfaceType.IsInterface);
+        }
 
         [TestMethod]
-        public void EmissorSyncpoint_ServiceCreation_Succeeds()
+        public void EmissorSyncpoint_HasEmitirSyncpointAsyncMethod()
         {
-            // Arrange & Act - Just verify we can reference the service
-            // Full testing requires DbContext configuration
-            
+            // Arrange & Act
+            var method = typeof(IEmissorSyncpoint).GetMethod("EmitirSyncpointAsync");
+
             // Assert
-            Assert.IsTrue(true); // Placeholder - requires DB integration test
+            Assert.IsNotNull(method);
+            Assert.AreEqual(typeof(Task), method.ReturnType);
+        }
+
+        [TestMethod]
+        public void EmissorSyncpoint_ServiceImplementsInterface()
+        {
+            // Arrange & Act
+            Type serviceType = typeof(EmissorSyncpoint);
+            Type interfaceType = typeof(IEmissorSyncpoint);
+
+            // Assert
+            Assert.IsTrue(interfaceType.IsAssignableFrom(serviceType));
         }
     }
 }
