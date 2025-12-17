@@ -1,0 +1,15 @@
+Create a document paper about this image in attachment, in HTML format easy to read.
+Image contain visual representation about Archtecture Layers.
+
+Layers:
+1- UI/ConsoleApp: represents UI/UX layer;
+2- Application Layer: represents services implementations and business ruless implemantations to abstract UI layers;
+3- Service Layer: contains Services Interfaces
+4- Domain Layer: include repositories interfaces, entities and dto's also belongs to Domain Layer.
+5- Repository Layer: contains data access implementations.
+
+Create document header table with 1 line and 3 columns.
+Header background color have to be something like Left side Dark Blue fade into Black in Right Side.
+Coloumn 1: Image logo with path "images/3conlogo.png";
+Columns 2: Document Title and Subtitle
+Coloumn 3: Image logo with path "images/catlogo.jpeg";
