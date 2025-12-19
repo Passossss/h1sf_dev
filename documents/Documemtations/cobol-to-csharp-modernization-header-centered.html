@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>COBOL to C# .NET 9 Conversion Strategy Summary</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#141a22; --ink:#e9eef7; --muted:#c8d3e6; --accent:#4cc9f0; --ok:#2ecc71; --warn:#ffb703; --bad:#e63946; --code:#1b2432; --table:#18202b; --hl:#2a3240;
+  }
+  html,body{background:var(--bg);color:var(--ink);font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";}
+  a{color:var(--accent)}
+  .paper{max-width:1100px;margin:40px auto;padding:32px;background:var(--panel);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  h1,h2,h3{line-height:1.2;margin:24px 0 12px}
+  h1{font-size:2rem}
+  h2{font-size:1.35rem;border-left:4px solid var(--accent);padding-left:8px}
+  h3{font-size:1.1rem;color:var(--muted)}
+  p,li{color:var(--ink);}  
+  .lead{font-size:1.05rem;color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns: 1fr 1fr}
+  .panel{background:var(--table);padding:16px;border-radius:12px}
+  .note{background:var(--hl);border-left:4px solid var(--accent);padding:12px;border-radius:10px;color:#cbd7ea}
+  code, pre{background:var(--code);color:#eaf1fb}
+  pre{padding:16px;border-radius:12px;overflow:auto}
+  table{width:100%;border-collapse:collapse;background:var(--table);border-radius:12px;overflow:hidden}
+  th,td{padding:10px;border-bottom:1px solid #283140;text-align:left}
+  th{background:#202938;color:#b9c7dc;position:sticky;top:0}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;padding:4px 8px;border-radius:999px;background:#213044;color:#bfe3f8;margin-right:6px}
+  .kbd{border:1px solid #3a475a;padding:2px 6px;border-radius:6px;background:#1f2834;color:#cfe2f9}
+  .cite{color:#9fb4d6;font-size:.9rem}
+
+  /* Responsive header (divs) */
+  .doc-header-strip{
+    margin:-32px -32px 24px -32px;
+    background: linear-gradient(90deg, #0b2a5a 0%, #0e1116 70%, #000000 100%);
+    color:#e9eef7;
+  }
+  .doc-header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:16px; flex-wrap:wrap;
+  }
+  .doc-header .left-group{display:flex; align-items:center; gap:12px; flex:0 1 auto}
+  .doc-header .left-group img{height:56px; width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+  .doc-header .architect{font-size:.95rem; color:#cbd7ea}
+  .doc-header .architect .label{display:block; font-weight:600; color:#e9eef7}
+
+  /* Centered title block */
+  .doc-header .title{flex:1 1 480px; text-align:center}
+  .doc-header .title h1{margin:0; font-size:1.8rem}
+  .doc-header .title h2{margin:6px 0 0; font-weight:500; font-size:1rem; color:#c8d3e6}
+
+  .doc-header .right-logo img{height:56px; width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+
+  /* Footer */
+  footer{margin-top:24px; color:#cbd7ea}
+  footer .contact{margin-top:6px}
+</style>
+</head>
+<body>
+  <main class="paper">
+    <!-- Responsive header built with DIVs -->
+    <div class="doc-header-strip">
+      <div class="doc-header">
+        <div class="left-group">
+          <img src="images/3conlogo.png" alt="Left logo"/>
+          <div class="architect">
+            <span class="label">System Architect</span>
+            Bruno D'Alessio
+          </div>
+        </div>
+        <div class="title">
+          <h1>Modernizing COBOL to C# .Net 9.0</h1>
+          <h2>Conversion Strategy Summary</h2>
+        </div>
+        <div class="right-logo">
+          <img src="images/catlogo.jpeg" alt="Right logo"/>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <h1>Modernizing COBOL to C# 9.0 with DDD, SOLID, Clean Code, ACL & Branch by Abstraction</h1>
+      <p class="lead">This document provides a practical, production‑oriented pathway to refactor legacy COBOL into modern C# 9, adopting DDD architecture, SOLID and Clean Code, protected by an Anti‑Corruption Layer (ACL), with Branch by Abstraction for safe incremental replacement and Dual‑Run testing to certify equivalence.</p>
+      <div class="note">Language preference: <strong>English</strong> — all content, examples and explanations are provided in English as requested.</div>
+    </header>
+
+    <!-- Body sections truncated for brevity; keep your previous content here -->
+    <section>
+      <h2>Executive Summary</h2>
+      <ul>
+        <li><span class="tag">Strategy</span> Prefer incremental modernization (Strangler Fig, ACL, Branch by Abstraction) over big‑bang rewrites to reduce risk and preserve delivery cadence.</li>
+        <li><span class="tag">Protection</span> Use an <strong>Anti‑Corruption Layer</strong> to translate legacy models (EBCDIC/COMP‑3, record layouts) to clean domain models.</li>
+        <li><span class="tag">Technique</span> Apply <strong>Branch by Abstraction</strong> so legacy and new implementations coexist behind an interface; switch callers progressively or via feature flags.</li>
+        <li><span class="tag">Certification</span> Prove functional equivalence with <strong>Dual‑Run</strong> (parallel production) and Golden‑Master characterization tests.</li>
+        <li><span class="tag">C# 9</span> Embrace records, init‑only properties, and pattern matching to model immutable value objects and concise domain logic.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Methodology & Principles</h2>
+      <ol>
+        <li><strong>DDD Boundaries & Ubiquitous Language:</strong> Discover aggregates, value objects, invariants; model them first, then integrate legacy through ports/adapters. (See ACL pattern for external integration.) <span class="cite"></span></li>
+        <li><strong>SOLID & Clean Code:</strong> Single‑responsibility adapters, open‑closed domain services, dependency inversion via ports, small pure functions, readable names, and tests-first for legacy seams. <span class="cite"></span></li>
+        <li><strong>Incremental Delivery:</strong> Strangler Fig at system edges; Branch by Abstraction deeper inside where callers depend on legacy libraries. <span class="cite"></span></li>
+        <li><strong>Equivalence Testing:</strong> Dual‑Run against production inputs; Golden‑Master captures legacy outputs as oracles; compare and investigate diffs. <span class="cite"></span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Sample Legacy Artifacts</h2>
+      <div class="grid cols-2">
+        <div class="panel">
+          <h3>COBOL Copybook</h3>
+          <pre><code class="language-cobol">      01  ACCOUNT-RECORD.
+          05  ACCT-NUM            PIC X(10).
+          05  CUST-ID             PIC X(10).
+          05  ACCT-STATUS         PIC X(1).      *> 'A' Active, 'C' Closed
+          05  OPEN-DATE           PIC 9(8).      *> YYYYMMDD (EBCDIC)
+          05  CURR-BALANCE        PIC S9(9)V99 COMP-3.
+          05  LAST-TXN-AMT        PIC S9(7)V99 COMP-3.
+          05  LAST-TXN-DATE       PIC 9(8).
+          05  BRANCH-CODE         PIC X(5).
+</code></pre>
+          <p class="cite">Packed decimals (COMP‑3) and EBCDIC require decoding to .NET types. See references on EBCDIC and COMP‑3 conversion. </p>
+        </div>
+        <div class="panel">
+          <h3>Module I/O (Batch)</h3>
+          <pre><code class="language-cobol">      IDENTIFICATION DIVISION.
+      PROGRAM-ID. ACCTUPDT.
+      ENVIRONMENT DIVISION.
+      INPUT-OUTPUT SECTION.
+      FILE-CONTROL.
+          SELECT ACCTFILE ASSIGN TO 'ACCOUNTS.DAT'
+                 ORGANIZATION IS SEQUENTIAL.
+      DATA DIVISION.
+      FILE SECTION.
+      FD ACCTFILE RECORD CONTAINS 64 CHARACTERS
+         DATA RECORD IS ACCOUNT-RECORD.
+      WORKING-STORAGE SECTION.
+      01  WS-PROCESS-DATE         PIC 9(8).
+      PROCEDURE DIVISION.
+          OPEN INPUT ACCTFILE
+          PERFORM UNTIL EOF
+             READ ACCTFILE AT END MOVE 'Y' TO EOF
+             NOT AT END
+               *> business rules, fee accrual, status changes
+             END-READ
+          END-PERFORM
+          CLOSE ACCTFILE
+          STOP RUN.
+</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>DDD Domain Model Sketch</h2>
+      <div class="panel">
+        <pre><code>Bounded Context: Accounts
+
+Aggregates:
+  Account (Aggregate Root)
+    - AccountId (Value Object)
+    - CustomerId (Value Object)
+    - Status (enum: Active, Closed)
+    - OpenDate (DateOnly)
+    - Balance (Money)
+    - LastTransaction (Transaction)
+
+Value Objects:
+  Money(decimal Amount, string Currency)
+  Transaction(decimal Amount, DateOnly Date)
+
+Domain Services:
+  AccountService: ApplyFees, Deposit, Withdraw, CloseAccount
+
+Ports (Interfaces):
+  IAccountRepository, ILegacyAccountFeedGateway, IClock
+
+Application Use Cases:
+  ImportLegacyAccountRecord, PostTransaction, CloseAccount
+</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>ACL Mapping Table (Legacy → Domain)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Legacy Field</th>
+            <th>COBOL Type</th>
+            <th>Domain Property</th>
+            <th>.NET Type</th>
+            <th>Conversion / Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ACCT-NUM</td><td>PIC X(10)</td><td>AccountId</td><td>record AccountId(string)</td><td>Trim right‑pads; validate format (alphanumeric). Through ACL adapter.</td>
+          </tr>
+          <tr>
+            <td>CUST-ID</td><td>PIC X(10)</td><td>CustomerId</td><td>record CustomerId(string)</td><td>Trim; normalize case.</td>
+          </tr>
+          <tr>
+            <td>ACCT-STATUS</td><td>PIC X(1)</td><td>Status</td><td>enum AccountStatus</td><td>'A' → Active, 'C' → Closed; reject others.</td>
+          </tr>
+          <tr>
+            <td>OPEN-DATE</td><td>PIC 9(8)</td><td>OpenDate</td><td>DateOnly</td><td>EBCDIC digits → ASCII; parse YYYYMMDD; validate calendar.</td>
+          </tr>
+          <tr>
+            <td>CURR-BALANCE</td><td>PIC S9(9)V99 COMP-3</td><td>Balance.Amount</td><td>decimal</td><td>Decode packed decimal; sign nibble; 2 decimals; currency via context. <span class="cite"></span></td>
+          </tr>
+          <tr>
+            <td>LAST-TXN-AMT</td><td>PIC S9(7)V99 COMP-3</td><td>LastTransaction.Amount</td><td>decimal</td><td>Decode packed decimal. <span class="cite"></span></td>
+          </tr>
+          <tr>
+            <td>LAST-TXN-DATE</td><td>PIC 9(8)</td><td>LastTransaction.Date</td><td>DateOnly</td><td>EBCDIC digits → ASCII; parse; consider timezone of batch.</td>
+          </tr>
+          <tr>
+            <td>BRANCH-CODE</td><td>PIC X(5)</td><td>BranchCode</td><td>string</td><td>Trim; validate known codes.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="cite">Anti‑Corruption Layer provides facades, adapters and translators that isolate the domain from legacy semantics. </p>
+    </section>
+
+    <section>
+      <h2>Ready‑to‑Run C# 9 Skeletons (Ports, Adapters, EF Core)</h2>
+      <h3>Domain (C# 9)</h3>
+      <pre><code class="language-csharp">namespace Accounts.Domain;
+
+public enum AccountStatus { Active, Closed }
+
+public readonly record struct AccountId(string Value);
+public readonly record struct CustomerId(string Value);
+public readonly record struct Money(decimal Amount, string Currency);
+public readonly record struct Transaction(decimal Amount, DateOnly Date);
+
+public sealed class Account
+{
+    public AccountId Id { get; }
+    public CustomerId Customer { get; }
+    public AccountStatus Status { get; private set; }
+    public DateOnly OpenDate { get; }
+    public Money Balance { get; private set; }
+    public Transaction? LastTransaction { get; private set; }
+
+    public Account(AccountId id, CustomerId customer, DateOnly openDate, Money balance,
+                   AccountStatus status = AccountStatus.Active)
+    {
+        Id = id; Customer = customer; OpenDate = openDate; Balance = balance; Status = status;
+        if (balance.Currency != "BRL") throw new ArgumentException("Currency must be BRL");
+    }
+
+    public void Deposit(decimal amount, DateOnly date)
+    {
+        if (Status == AccountStatus.Closed) throw new InvalidOperationException("Account closed");
+        if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+        Balance = Balance with { Amount = Balance.Amount + amount };
+        LastTransaction = new Transaction(amount, date);
+    }
+
+    public void Withdraw(decimal amount, DateOnly date)
+    {
+        if (Status == AccountStatus.Closed) throw new InvalidOperationException("Account closed");
+        if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+        Balance = Balance with { Amount = Balance.Amount - amount };
+        LastTransaction = new Transaction(-amount, date);
+    }
+
+    public void Close() => Status = AccountStatus.Closed;
+}
+</code></pre>
+
+      <h3>Ports (Dependency Inversion)</h3>
+      <pre><code class="language-csharp">namespace Accounts.Application;
+
+public interface IAccountRepository
+{
+    Task&lt;Account?&gt; FindByIdAsync(AccountId id, CancellationToken ct);
+    Task AddAsync(Account account, CancellationToken ct);
+    Task UpdateAsync(Account account, CancellationToken ct);
+}
+
+public interface ILegacyAccountFeedGateway
+{
+    // Pulls raw EBCDIC bytes and packed decimals according to copybooks
+    IAsyncEnumerable&lt;LegacyAccountRecord&gt; ReadBatchAsync(DateOnly processDate, CancellationToken ct);
+}
+
+public interface IClock { DateOnly Today { get; } }
+
+public sealed record LegacyAccountRecord(
+    string AcctNum, string CustId, char Status, string OpenDateYYYYMMDD,
+    ReadOnlyMemory&lt;byte&gt; CurrBalanceComp3, ReadOnlyMemory&lt;byte&gt; LastTxnAmtComp3,
+    string LastTxnDateYYYYMMDD, string BranchCode);
+</code></pre>
+
+      <h3>ACL Adapter & Use Case</h3>
+      <pre><code class="language-csharp">using System.Globalization;
+using Accounts.Domain;
+using Accounts.Application;
+
+public sealed class ImportLegacyAccountRecord
+{
+    private readonly ILegacyAccountFeedGateway _gateway;
+    private readonly IAccountRepository _repo;
+
+    public ImportLegacyAccountRecord(ILegacyAccountFeedGateway gateway, IAccountRepository repo)
+        { _gateway = gateway; _repo = repo; }
+
+    public async Task ExecuteAsync(DateOnly processDate, CancellationToken ct)
+    {
+        await foreach (var rec in _gateway.ReadBatchAsync(processDate, ct))
+        {
+            var id = new AccountId(rec.AcctNum.Trim());
+            var cust = new CustomerId(rec.CustId.Trim());
+            var status = rec.Status == 'A' ? AccountStatus.Active : AccountStatus.Closed;
+            var openDate = ParseDate(rec.OpenDateYYYYMMDD);
+            var balance = new Money(Comp3ToDecimal(rec.CurrBalanceComp3.Span, 2), "BRL");
+            var acct = new Account(id, cust, openDate, balance, status);
+            if (!string.IsNullOrWhiteSpace(rec.LastTxnDateYYYYMMDD))
+            {
+                var lastAmt = Comp3ToDecimal(rec.LastTxnAmtComp3.Span, 2);
+                acct.Deposit(0, openDate); // ensure LastTransaction nullable structure exists if needed
+                acct = acct; // no-op; example shows mapping
+                acct.Withdraw(0, openDate); // placeholder for demo
+                acct = acct; // no-op
+            }
+            var existing = await _repo.FindByIdAsync(id, ct);
+            if (existing is null) await _repo.AddAsync(acct, ct); else await _repo.UpdateAsync(acct, ct);
+        }
+    }
+
+    private static DateOnly ParseDate(string yyyymmdd)
+        => DateOnly.ParseExact(yyyymmdd, "yyyyMMdd", CultureInfo.InvariantCulture);
+
+    // Simplified COMP-3 decode; replace with production-grade implementation & tests
+    public static decimal Comp3ToDecimal(ReadOnlySpan&lt;byte&gt; bytes, int scale)
+    {
+        // Each nibble is a digit, last nibble is sign (C/F=+, D=-)
+        var digits = new System.Text.StringBuilder();
+        for (int i = 0; i &lt; bytes.Length; i++)
+        {
+            var b = bytes[i];
+            var hi = (b &gt;&gt; 4) &amp; 0xF;
+            var lo = b &amp; 0xF;
+            if (i &lt; bytes.Length - 1) { digits.Append(hi).Append(lo); }
+            else {
+                // last byte: hi digit, lo sign
+                digits.Append(hi);
+                bool negative = lo == 0xD; // 0xC/0xF positive
+                var s = digits.ToString();
+                if (scale &gt; 0)
+                    s = s.Insert(s.Length - scale, ".");
+                var value = decimal.Parse(s, CultureInfo.InvariantCulture);
+                return negative ? -value : value;
+            }
+        }
+        throw new FormatException("Invalid COMP-3");
+    }
+}
+</code></pre>
+      <p class="cite">ACL translates legacy encodings and semantics to domain models; packed decimal decoding detailed in references. </p>
+
+      <h3>Infrastructure: EF Core Mappings</h3>
+      <pre><code class="language-csharp">using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Accounts.Domain;
+
+public sealed class AccountsDbContext : DbContext
+{
+    public DbSet&lt;Account&gt; Accounts =&gt; Set&lt;Account&gt;();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity&lt;Account&gt;(ConfigureAccount);
+    }
+
+    private static void ConfigureAccount(EntityTypeBuilder&lt;Account&gt; b)
+    {
+        b.HasKey(x =&gt; x.Id);
+        b.Property(x =&gt; x.Id)
+         .HasConversion(id =&gt; id.Value, s =&gt; new AccountId(s)); // ValueConverter
+        b.Property(x =&gt; x.Customer)
+         .HasConversion(c =&gt; c.Value, s =&gt; new CustomerId(s));
+        b.OwnsOne(x =&gt; x.Balance, ob =&gt;
+        {
+            ob.Property(m =&gt; m.Amount).HasColumnType("decimal(18,2)");
+            ob.Property(m =&gt; m.Currency).HasMaxLength(3);
+        });
+        b.Property(x =&gt; x.Status).HasConversion&lt;int&gt;();
+    }
+}
+</code></pre>
+      <p class="cite">EF Core value converters map value objects and enums cleanly to database columns. </p>
+
+      <h3>Composition Root (DI)</h3>
+      <pre><code class="language-csharp">using Microsoft.Extensions.DependencyInjection;
+
+var services = new ServiceCollection();
+services.AddDbContext&lt;AccountsDbContext&gt;(o =&gt; o.UseSqlServer(connString));
+services.AddScoped&lt;IAccountRepository, EfAccountRepository&gt;();
+services.AddScoped&lt;ILegacyAccountFeedGateway, CobolFileGateway&gt;();
+services.AddScoped&lt;ImportLegacyAccountRecord&gt;();
+</code></pre>
+    </section>
+
+    <section>
+      <h2>Branch by Abstraction — Explanation & Full C# Example</h2>
+      <p><strong>Branch by Abstraction</strong> is a development technique where you introduce an interface that captures how callers interact with a component you want to replace. Both the legacy implementation and the new implementation are placed behind this abstraction, allowing you to migrate callers gradually, keep the system working, and use feature flags to steer traffic. <span class="cite"></span></p>
+      <div class="panel">
+        <pre><code class="language-csharp">// 1) Define an abstraction for fee calculation used across the codebase
+public interface IFeeCalculator
+{
+    decimal Calculate(decimal balance, DateOnly processDate);
+}
+
+// 2) Adapter wrapping the legacy COBOL routine (via interop/file/hosted service)
+public sealed class LegacyCobolFeeCalculator : IFeeCalculator
+{
+    public decimal Calculate(decimal balance, DateOnly processDate)
+    {
+        // Call legacy: translate inputs to EBCDIC/packed decimals; parse outputs
+        // Placeholder: simulate legacy rule
+        return balance &lt; 1000m ? 1.00m : 2.50m;
+    }
+}
+
+// 3) New implementation in C# aligned with domain rules
+public sealed class DomainFeeCalculator : IFeeCalculator
+{
+    public decimal Calculate(decimal balance, DateOnly processDate)
+        =&gt; balance switch
+        {
+            &lt; 1000m =&gt; 1.00m,
+            &gt;= 1000m and &lt; 10000m =&gt; 2.50m,
+            _ =&gt; 5.00m
+        };
+}
+
+// 4) Runtime router using a feature flag; supports dual-run verification
+public sealed class RoutedFeeCalculator : IFeeCalculator
+{
+    private readonly IFeeCalculator _legacy;
+    private readonly IFeeCalculator _modern;
+    private readonly bool _useModern;
+    private readonly bool _dualRun;
+
+    public RoutedFeeCalculator(IFeeCalculator legacy, IFeeCalculator modern,
+        bool useModern, bool dualRun)
+    { _legacy = legacy; _modern = modern; _useModern = useModern; _dualRun = dualRun; }
+
+    public decimal Calculate(decimal balance, DateOnly date)
+    {
+        var legacy = _legacy.Calculate(balance, date);
+        if (_dualRun)
+        {
+            var modern = _modern.Calculate(balance, date);
+            if (legacy != modern)
+            {
+                // log diff for triage; in strict mode fail fast
+                Console.Error.WriteLine($"DualRun diff: legacy={legacy}, modern={modern}");
+            }
+        }
+        return _useModern ? _modern.Calculate(balance, date) : legacy;
+    }
+}
+</code></pre>
+      </div>
+      <p class="cite">Combining feature flags with Branch by Abstraction is common to steer traffic safely. </p>
+    </section>
+
+    <section>
+      <h2>Dual‑Run Testing — How to Implement</h2>
+      <p>Dual‑Run executes the legacy and modernized implementations in parallel against the same inputs, compares outputs, and reports diffs without impacting production. It’s used to certify equivalence of batch jobs and online transactions before cut‑over. <span class="cite"></span></p>
+      <ol>
+        <li>Mirror production inputs (files, messages, DB snapshots) into a test harness.</li>
+        <li>Run both systems behind an abstraction; capture outputs (reports, totals, responses).</li>
+        <li>Compare with <em>characterization (Golden‑Master)</em> tests; investigate and approve intended changes. <span class="cite"></span></li>
+        <li>Automate in CI/CD; publish dashboards of pass/fail equivalence and performance.</li>
+      </ol>
+      <div class="panel">
+        <pre><code class="language-csharp">public sealed class DualRunHarness
+{
+    private readonly IFeeCalculator _legacy;
+    private readonly IFeeCalculator _modern;
+
+    public DualRunHarness(IFeeCalculator legacy, IFeeCalculator modern)
+    { _legacy = legacy; _modern = modern; }
+
+    public (decimal legacy, decimal modern, bool equal) Execute(decimal balance, DateOnly date)
+    {
+        var l = _legacy.Calculate(balance, date);
+        var m = _modern.Calculate(balance, date);
+        return (l, m, l == m);
+    }
+}
+</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>Unit Tests — 100% Coverage Goal (Services)</h2>
+      <p>Focus on <strong>service layer</strong> coverage: all branches and exceptional paths. Use xUnit/NUnit + mocks. Aim for simple, deterministic tests that assert domain invariants.</p>
+      <div class="grid cols-2">
+        <div class="panel">
+          <h3>xUnit Example</h3>
+          <pre><code class="language-csharp">using Xunit;
+using Accounts.Domain;
+
+public class AccountServiceTests
+{
+    [Fact] public void Deposit_Increases_Balance_And_Sets_LastTransaction()
+    {
+        var acct = new Account(new("0000000001"), new("CUST000001"), new DateOnly(2020,1,1), new Money(100m,"BRL"));
+        acct.Deposit(50m, new DateOnly(2020,1,2));
+        Assert.Equal(150m, acct.Balance.Amount);
+        Assert.Equal(new DateOnly(2020,1,2), acct.LastTransaction!.Value.Date);
+    }
+
+    [Fact] public void Withdraw_Validates_Amount()
+    {
+        var acct = new Account(new("0000000001"), new("CUST000001"), new DateOnly(2020,1,1), new Money(100m,"BRL"));
+        Assert.Throws&lt;ArgumentOutOfRangeException&gt;(() =&gt; acct.Withdraw(0m, new DateOnly(2020,1,2)));
+    }
+
+    [Fact] public void CloseAccount_Blocks_Further_Activity()
+    {
+        var acct = new Account(new("0000000001"), new("CUST000001"), new DateOnly(2020,1,1), new Money(100m,"BRL"));
+        acct.Close();
+        Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; acct.Deposit(10m, new DateOnly(2020,1,3)));
+    }
+}
+</code></pre>
+        </div>
+        <div class="panel">
+          <h3>Coverage Tips</h3>
+          <ul>
+            <li>Cover <strong>all branches</strong> (positive/negative paths, exceptions).</li>
+            <li>Mock repositories and gateways to isolate service behavior.</li>
+            <li>Add tests for ACL conversions (valid/invalid EBCDIC, COMP‑3 signs).</li>
+            <li>Use <span class="kbd">dotnet test /p:CollectCoverage=true</span> (coverlet) to track coverage.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>EBCDIC & COMP‑3 Conversion Notes</h2>
+      <p>EBCDIC is not a single encoding; you must select the correct code page (e.g., IBM037/CP1047). Packed decimal (COMP‑3) stores two digits per byte; the low nibble of the final byte is the sign. <span class="cite"></span></p>
+      <pre><code class="language-csharp">// Example: decoding with code pages (text fields)
+var ebcdic = System.Text.Encoding.GetEncoding("IBM037");
+string s = ebcdic.GetString(rawBytes);
+</code></pre>
+      <p class="cite">EF Core value converters can encapsulate conversions between domain types and provider types. </p>
+    </section>
+
+    <section>
+      <h2>Migration Playbook (Phased)</h2>
+      <ol>
+        <li>Identify bounded contexts and seams; extract value streams; define abstractions. <span class="cite"></span></li>
+        <li>Introduce ACL around legacy I/O; map copybooks to domain models. <span class="cite"></span></li>
+        <li>Apply Strangler Fig at system edges; route requests via façade/gateway. <span class="cite"></span></li>
+        <li>Use Branch by Abstraction for deep components; feature flag switching. <span class="cite"></span></li>
+        <li>Run Dual‑Run certification; Golden‑Master tests; fix diffs; cut over. <span class="cite"></span></li>
+      </ol>
+    </section>
+
+    <footer class="note">
+      <p><strong>Next:</strong> Plug your EBCDIC/COMP‑3 fixtures into <code>ILegacyAccountFeedGateway</code> and replace the demo <code>Comp3ToDecimal</code> with your production converter; expand services and tests until service coverage reaches 100%.</p>
+      <div class="contact">Contact: <a href="mailto:bruno.dalessio@trescon.com.br">bruno.dalessio@trescon.com.br</a></div>
+    </footer>
+  </main>
+</body>
+</html>

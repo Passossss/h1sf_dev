@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COBOL (h1sf0033.txt) CICS Transaction Flow with SQL Error Handling</title>
+
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --panel: #1f1f1f;
+      --panel-border: #3a3a3a;
+      --text: #eaeaea;
+      --muted: #bdbdbd;
+      --accent: #6ec1ff;
+      --accent-2: #ffcf66;
+      --success: #82d882;
+      --error: #ff7b7b;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Document header table styles */
+    .doc-header {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .doc-header th, .doc-header td {
+      border: 0;
+      padding: .75rem;
+      vertical-align: middle;
+    }
+    .doc-header .logo {
+      width: 120px;
+      height: auto;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      background: #111;
+      object-fit: contain;
+    }
+    .doc-header .title {
+      text-align: center;
+    }
+    .doc-header .title h1 {
+      margin: .25rem 0 .35rem 0;
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+    }
+    .doc-header .title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    header h1 {
+      margin: 0 0 .25rem;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+    }
+
+    header p {
+      margin: 0 0 1.25rem;
+      color: var(--muted);
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: .75rem;
+      margin-top: .5rem;
+    }
+
+    .kpi > div {
+      background: rgba(255,255,255,.03);
+      border: 1px dashed var(--panel-border);
+      border-radius: 10px;
+      padding: .75rem;
+      font-size: .95rem;
+    }
+
+    .legend {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .25rem .5rem;
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      font-size: .9rem;
+    }
+
+    .legend .dot {
+      width: .75rem;
+      height: .75rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Diagram container */
+    .diagram {
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: radial-gradient(1200px 600px at 50% 0%, rgba(110,193,255,.08), transparent 55%);
+      border-radius: 12px;
+    }
+
+    /* Narrative list styling */
+    .flow-steps {
+      list-style: none;
+      padding-left: 0;
+      margin: .5rem 0 0;
+      border-left: 2px solid var(--panel-border);
+    }
+    .flow-steps li {
+      padding: .4rem .6rem .4rem 1rem;
+      margin: .2rem 0;
+      position: relative;
+    }
+    .flow-steps li::before {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: .9rem;
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--bg);
+    }
+
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+    }
+    pre {
+      padding: .75rem 1rem;
+      overflow: auto;
+    }
+
+    .note {
+      font-size: .95rem;
+      color: var(--muted);
+      border-left: 3px solid var(--accent-2);
+      padding-left: .75rem;
+      margin: .75rem 0 0;
+    }
+
+    /* Accessibility helpers */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header>
+
+    <!-- Document Header Table -->
+    <table class="doc-header" role="presentation" aria-label="Document header">
+      <tr>
+        <td style="width: 20%; text-align: left;">
+          <img src="images/3conlogo.png" alt="Left logo" class="logo" />
+        </td>
+        <td class="title" style="width: 60%;">
+          <h1>COBOL (h1sf0033.txt) CICS Transaction Flow with SQL Error Handling</h1>
+          <p>A structured overview of program execution, decision branching, and robust error-handling routines in a CICS + SQL environment.</p>
+        </td>
+        <td style="width: 20%; text-align: right;">
+          <img src="images/catlogo.jpeg" alt="Right logo" class="logo" />
+        </td>
+      </tr>
+    </table>
+
+    </header>
+
+    <!-- Overview -->
+    <section aria-labelledby="overview-title">
+      <h2 id="overview-title">Flow Overview</h2>
+      <p>
+        The diagram and description represent a program that interacts with
+        <strong>CICS (Customer Information Control System)</strong> and performs SQL operations.
+        It initializes, sets up handlers for CICS and SQL, executes core logic, evaluates success,
+        and—if necessary—executes an error path that records issues to a <abbr title="Temporary Storage">TS</abbr> Queue and registers the transaction error
+        before returning control to CICS.
+      </p>
+
+      <div class="kpi">
+        <div><strong>Structure:</strong> Linear with one decision branching to success/error paths.</div>
+        <div><strong>Focus:</strong> Predictable error capture, audit trail, and clean termination.</div>
+        <div><strong>Outcome:</strong> Returns to CICS in both paths (success or controlled failure).</div>
+      </div>
+
+      <p class="legend" aria-label="Legend">
+        <span class="dot" style="background: var(--accent)"></span> Main path
+        <span class="dot" style="background: var(--success); margin-left: .75rem;"></span> Success label
+        <span class="dot" style="background: var(--error); margin-left: .75rem;"></span> Error path
+      </p>
+    </section>
+
+    <!-- Diagram (SVG rendered with HTML/CSS) -->
+    <section aria-labelledby="diagram-title">
+      <h2 id="diagram-title">Flowchart Diagram (HTML + CSS + SVG)</h2>
+      <div class="diagram" role="img" aria-label="Flowchart showing program start, CICS conditions handling, SQL error handling setup, logical processing, decision node for success, success path returning to CICS, and error path writing to TS Queue and registering transaction error before returning to CICS.">
+        <svg viewBox="0 0 900 1300" width="100%" height="auto" aria-hidden="false">
+          <!-- Styles for nodes -->
+          <defs>
+            <style>
+              .box {
+                fill: #1f1f1f; stroke: #3a3a3a; stroke-width: 2;
+                rx: 10; ry: 10;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,.35));
+              }
+              .diamond {
+                fill: #1f1f1f; stroke: #3a3a3a; stroke-width: 2;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,.35));
+              }
+              .label { fill: #eaeaea; font-size: 18px; font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; text-anchor: middle; }
+              .small { font-size: 15px; fill: #bdbdbd; }
+              .arrow { stroke: #bdbdbd; stroke-width: 2; marker-end: url(#arrowhead); fill: none; }
+              .accent { stroke: #6ec1ff; }
+              .error { stroke: #ff7b7b; }
+              .yes { fill: #82d882; }
+              .no  { fill: #ff7b7b; }
+            </style>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#bdbdbd"></polygon>
+            </marker>
+          </defs>
+
+          <!-- Central vertical nodes -->
+          <!-- 1: Start Program -->
+          <rect class="box" x="335" y="50"  width="230" height="60"></rect>
+          <text class="label" x="450" y="90">Start Program</text>
+          <line class="arrow accent" x1="450" y1="110" x2="450" y2="150"></line>
+
+          <!-- 2: Handle CICS Conditions -->
+          <rect class="box" x="300" y="150" width="300" height="60"></rect>
+          <text class="label" x="450" y="190">Handle CICS Conditions</text>
+          <line class="arrow accent" x1="450" y1="210" x2="450" y2="260"></line>
+
+          <!-- 3: SQL Error Handling Setup -->
+          <rect class="box" x="300" y="260" width="300" height="60"></rect>
+          <text class="label" x="450" y="300">SQL Error Handling Setup</text>
+          <line class="arrow accent" x1="450" y1="320" x2="450" y2="370"></line>
+
+          <!-- 4: Logical Processing -->
+          <rect class="box" x="350" y="370" width="200" height="60"></rect>
+          <text class="label" x="450" y="410">Logical Processing</text>
+          <line class="arrow accent" x1="450" y1="430" x2="450" y2="500"></line>
+
+          <!-- 5: Decision Diamond: Process Successful? -->
+          <polygon class="diamond" points="450,500 540,590 450,680 360,590"></polygon>
+          <text class="label" x="450" y="590">Process Successful?</text>
+
+          <!-- Branch labels -->
+          <rect x="330" y="620" width="32" height="22" rx="4" class="yes"></rect>
+          <text class="small" x="346" y="636" text-anchor="middle">Yes</text>
+          <rect x="515" y="620" width="30" height="22" rx="4" class="no"></rect>
+          <text class="small" x="530" y="636" text-anchor="middle">No</text>
+
+          <!-- Success path: curve to Return to CICS -->
+          <path class="arrow accent" d="M 360 590 C 300 720 300 1020 360 1120" ></path>
+
+          <!-- Error path (right column) -->
+          <path class="arrow error" d="M 540 590 C 610 650 610 650 610 650" ></path>
+          <!-- 6: Error Handling -->
+          <rect class="box" x="570" y="650" width="250" height="60"></rect>
+          <text class="label" x="695" y="690">Error Handling</text>
+          <line class="arrow error" x1="695" y1="710" x2="695" y2="770"></line>
+
+          <!-- 7: Write Error to TS Queue -->
+          <rect class="box" x="545" y="770" width="300" height="60"></rect>
+          <text class="label" x="695" y="810">Write Error to TS Queue</text>
+          <line class="arrow error" x1="695" y1="830" x2="695" y2="900"></line>
+
+          <!-- 8: Register Transaction Error -->
+          <rect class="box" x="560" y="900" width="270" height="60"></rect>
+          <text class="label" x="695" y="940">Register Transaction Error</text>
+          <path class="arrow error" d="M 695 960 C 690 1040 630 1100 540 1120" ></path>
+
+          <!-- 9: Return to CICS (bottom center-left) -->
+          <rect class="box" x="350" y="1100" width="200" height="60"></rect>
+          <text class="label" x="450" y="1140">Return to CICS</text>
+        </svg>
+      </div>
+
+      <p class="note">
+        The diagram uses accessible text labels and high-contrast colors. Resize the window—SVG is responsive.
+      </p>
+    </section>
+
+    <!-- Detailed narrative -->
+    <section aria-labelledby="steps-title">
+      <h2 id="steps-title">Step-by-Step Narrative</h2>
+      <ol class="flow-steps">
+        <li><strong>Start Program:</strong> The entry point where initial state and runtime context are established.</li>
+        <li><strong>Handle CICS Conditions:</strong> Configure CICS condition handlers (e.g., <em>HANDLE CONDITION</em>) to manage transaction-level exceptions, timeouts, or communication failures.</li>
+        <li><strong>SQL Error Handling Setup:</strong> Prepare SQL error interception (e.g., DB2 <em>WHENEVER</em> directives or explicit <em>SQLCODE</em> checks) before executing business logic.</li>
+        <li><strong>Logical Processing:</strong> Execute the core business operations and database interactions.</li>
+        <li><strong>Decision — Process Successful?</strong> Evaluate whether the previous operations completed as expected.</li>
+        <li><strong>On Success:</strong> Skip error handling and <strong>Return to CICS</strong> cleanly.</li>
+        <li><strong>On Failure:</strong> Enter <strong>Error Handling</strong>, persist details to the <strong>TS Queue</strong> for diagnostics/retry, <strong>register the transaction error</strong> for auditability, and then <strong>Return to CICS</strong> in a controlled manner.</li>
+      </ol>
+    </section>
+
+    <!-- SQL Error Handling Setup -->
+    <section aria-labelledby="sql-title">
+      <h2 id="sql-title">SQL Error Handling Setup (Explanation + Examples)</h2>
+      <p>
+        In CICS programs that invoke SQL (e.g., DB2), error handling should be configured <em>before</em> any SQL statements execute.
+        Common patterns include using <strong>DB2 WHENEVER</strong> directives, inspecting <code>SQLCA</code>/<code>SQLCODE</code>, and coordinating with CICS condition handling.
+        The goals are: (1) fail fast or route control to a known handler, (2) capture context for diagnosis,
+        and (3) keep transaction integrity (commit/rollback as appropriate).
+      </p>
+
+      <h3>Typical Components</h3>
+      <ul>
+        <li><strong>SQLCA / SQLCODE:</strong> DB2’s SQL Communications Area reports status for the last SQL statement. Check <code>SQLCODE</code> (0 = success, &gt;0 warnings, &lt;0 errors).</li>
+        <li><strong>WHENEVER Directives:</strong> Declarative routing of control on SQL outcomes (e.g., <code>WHENEVER SQLERROR</code>, <code>WHENEVER NOT FOUND</code>).</li>
+        <li><strong>Unit-of-Work:</strong> Decide whether to <code>COMMIT</code> or <code>ROLLBACK</code> based on success/failure; avoid leaving the transaction in-doubt.</li>
+        <li><strong>Error Capture:</strong> Collect details (operation, parameters, <code>SQLSTATE</code>/<code>SQLCODE</code>, timestamp) and write to a TS Queue for later inspection or recovery flows.</li>
+      </ul>
+
+      <h3>DB2 (COBOL) Example — Declarative Handling</h3>
+      <pre><code>* Set up handlers before any SQL
+EXEC SQL
+    WHENEVER SQLERROR   GO TO SQL-ERR
+END-EXEC.
+EXEC SQL
+    WHENEVER NOT FOUND  CONTINUE
+END-EXEC.
+EXEC SQL
+    WHENEVER SQLWARNING CONTINUE
+END-EXEC.
+
+* ... logical processing with SQL statements ...
+EXEC SQL
+    INSERT INTO ORDERS (ID, AMOUNT) VALUES (:WS-ID, :WS-AMOUNT)
+END-EXEC.
+
+* If SQLERROR occurs, control transfers here:
+SQL-ERR.
+    MOVE SQLCODE TO WS-SQLCODE.
+    MOVE SQLSTATE TO WS-SQLSTATE.
+    * Write diagnostic record to CICS TS Queue
+    EXEC CICS WRITEQ TS
+         QUEUE('ERR.LOG')
+         FROM(WS-ERR-BLOCK)
+         LENGTH(WS-ERR-LEN)
+    END-EXEC.
+    * Register/flag transaction error (e.g., application log or monitoring)
+    * Decide rollback/commit
+    IF WS-SQLCODE &lt; 0
+        EXEC SQL ROLLBACK END-EXEC
+    END-IF.
+    * Return to CICS or propagate condition
+</code></pre>
+
+      <h3>Explicit Checking Pattern</h3>
+      <pre><code>EXEC SQL
+    UPDATE ACCOUNTS SET BALANCE = BALANCE - :WS-AMT
+    WHERE ID = :WS-ID
+END-EXEC.
+IF SQLCODE NOT = 0
+    * Populate error structure with context, SQLCODE/STATE
+    * WRITEQ TS 'ERR.LOG'
+    * ROLLBACK
+    GO TO SQL-ERR
+END-IF.
+</code></pre>
+
+      <h3>Modern Language C# (ADO.NET) Sketch</h3>
+      <pre><code>// ADO.NET pattern with explicit transaction handling and parameterized SQL
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+public static class OrderRepository
+{
+    public static void InsertOrder(long id, decimal amount, string connectionString)
+    {
+        // In CICS-integrated environments, coordinate commit/rollback with the transaction manager
+        using var conn = new SqlConnection(connectionString);
+        conn.Open();
+
+        using var tx = conn.BeginTransaction(IsolationLevel.ReadCommitted);
+        try
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = "INSERT INTO orders(id, amount) VALUES (@id, @amount)";
+            cmd.CommandType = CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.BigInt) { Value = id });
+            cmd.Parameters.Add(new SqlParameter("@amount", SqlDbType.Decimal) {
+                Precision = 18, Scale = 2, Value = amount
+            });
+
+            int rows = cmd.ExecuteNonQuery();
+            if (rows != 1)
+            {
+                // Simulate NOT FOUND or unexpected rowcount logic
+                throw new InvalidOperationException($"Unexpected row count: {rows}");
+            }
+
+            // Commit the unit-of-work on success
+            tx.Commit();
+        }
+        catch (SqlException ex)
+        {
+            // SQLSTATE-style info is provider-specific; SqlException includes Number, State, Class, and Messages
+            // Build a diagnostic payload to persist (TS Queue equivalent or application log)
+            var diagnostic = new
+            {
+                op = "INSERT orders",
+                errorCode = ex.Number,
+                state = ex.State,
+                classCode = ex.Class,
+                message = ex.Message,
+                ts = DateTimeOffset.UtcNow,
+                id = id,
+                amount = amount
+            };
+
+            // TODO: Write diagnostic to CICS TS Queue or an application logging system
+            // e.g., WRITEQ TS 'ERR.LOG' with serialized diagnostic
+            // registerTransactionError(diagnostic);
+
+            // Roll back the transaction to preserve integrity
+            try { tx.Rollback(); } catch { /* handle rollback failures if needed */ }
+
+            // Propagate or translate as needed
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Non-SQL exceptions (e.g., invalid state, connectivity after open, etc.)
+            // Capture diagnostics similarly
+            var diagnostic = new
+            {
+                op = "INSERT orders",
+                message = ex.Message,
+                ts = DateTimeOffset.UtcNow,
+                id = id,
+                amount = amount
+            };
+
+            // TODO: WRITEQ TS and register transaction error
+            try { tx.Rollback(); } catch { /* handle rollback failures */ }
+            throw;
+        }
+    }
+}
+</code></pre>
+
+      <p class="note">
+        <strong>Key points:</strong> Use parameterized queries to prevent injection, wrap commands in an explicit transaction for consistent unit-of-work,
+        and capture diagnostic context (operation, identifiers, error codes/messages, timestamp). In CICS environments, align commit/rollback behavior with
+        the transaction manager and persist diagnostics to TS Queues or your centralized logging pipeline.
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <section aria-labelledby="footer-title">
+      <h2 id="footer-title">Notes &amp; Next Steps</h2>
+      <p>
+        This page is ready to embed in documentation portals or knowledge bases.
+        If you’d like, I can tailor the styling to match your project’s existing HTML/CSS,
+        or export this as a downloadable <code>.html</code> file.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
